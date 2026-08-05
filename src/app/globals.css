@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF6F0; /* Sandalwood */
+  --foreground: #1A2228; /* Shanti Slate */
+  
+  /* Traditional Indian Classical Theme Palette */
+  --sandalwood: #FAF6F0;
+  --sandalwood-dark: #F3EBE0;
+  --kumkum: #800020;
+  --kumkum-light: #9E1B32;
+  --marigold: #E68A00;
+  --marigold-light: #F0A500;
+  --shanti-slate: #1A2228;
+  --swara-gold: #D4AF37;
+  --swara-gold-light: #F3E5AB;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-sans);
+  
+  --color-sandalwood: var(--sandalwood);
+  --color-sandalwood-dark: var(--sandalwood-dark);
+  --color-kumkum: var(--kumkum);
+  --color-kumkum-light: var(--kumkum-light);
+  --color-marigold: var(--marigold);
+  --color-marigold-light: var(--marigold-light);
+  --color-shanti-slate: var(--shanti-slate);
+  --color-swara-gold: var(--swara-gold);
+  --color-swara-gold-light: var(--swara-gold-light);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Elegant custom scrollbar styles for a clean premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--sandalwood-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--kumkum-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kumkum);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom premium design system classes */
+.traditional-glow {
+  box-shadow: 0 0 20px rgba(128, 0, 32, 0.08), 0 0 3px rgba(212, 175, 55, 0.25);
+}
+.traditional-border {
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+.glass-panel {
+  background: rgba(250, 246, 240, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Subtle texture/dot grid background for the classical aesthetic */
+.chandan-grid {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(128, 0, 32, 0.04) 1px, transparent 1px);
 }
