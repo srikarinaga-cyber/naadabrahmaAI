@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Naadabrahma AI
+
+**Where Tradition Meets Intelligence**
+
+India's modern digital platform for Carnatic music — built for students, teachers, academies, and administrators across vocal, veena, violin, flute, mridangam, and keyboard.
+
+## Tech Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Framer Motion
+- **Backend:** Supabase (Auth, PostgreSQL, Storage, pgvector)
+- **Deployment:** Vercel
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment
+
+Copy the example env file and add your Supabase credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+### 3. Run database migrations
+
+Apply migrations in `supabase/migrations/` via the Supabase CLI or SQL Editor:
+
+```bash
+supabase db push
+```
+
+Or run each migration file manually in the Supabase Dashboard SQL Editor.
+
+### 4. Start development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router pages
+├── components/
+│   ├── landing/            # Landing page sections
+│   ├── layout/             # Navbar, Footer, ThemeToggle
+│   ├── providers/          # Theme provider
+│   └── ui/                 # shadcn/ui components
+├── config/                 # Site configuration
+├── lib/
+│   ├── data/               # Server-side data fetching
+│   └── supabase/           # Supabase client utilities
+└── types/                  # TypeScript types
+```
 
-## Learn More
+## Milestone 1 — Foundation (Complete)
 
-To learn more about Next.js, take a look at the following resources:
+- [x] Project structure
+- [x] Supabase configuration
+- [x] shadcn/ui setup
+- [x] Landing page with Hero, Features, Statistics, Knowledge Hub preview, AI Guru preview, Testimonials, Footer
+- [x] Responsive Navbar with mobile menu
+- [x] Dark mode
+- [x] SEO metadata
+- [x] Framer Motion animations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proprietary — Naadabrahma AI
