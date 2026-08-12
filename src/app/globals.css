@@ -171,12 +171,12 @@
   html,
   body {
     color: var(--foreground);
-    background-image: linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.14)),
-      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.14), transparent 18%),
-      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.1), transparent 16%),
-      linear-gradient(180deg, rgba(255, 252, 250, 0.7), rgba(241, 225, 233, 0.65)),
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.35)),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.08), transparent 18%),
+      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.06), transparent 16%),
+      linear-gradient(180deg, rgba(255, 252, 250, 0.9), rgba(241, 225, 233, 0.82)),
       url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp');
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.25);
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
@@ -185,10 +185,10 @@
   }
   .dark html,
   .dark body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.3)),
-      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.14), transparent 18%),
-      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.1), transparent 16%),
-      linear-gradient(180deg, rgba(11, 17, 32, 0.82), rgba(18, 8, 40, 0.8)),
+    background-image: linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.18)),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.12), transparent 18%),
+      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.08), transparent 16%),
+      linear-gradient(180deg, rgba(11, 17, 32, 0.7), rgba(18, 8, 40, 0.7)),
       url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp');
   }
   html {
