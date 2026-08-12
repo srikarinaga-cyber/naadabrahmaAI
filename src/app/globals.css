@@ -19,19 +19,19 @@
 
   /* shadcn semantic tokens — light theme */
   --background: var(--sandalwood);
-  --foreground: #111827;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #111827;
+  --popover-foreground: #0f172a;
   --primary: var(--kumkum);
   --primary-foreground: #ffffff;
   --secondary: var(--sandalwood-dark);
-  --secondary-foreground: #111827;
+  --secondary-foreground: #0f172a;
   --muted: var(--sandalwood-dark);
-  --muted-foreground: #334155;
+  --muted-foreground: #1f2937;
   --accent: var(--swara-gold-light);
-  --accent-foreground: #111827;
+  --accent-foreground: #0f172a;
   --destructive: #dc2626;
   --border: rgba(212, 175, 55, 0.25);
   --input: rgba(212, 175, 55, 0.2);
