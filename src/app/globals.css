@@ -29,7 +29,7 @@
   --secondary: var(--sandalwood-dark);
   --secondary-foreground: #0f172a;
   --muted: var(--sandalwood-dark);
-  --muted-foreground: #1f2937;
+  --muted-foreground: #0f172a;
   --accent: var(--swara-gold-light);
   --accent-foreground: #0f172a;
   --destructive: #dc2626;
@@ -94,7 +94,7 @@
   --secondary: #1a2228;
   --secondary-foreground: #f8fafc;
   --muted: #1a2228;
-  --muted-foreground: #e2e8f0;
+  --muted-foreground: #f8fafc;
   --accent: rgba(212, 175, 55, 0.2);
   --accent-foreground: var(--swara-gold);
   --destructive: #ef4444;
