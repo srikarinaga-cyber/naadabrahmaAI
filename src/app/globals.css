@@ -169,17 +169,20 @@
   html,
   body {
     color: var(--foreground);
-    background: radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
+    background-image: url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp'),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
       radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.14), transparent 16%),
       linear-gradient(180deg, rgba(255, 252, 250, 0.92), rgba(241, 225, 233, 0.85));
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
     min-height: 100%;
   }
   .dark html,
   .dark body {
-    background: radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
+    background-image: url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp'),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
       radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.12), transparent 16%),
       linear-gradient(180deg, rgba(11, 17, 32, 0.94), rgba(18, 8, 40, 0.92));
   }
