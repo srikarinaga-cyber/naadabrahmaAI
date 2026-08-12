@@ -71,6 +71,7 @@ export function KnowledgeHubPreview({ featuredRaga }: KnowledgeHubPreviewProps) 
 
             <Button
               className="bg-kumkum hover:bg-kumkum-light"
+              nativeButton={false}
               render={<Link href="/knowledge-hub" />}
             >
               Browse Knowledge Hub

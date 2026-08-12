@@ -94,6 +94,7 @@ export function AiGuruPreview() {
 
             <Button
               className="bg-kumkum hover:bg-kumkum-light"
+              nativeButton={false}
               render={<Link href="/ai-guru" />}
             >
               Chat with AI Guru
