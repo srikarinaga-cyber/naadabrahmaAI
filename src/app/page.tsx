@@ -26,7 +26,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <HeroSection />
         <section className="mx-auto w-full max-w-7xl px-6 pb-16">
-          <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/15 bg-background/80 p-6 shadow-xl">
+          <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/15 p-6 shadow-xl">
             <h2 className="font-serif text-2xl font-semibold text-[#800020] mb-4">
               Hear the Drone for Tanpura, Veena, and Violin
             </h2>

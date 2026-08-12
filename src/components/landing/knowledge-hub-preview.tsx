@@ -85,7 +85,7 @@ export function KnowledgeHubPreview({ featuredRaga }: KnowledgeHubPreviewProps) 
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            <div className="traditional-border relative overflow-hidden rounded-2xl border-swara-gold/20 bg-card p-6 shadow-sm dark:bg-card/80">
+            <div className="glass-panel traditional-glow relative overflow-hidden rounded-2xl border border-swara-gold/20 p-6 shadow-sm">
               <div className="absolute top-0 right-0 size-32 rounded-bl-full bg-kumkum/5" />
 
               {featuredRaga ? (

@@ -20,7 +20,7 @@ interface FeatureCardsProps {
 
 export function FeatureCards({ features }: FeatureCardsProps) {
   return (
-    <section id="features" className="border-y border-swara-gold/15 bg-sandalwood-dark/40 py-24 dark:bg-muted/20">
+    <section id="features" className="border-y border-swara-gold/15 bg-transparent py-24 dark:bg-transparent">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           className="mx-auto mb-16 max-w-2xl text-center"
@@ -49,7 +49,7 @@ export function FeatureCards({ features }: FeatureCardsProps) {
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
               >
-                <Card className="group traditional-border h-full border-swara-gold/20 bg-card/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-card/60">
+                <Card className="group glass-panel traditional-border h-full border-swara-gold/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                   <CardHeader className="pb-3">
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex size-11 items-center justify-center rounded-xl bg-kumkum/10 ring-1 ring-swara-gold/20 transition-colors group-hover:bg-kumkum/15">

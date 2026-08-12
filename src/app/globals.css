@@ -135,15 +135,15 @@
   border: 1px solid rgba(212, 175, 55, 0.25);
 }
 .glass-panel {
-  background: rgba(255, 255, 255, 0.62);
-  backdrop-filter: blur(22px) saturate(1.2);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(24px) saturate(1.2);
   border: 1px solid rgba(173, 65, 123, 0.18);
-  box-shadow: 0 28px 60px rgba(113, 33, 91, 0.08);
+  box-shadow: 0 34px 80px rgba(113, 33, 91, 0.08);
 }
 .dark .glass-panel {
-  background: rgba(24, 10, 40, 0.64);
-  border: 1px solid rgba(173, 65, 123, 0.16);
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.26);
+  background: rgba(24, 10, 40, 0.48);
+  border: 1px solid rgba(173, 65, 123, 0.14);
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.26);
 }
 
 .chandan-grid {
@@ -169,10 +169,12 @@
   html,
   body {
     color: var(--foreground);
-    background-image: url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp'),
-      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
-      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.14), transparent 16%),
-      linear-gradient(180deg, rgba(255, 252, 250, 0.92), rgba(241, 225, 233, 0.85));
+    background-image: linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.14)),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.14), transparent 18%),
+      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.1), transparent 16%),
+      linear-gradient(180deg, rgba(255, 252, 250, 0.7), rgba(241, 225, 233, 0.65)),
+      url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp');
+    background-color: transparent;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
@@ -181,10 +183,11 @@
   }
   .dark html,
   .dark body {
-    background-image: url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp'),
-      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.18), transparent 18%),
-      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.12), transparent 16%),
-      linear-gradient(180deg, rgba(11, 17, 32, 0.94), rgba(18, 8, 40, 0.92));
+    background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.3)),
+      radial-gradient(circle at 20% 10%, rgba(173, 65, 123, 0.14), transparent 18%),
+      radial-gradient(circle at 80% 25%, rgba(128, 0, 32, 0.1), transparent 16%),
+      linear-gradient(180deg, rgba(11, 17, 32, 0.82), rgba(18, 8, 40, 0.8)),
+      url('https://artium-v2-blogs.s3.ap-south-1.amazonaws.com/wp-content/uploads/2025/12/Ragas-and-Brain-Neuroscience-of-Hindustani-Music.webp');
   }
   html {
     @apply font-sans scroll-smooth;
