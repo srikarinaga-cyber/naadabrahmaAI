@@ -19,19 +19,19 @@
 
   /* shadcn semantic tokens — light theme */
   --background: var(--sandalwood);
-  --foreground: var(--shanti-slate);
+  --foreground: #111827;
   --card: #ffffff;
-  --card-foreground: var(--shanti-slate);
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: var(--shanti-slate);
+  --popover-foreground: #111827;
   --primary: var(--kumkum);
   --primary-foreground: #ffffff;
   --secondary: var(--sandalwood-dark);
-  --secondary-foreground: var(--shanti-slate);
+  --secondary-foreground: #111827;
   --muted: var(--sandalwood-dark);
-  --muted-foreground: #5c6670;
+  --muted-foreground: #334155;
   --accent: var(--swara-gold-light);
-  --accent-foreground: var(--shanti-slate);
+  --accent-foreground: #111827;
   --destructive: #dc2626;
   --border: rgba(212, 175, 55, 0.25);
   --input: rgba(212, 175, 55, 0.2);
@@ -84,22 +84,22 @@
 
 .dark {
   --background: var(--royal-navy);
-  --foreground: var(--sandalwood);
-  --card: #141c2e;
-  --card-foreground: var(--sandalwood);
-  --popover: #141c2e;
-  --popover-foreground: var(--sandalwood);
+  --foreground: #f8fafc;
+  --card: #111827;
+  --card-foreground: #f8fafc;
+  --popover: #111827;
+  --popover-foreground: #f8fafc;
   --primary: var(--kumkum-light);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #111827;
   --secondary: #1a2228;
-  --secondary-foreground: var(--sandalwood);
+  --secondary-foreground: #f8fafc;
   --muted: #1a2228;
-  --muted-foreground: #a8b0ba;
-  --accent: rgba(212, 175, 55, 0.15);
+  --muted-foreground: #e2e8f0;
+  --accent: rgba(212, 175, 55, 0.2);
   --accent-foreground: var(--swara-gold);
   --destructive: #ef4444;
-  --border: rgba(212, 175, 55, 0.15);
-  --input: rgba(212, 175, 55, 0.12);
+  --border: rgba(212, 175, 55, 0.18);
+  --input: rgba(212, 175, 55, 0.18);
   --ring: var(--swara-gold);
 }
 
@@ -135,12 +135,14 @@
   border: 1px solid rgba(212, 175, 55, 0.25);
 }
 .glass-panel {
+  color: var(--foreground);
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(24px) saturate(1.2);
   border: 1px solid rgba(173, 65, 123, 0.18);
   box-shadow: 0 34px 80px rgba(113, 33, 91, 0.08);
 }
 .dark .glass-panel {
+  color: var(--foreground);
   background: rgba(24, 10, 40, 0.48);
   border: 1px solid rgba(173, 65, 123, 0.14);
   box-shadow: 0 34px 80px rgba(0, 0, 0, 0.26);
