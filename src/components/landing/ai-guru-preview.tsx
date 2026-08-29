@@ -11,29 +11,34 @@ import {
   NotebookPen,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const capabilities = [
   {
     icon: HelpCircle,
     title: "Ask Music Doubts",
     description: "Get instant explanations for raga theory, swara patterns, and performance nuances.",
+    href: "/ai-guru",
   },
   {
     icon: GitCompare,
     title: "Compare Ragas",
     description: "Side-by-side analysis of Melakarta and Janya ragas with swara differences highlighted.",
+    href: "/ai-guru",
   },
   {
     icon: NotebookPen,
     title: "Generate Notes & Quizzes",
     description: "AI-crafted study notes and practice quizzes tailored to your exam level.",
+    href: "/ai-guru",
   },
   {
     icon: Calendar,
     title: "Practice Schedules",
     description: "Personalized daily practice plans based on your progress and weak areas.",
+    href: "/student",
   },
 ];
 
@@ -79,27 +84,33 @@ export function AiGuruPreview() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {capabilities.map((cap) => (
-                <div
+                <Link
                   key={cap.title}
-                  className="rounded-xl border border-swara-gold/15 bg-card/60 p-4 backdrop-blur-sm dark:bg-card/40"
+                  href={cap.href}
+                  className="block rounded-xl border border-swara-gold/15 bg-card/60 p-4 backdrop-blur-sm dark:bg-card/40 transition-all duration-300 hover:-translate-y-0.5 hover:border-kumkum/45 hover:shadow-md group/card"
                 >
-                  <cap.icon className="mb-2 size-5 text-kumkum" aria-hidden />
-                  <p className="text-sm font-semibold">{cap.title}</p>
+                  <cap.icon className="mb-2 size-5 text-kumkum transition-transform duration-300 group-hover/card:scale-110" aria-hidden />
+                  <p className="text-sm font-semibold flex items-center gap-1 group-hover/card:text-kumkum transition-colors">
+                    {cap.title}
+                    <ArrowRight className="size-3 opacity-0 -translate-x-1 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all" />
+                  </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {cap.description}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
 
-            <Button
-              className="bg-kumkum hover:bg-kumkum-light"
-              nativeButton={false}
-              render={<Link href="/ai-guru" />}
+            <Link
+              href="/ai-guru"
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "bg-kumkum hover:bg-kumkum-light h-11 px-6 text-white inline-flex items-center justify-center gap-2 rounded-lg transition-colors border border-transparent select-none whitespace-nowrap text-sm font-medium focus-visible:outline-none"
+              )}
             >
               Chat with AI Guru
               <ArrowRight className="size-4" />
-            </Button>
+            </Link>
           </motion.div>
 
           <motion.div
