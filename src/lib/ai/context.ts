@@ -95,7 +95,7 @@ export async function buildMusicContext(params: {
     console.error("Database context query error (falling back to empty database context):", dbError);
   }
 
-  const syllabusRes = await searchSyllabus(params.query);
+  const syllabusRes = await searchSyllabus(params.query, 10);
 
   console.log("buildMusicContext Query Counts:", {
     melakartas: melakartasRes.data ? melakartasRes.data.length : 0,

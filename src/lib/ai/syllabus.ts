@@ -85,7 +85,7 @@ export function cleanSearchQuery(query: string): string {
  */
 export async function searchSyllabus(
   query: string,
-  limit = 4
+  limit = 10
 ): Promise<SyllabusChunkMatch[]> {
   const supabase = await getDbClient();
   if (!supabase) {
