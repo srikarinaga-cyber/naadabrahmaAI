@@ -1,16 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
+import { sanitizeSupabaseUrl, sanitizeAnonKey } from "./static";
 
 /**
  * Creates a standard dynamic Supabase client linked to the user's cookies.
  * Should only be used inside dynamic routes/actions (e.g. login, student profile, submissions).
  */
 export async function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = sanitizeSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const anonKey = sanitizeAnonKey(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-  if (!url || !anonKey || !(url.startsWith("http://") || url.startsWith("https://"))) {
+  if (!url || !anonKey) {
     return null;
   }
 
