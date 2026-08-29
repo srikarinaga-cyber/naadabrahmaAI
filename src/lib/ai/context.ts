@@ -226,7 +226,10 @@ export async function callOpenAI(params: {
   });
 
   if (!response.ok) {
-    return { answer: "AI Guru is temporarily unavailable. Please try again shortly." };
+    const errText = await response.text();
+    return {
+      answer: `AI Guru is temporarily unavailable. (Status: ${response.status}). Details: ${errText}`,
+    };
   }
 
   const data = (await response.json()) as {
