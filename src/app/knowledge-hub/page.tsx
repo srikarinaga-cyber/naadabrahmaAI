@@ -15,7 +15,9 @@ export default async function KnowledgeHubPage() {
   if (configured) {
     const { data } = await getMelakartas(1, 72);
     melakartas = data;
-  } else {
+  }
+
+  if (!melakartas || melakartas.length === 0) {
     melakartas = MELAKARTA_SEED_DATA;
   }
 
