@@ -231,58 +231,74 @@ export async function callGemini(params: {
 
   const promptText = `${params.systemPrompt}\n\nUser Question: ${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+  const models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro"];
+  let lastErrorText = "";
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
+  for (const model of models) {
+    console.log(`AI Guru: Attempting connection using model: ${model}`);
+    const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
             {
-              text: promptText,
+              parts: [
+                {
+                  text: promptText,
+                },
+              ],
             },
           ],
-        },
-      ],
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.4,
-      },
-    }),
-  });
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.4,
+          },
+        }),
+      });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    return {
-      answer: `AI Guru (Gemini) is temporarily unavailable. (Status: ${response.status}). Details: ${errText}`,
-    };
+      if (!response.ok) {
+        lastErrorText = await response.text();
+        console.warn(`Gemini model ${model} returned non-OK status ${response.status}: ${lastErrorText}`);
+        continue;
+      }
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (err) {
+        const rawText = await response.text().catch(() => "");
+        console.warn(`Gemini model ${model} response JSON parse failed: ${rawText}`);
+        lastErrorText = `JSON parsing failed: ${rawText}`;
+        continue;
+      }
+
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!content) {
+        console.warn(`Gemini model ${model} returned response with no candidate content parts.`);
+        lastErrorText = "No text found in candidates array.";
+        continue;
+      }
+
+      try {
+        return JSON.parse(content) as AiChatResponse;
+      } catch {
+        return { answer: content };
+      }
+    } catch (fetchErr: any) {
+      lastErrorText = fetchErr.message || String(fetchErr);
+      console.warn(`Gemini model ${model} query execution threw exception:`, fetchErr);
+      continue;
+    }
   }
 
-  let data;
-  try {
-    data = await response.json();
-  } catch (err) {
-    const rawText = await response.text().catch(() => "");
-    return {
-      answer: `AI Guru (Gemini) response parsing failed. Raw response: ${rawText || "Empty response"}`,
-    };
-  }
-
-  const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!content) {
-    return { answer: "I could not generate a response. Please rephrase your question." };
-  }
-
-  try {
-    return JSON.parse(content) as AiChatResponse;
-  } catch {
-    return { answer: content };
-  }
+  return {
+    answer: `AI Guru (Gemini) is temporarily unavailable due to high API demand on Google servers. Please try again in a few moments. Details: ${lastErrorText}`,
+  };
 }
 
 export async function callOpenAI(params: {
