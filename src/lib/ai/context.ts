@@ -191,17 +191,81 @@ export interface AiChatResponse {
   practiceTips?: string[];
 }
 
+export async function callGemini(params: {
+  systemPrompt: string;
+  message: string;
+}): Promise<AiChatResponse> {
+  const rawApiKey = process.env.GEMINI_API_KEY;
+  const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
+
+  if (!apiKey) {
+    return {
+      answer: "Gemini API key is not configured.",
+    };
+  }
+
+  const promptText = `${params.systemPrompt}\n\nUser Question: ${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: promptText,
+            },
+          ],
+        },
+      ],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.4,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    return {
+      answer: `AI Guru (Gemini) is temporarily unavailable. (Status: ${response.status}). Details: ${errText}`,
+    };
+  }
+
+  const data = await response.json();
+  const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!content) {
+    return { answer: "I could not generate a response. Please rephrase your question." };
+  }
+
+  try {
+    return JSON.parse(content) as AiChatResponse;
+  } catch {
+    return { answer: content };
+  }
+}
+
 export async function callOpenAI(params: {
   systemPrompt: string;
   message: string;
 }): Promise<AiChatResponse> {
+  if (process.env.GEMINI_API_KEY) {
+    return callGemini(params);
+  }
+
   const rawApiKey = process.env.OPENAI_API_KEY;
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
   
   if (!apiKey) {
     return {
       answer:
-        "AI Guru is not configured yet. Please add OPENAI_API_KEY to your environment variables. Meanwhile, explore the Knowledge Hub for raga information from our database.",
+        "AI Guru is not configured yet. Please add GEMINI_API_KEY or OPENAI_API_KEY to your environment variables. Meanwhile, explore the Knowledge Hub for raga information from our database.",
     };
   }
 
