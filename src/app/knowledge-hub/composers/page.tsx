@@ -1,10 +1,12 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, User } from "lucide-react";
 import { getComposers } from "@/lib/db/catalog";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { Composer } from "@/types/music";
 
 const FALLBACK_COMPOSERS = [

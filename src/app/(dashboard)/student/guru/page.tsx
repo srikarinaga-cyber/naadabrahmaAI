@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { AiGuruChat } from "@/components/ai-guru/chat-panel";
 
 export default function StudentGuruPage() {

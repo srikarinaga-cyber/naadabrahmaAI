@@ -1,4 +1,4 @@
-import { createStaticClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createStaticClient, isSupabaseConfigured } from "@/lib/supabase/static";
 import type { LandingPageData } from "@/types/database";
 
 export async function getLandingPageData(): Promise<LandingPageData> {

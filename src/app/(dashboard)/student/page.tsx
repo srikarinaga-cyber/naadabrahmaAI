@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
-import dynamic from "next/dynamic";
+export const dynamic = "force-dynamic";
 
-const PitchVisualizer = dynamic(
+import React from "react";
+import nextDynamic from "next/dynamic";
+
+const PitchVisualizer = nextDynamic(
   () => import("@/components/music/PitchVisualizer"),
   { ssr: false }
 );

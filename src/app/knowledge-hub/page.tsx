@@ -1,12 +1,12 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { getMelakartas } from "@/lib/db/catalog";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
-
-export const revalidate = 3600;
 
 export default async function KnowledgeHubPage() {
   const configured = isSupabaseConfigured();

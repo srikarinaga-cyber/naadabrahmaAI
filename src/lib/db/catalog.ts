@@ -1,4 +1,4 @@
-import { createStaticClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import { mapMelakarta, mapJanya, mapComposer, mapTala, mapKriti } from "@/lib/mappers";
 
 export async function searchMusicCatalog(query: string, limit = 20) {

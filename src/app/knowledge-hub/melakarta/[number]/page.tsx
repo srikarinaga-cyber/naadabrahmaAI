@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Music, Users } from "lucide-react";
 import { getMelakartaByNumber } from "@/lib/db/catalog";
-import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
 import { Janya, Kriti } from "@/types/music";
 
