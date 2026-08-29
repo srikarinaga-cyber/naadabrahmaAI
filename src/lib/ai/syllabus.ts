@@ -22,7 +22,7 @@ async function getDbClient() {
  * Generate embedding vector using OpenAI Embeddings API
  */
 export async function getEmbedding(text: string): Promise<number[] | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env["OPENAI_API_KEY"];
   if (!apiKey) {
     console.warn("OPENAI_API_KEY is not defined. Skipping embedding generation.");
     return null;
