@@ -23,9 +23,9 @@ export const siteConfig = {
     twitter: "https://twitter.com/naadabrahmaai",
   },
   nav: [
-    { label: "Features", href: "#features" },
-    { label: "Knowledge Hub", href: "#knowledge-hub" },
-    { label: "AI Guru", href: "#ai-guru" },
-    { label: "Testimonials", href: "#testimonials" },
+    { label: "Features", href: "/#features" },
+    { label: "Knowledge Hub", href: "/knowledge-hub" },
+    { label: "AI Guru", href: "/ai-guru" },
+    { label: "Testimonials", href: "/#testimonials" },
   ],
 } as const;

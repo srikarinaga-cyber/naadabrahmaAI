@@ -79,6 +79,7 @@ export interface Kriti {
   composerId?: string;
   melakartaId?: string;
   janyaId?: string;
+  talaId?: string;
   notation?: string;
   lyrics?: string;
   translation?: string;
@@ -139,5 +140,33 @@ export interface UserBookmark {
   userId: string;
   entityType: 'raga_m' | 'raga_j' | 'composer' | 'kriti' | 'note';
   entityId: string;
+  createdAt: string;
+}
+
+export interface PracticeSession {
+  id: string;
+  userId: string;
+  shruti: string;
+  instrument: string;
+  durationSeconds: number;
+  pitchSummary?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface TeacherClass {
+  id: string;
+  teacherId: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+}
+
+export interface Assignment {
+  id: string;
+  classId: string;
+  title: string;
+  description?: string;
+  pdfAttachmentUrl?: string;
+  dueDate: string;
   createdAt: string;
 }

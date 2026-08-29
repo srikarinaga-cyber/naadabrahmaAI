@@ -19,11 +19,15 @@ const PITCHES = [
 ];
 
 type TuningType = "Pa" | "Ma" | "Ni";
+type InstrumentType = "Tanpura" | "Veena" | "Violin";
+
+const INSTRUMENTS: InstrumentType[] = ["Tanpura", "Veena", "Violin"];
 
 export default function TanpuraPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedPitch, setSelectedPitch] = useState("C");
   const [tuning, setTuning] = useState<TuningType>("Pa");
+  const [instrument, setInstrument] = useState<InstrumentType>("Tanpura");
   const [tempo, setTempo] = useState(1.5); // seconds per string pluck
   const [volume, setVolume] = useState(0.8);
   const [activeString, setActiveString] = useState<number | null>(null);
@@ -80,29 +84,50 @@ export default function TanpuraPlayer() {
     voiceGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration); // release
     voiceGain.connect(masterGain);
 
-    // Multi-harmonic oscillators to synthesize the rich jawari sound (buzzing bridge)
-    const harmonics = [1, 2, 3, 4, 5, 6];
-    const harmonicGains = [1.0, 0.4, 0.25, 0.12, 0.06, 0.02];
     const oscillators: OscillatorNode[] = [];
+    const filter = ctx.createBiquadFilter();
+    let harmonics = [1, 2, 3, 4, 5, 6];
+    let harmonicGains = [1.0, 0.4, 0.25, 0.12, 0.06, 0.02];
+    let waveforms: OscillatorType[] = ["triangle", "sawtooth", "triangle", "sawtooth", "triangle", "sawtooth"];
+    let filterFreq = 9000;
+    let filterQ = 0.8;
+
+    if (instrument === "Veena") {
+      harmonics = [1, 2, 3, 4];
+      harmonicGains = [1.0, 0.35, 0.18, 0.08];
+      waveforms = ["sawtooth", "triangle", "sawtooth", "triangle"];
+      filter.type = "lowpass";
+      filterFreq = Math.max(frequency * 6, 1200);
+      filterQ = 0.9;
+    } else if (instrument === "Violin") {
+      harmonics = [1, 2, 3, 4, 5];
+      harmonicGains = [0.85, 0.35, 0.22, 0.12, 0.06];
+      waveforms = ["sawtooth", "sawtooth", "triangle", "sawtooth", "triangle"];
+      filter.type = "bandpass";
+      filterFreq = Math.max(frequency * 2.4, 1400);
+      filterQ = 1.2;
+    } else {
+      filter.type = "lowpass";
+    }
+
+    filter.frequency.setValueAtTime(filterFreq, ctx.currentTime);
+    filter.Q.setValueAtTime(filterQ, ctx.currentTime);
+    filter.connect(voiceGain);
 
     harmonics.forEach((h, index) => {
       const osc = ctx.createOscillator();
-      
-      // Traditional Tanpura has a rich mix of sawtooth and triangle waves for buzzing
-      osc.type = index % 2 === 0 ? "triangle" : "sawtooth";
+      osc.type = waveforms[index] || "triangle";
       osc.frequency.setValueAtTime(frequency * h, ctx.currentTime);
 
-      // Create a specific gain node for this harmonic
       const hGain = ctx.createGain();
       hGain.gain.setValueAtTime(harmonicGains[index], ctx.currentTime);
 
-      // Add a tiny detune to create a lush, organic chorusing/bridge rattle effect
       if (index > 0) {
-        osc.detune.setValueAtTime((Math.random() - 0.5) * 8, ctx.currentTime);
+        osc.detune.setValueAtTime((Math.random() - 0.5) * (instrument === "Tanpura" ? 8 : 12), ctx.currentTime);
       }
 
       osc.connect(hGain);
-      hGain.connect(voiceGain);
+      hGain.connect(filter);
       osc.start();
       oscillators.push(osc);
     });
@@ -185,7 +210,7 @@ export default function TanpuraPlayer() {
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPitch, tuning, tempo, isPlaying]);
+  }, [selectedPitch, tuning, tempo, isPlaying, instrument]);
 
   useEffect(() => {
     return () => {
@@ -199,8 +224,14 @@ export default function TanpuraPlayer() {
     <div className="glass-panel traditional-border traditional-glow rounded-2xl p-6 max-w-sm w-full transition-all duration-300">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="font-serif text-xl font-semibold text-[#800020]">Electronic Tanpura</h3>
-          <p className="text-xs text-[#1A2228]/60 mt-0.5">Adhara Shadja Drone Anchor</p>
+          <h3 className="font-serif text-xl font-semibold text-[#800020]">{instrument} Background Audio</h3>
+          <p className="text-xs text-[#1A2228]/60 mt-0.5">
+            {instrument === "Tanpura"
+              ? "Adhara Shadja drone anchor"
+              : instrument === "Veena"
+              ? "Warm veena-style drone accompaniment"
+              : "Lush violin-style background pad"}
+          </p>
         </div>
         <div className="flex space-x-1">
           {[0, 1, 2, 3].map((idx) => (
@@ -242,29 +273,51 @@ export default function TanpuraPlayer() {
         </div>
 
         {/* Tuning Type */}
-        <div className="flex gap-4">
-          <div className="flex-1">
+        <div className="space-y-4">
+          <div>
             <label className="text-xs font-semibold text-[#1A2228]/70 block mb-1.5">
-              Tuning String 1
+              Instrument
             </label>
             <div className="flex bg-white rounded-lg border border-gray-200 p-0.5">
-              {(["Pa", "Ma", "Ni"] as TuningType[]).map((t) => (
+              {INSTRUMENTS.map((item) => (
                 <button
-                  key={t}
-                  onClick={() => setTuning(t)}
+                  key={item}
+                  onClick={() => setInstrument(item)}
                   className={`flex-1 py-1 rounded text-xs font-medium transition-all duration-200 ${
-                    tuning === t
+                    instrument === item
                       ? "bg-[#F3EBE0] text-[#800020] font-semibold"
                       : "text-[#1A2228]/70 hover:text-[#1A2228]"
                   }`}
                 >
-                  {t}
+                  {item}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Pluck Tempo */}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="text-xs font-semibold text-[#1A2228]/70 block mb-1.5">
+                Tuning String 1
+              </label>
+              <div className="flex bg-white rounded-lg border border-gray-200 p-0.5">
+                {(["Pa", "Ma", "Ni"] as TuningType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setTuning(t)}
+                    className={`flex-1 py-1 rounded text-xs font-medium transition-all duration-200 ${
+                      tuning === t
+                        ? "bg-[#F3EBE0] text-[#800020] font-semibold"
+                        : "text-[#1A2228]/70 hover:text-[#1A2228]"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Pluck Tempo */}
           <div className="w-1/3">
             <label className="text-xs font-semibold text-[#1A2228]/70 block mb-1.5">
               Pluck Interval
@@ -281,6 +334,7 @@ export default function TanpuraPlayer() {
             </select>
           </div>
         </div>
+      </div>
 
         {/* Volume Slider */}
         <div>
@@ -322,7 +376,7 @@ export default function TanpuraPlayer() {
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              <span>PLAY TANPURA</span>
+              <span>{`PLAY ${instrument.toUpperCase()}`}</span>
             </>
           )}
         </button>
