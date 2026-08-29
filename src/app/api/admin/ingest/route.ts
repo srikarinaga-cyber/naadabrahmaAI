@@ -10,6 +10,29 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmbedding } from "@/lib/ai/syllabus";
 import { PDFParse } from "pdf-parse";
 
+import { NextResponse } from "next/server";
+
+export async function GET(request: NextRequest) {
+  try {
+    const supabaseAdmin = createAdminClient();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Admin client is not configured" });
+    }
+
+    const { data: buckets, error: err1 } = await supabaseAdmin.storage.listBuckets();
+    const { data: files, error: err2 } = await supabaseAdmin.storage.from("syllabus").list();
+
+    return NextResponse.json({
+      buckets,
+      bucketsError: err1 ? err1.message : null,
+      files,
+      filesError: err2 ? err2.message : null
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message });
+  }
+}
+
 export const maxDuration = 300; // Allow serverless route to run up to 5 minutes if supported
 
 export async function POST(request: NextRequest) {
