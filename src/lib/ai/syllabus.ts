@@ -54,6 +54,32 @@ export async function getEmbedding(text: string): Promise<number[] | null> {
   }
 }
 
+const STOP_WORDS = new Set([
+  "gurinchi", "cheppu", "cheppava", "enti", "yenti", "lo", "kosam",
+  "tell", "me", "about", "what", "is", "the", "of", "in", "explain", "who", "was", "write", "info", "a", "an", "and", "to", "for", "on", "with", "at", "by", "from"
+]);
+
+export function cleanSearchQuery(query: string): string {
+  let cleaned = query.toLowerCase();
+  
+  // Replace common Telugu variations to match textbook English terms
+  cleaned = cleaned.replace(/purandaradasu/g, "purandara dasa");
+  cleaned = cleaned.replace(/ragam/g, "raga");
+  cleaned = cleaned.replace(/talam/g, "tala");
+
+  const words = cleaned
+    .replace(/[^\w\s]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(w => w && !STOP_WORDS.has(w));
+
+  if (words.length === 0) {
+    return query.trim();
+  }
+
+  return words.slice(0, 3).join(" ");
+}
+
 /**
  * Search the syllabus_knowledge table using semantic vector similarity or text fallback
  */
@@ -67,7 +93,7 @@ export async function searchSyllabus(
     return [];
   }
 
-  const queryText = query.trim();
+  const queryText = cleanSearchQuery(query);
   if (!queryText) return [];
 
   // 1. Try vector semantic search if embedding model is configured

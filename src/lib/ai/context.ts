@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { instrumentGuidance, type Instrument } from "@/lib/ai/instruments";
-import { searchSyllabus } from "@/lib/ai/syllabus";
+import { searchSyllabus, cleanSearchQuery } from "@/lib/ai/syllabus";
 
 export interface MusicContext {
   melakartas: Array<{ number: number; name: string; arohana: string; avarohana: string; description?: string }>;
@@ -27,8 +27,8 @@ export async function buildMusicContext(params: {
     return { melakartas: [], janyas: [], composers: [], talas: [], kritis: [], syllabusChunks: [] };
   }
 
-  const searchTerm = params.query.replace(/[^\w\s]/g, " ").trim();
-  const likePattern = `%${searchTerm.split(/\s+/).slice(0, 3).join("%")}%`;
+  const cleanedQuery = cleanSearchQuery(params.query);
+  const likePattern = `%${cleanedQuery.split(/\s+/).join("%")}%`;
 
   let melakartasRes: { data: any[] | null } = { data: [] };
   let janyasRes: { data: any[] | null } = { data: [] };
