@@ -30,53 +30,69 @@ export async function buildMusicContext(params: {
   const searchTerm = params.query.replace(/[^\w\s]/g, " ").trim();
   const likePattern = `%${searchTerm.split(/\s+/).slice(0, 3).join("%")}%`;
 
-  const [melakartasRes, janyasRes, composersRes, talasRes, kritisRes] = await Promise.all([
-    supabase
-      .from("melakartas")
-      .select("number, name, arohana, avarohana, description")
-      .or(`name.ilike.${likePattern},description.ilike.${likePattern}`)
-      .limit(5),
-    supabase
-      .from("janyas")
-      .select("name, arohana, avarohana, description, melakartas(name)")
-      .or(`name.ilike.${likePattern},description.ilike.${likePattern}`)
-      .limit(5),
-    supabase
-      .from("composers")
-      .select("name, era, mudra")
-      .ilike("name", likePattern)
-      .limit(3),
-    supabase
-      .from("talas")
-      .select("name, beats, angas")
-      .ilike("name", likePattern)
-      .limit(3),
-    supabase
-      .from("kritis")
-      .select("title, composers(name), janyas(name), melakartas(name)")
-      .ilike("title", likePattern)
-      .limit(3),
-  ]);
+  let melakartasRes: { data: any[] | null } = { data: [] };
+  let janyasRes: { data: any[] | null } = { data: [] };
+  let composersRes: { data: any[] | null } = { data: [] };
+  let talasRes: { data: any[] | null } = { data: [] };
+  let kritisRes: { data: any[] | null } = { data: [] };
 
-  if (params.ragaId) {
-    const { data: specificMel } = await supabase
-      .from("melakartas")
-      .select("number, name, arohana, avarohana, description")
-      .eq("id", params.ragaId)
-      .maybeSingle();
-
-    if (specificMel) {
-      melakartasRes.data = [specificMel, ...(melakartasRes.data ?? [])];
-    } else {
-      const { data: specificJanya } = await supabase
+  try {
+    const [mRes, jRes, cRes, tRes, kRes] = await Promise.all([
+      supabase
+        .from("melakartas")
+        .select("number, name, arohana, avarohana, description")
+        .or(`name.ilike.${likePattern},description.ilike.${likePattern}`)
+        .limit(5),
+      supabase
         .from("janyas")
         .select("name, arohana, avarohana, description, melakartas(name)")
+        .or(`name.ilike.${likePattern},description.ilike.${likePattern}`)
+        .limit(5),
+      supabase
+        .from("composers")
+        .select("name, era, mudra")
+        .ilike("name", likePattern)
+        .limit(3),
+      supabase
+        .from("talas")
+        .select("name, beats, angas")
+        .ilike("name", likePattern)
+        .limit(3),
+      supabase
+        .from("kritis")
+        .select("title, composers(name), janyas(name), melakartas(name)")
+        .ilike("title", likePattern)
+        .limit(3),
+    ]);
+
+    melakartasRes = mRes;
+    janyasRes = jRes;
+    composersRes = cRes;
+    talasRes = tRes;
+    kritisRes = kRes;
+
+    if (params.ragaId) {
+      const { data: specificMel } = await supabase
+        .from("melakartas")
+        .select("number, name, arohana, avarohana, description")
         .eq("id", params.ragaId)
         .maybeSingle();
-      if (specificJanya) {
-        janyasRes.data = [specificJanya, ...(janyasRes.data ?? [])];
+
+      if (specificMel) {
+        melakartasRes.data = [specificMel, ...(melakartasRes.data ?? [])];
+      } else {
+        const { data: specificJanya } = await supabase
+          .from("janyas")
+          .select("name, arohana, avarohana, description, melakartas(name)")
+          .eq("id", params.ragaId)
+          .maybeSingle();
+        if (specificJanya) {
+          janyasRes.data = [specificJanya, ...(janyasRes.data ?? [])];
+        }
       }
     }
+  } catch (dbError) {
+    console.error("Database context query error (falling back to empty database context):", dbError);
   }
 
   const syllabusRes = await searchSyllabus(params.query);
