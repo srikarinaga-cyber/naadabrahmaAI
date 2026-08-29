@@ -2,10 +2,9 @@ import { NextRequest } from "next/server";
 import {
   jsonOk,
   jsonError,
-  jsonUnauthorized,
   jsonServerError,
 } from "@/lib/api/response";
-import { requireAuth } from "@/lib/api/auth";
+import { getSessionUser } from "@/lib/api/auth";
 import {
   buildMusicContext,
   buildSystemPrompt,
@@ -16,8 +15,7 @@ import { updateStudyStreak } from "@/lib/db/progress";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth();
-    if (!user) return jsonUnauthorized();
+    const user = await getSessionUser();
 
     const body = await request.json();
     const message = body.message as string;
@@ -33,7 +31,9 @@ export async function POST(request: NextRequest) {
     const systemPrompt = buildSystemPrompt({ context, instrument, language });
     const response = await callOpenAI({ systemPrompt, message });
 
-    await updateStudyStreak(user.id);
+    if (user) {
+      await updateStudyStreak(user.id);
+    }
 
     return jsonOk(response);
   } catch {
