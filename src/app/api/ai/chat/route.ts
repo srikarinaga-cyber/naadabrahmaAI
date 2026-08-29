@@ -14,6 +14,22 @@ import {
 } from "@/lib/ai/context";
 import type { Instrument } from "@/lib/ai/instruments";
 import { updateStudyStreak } from "@/lib/db/progress";
+import { NextResponse } from "next/server";
+
+export async function GET(request: NextRequest) {
+  try {
+    const rawApiKey = process.env["GEMINI_API_KEY"];
+    const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
+    if (!apiKey) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is not configured" });
+    }
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`);
+    const json = await res.json();
+    return NextResponse.json(json);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
