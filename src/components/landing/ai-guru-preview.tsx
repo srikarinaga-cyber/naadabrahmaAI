@@ -20,25 +20,25 @@ const capabilities = [
     icon: HelpCircle,
     title: "Ask Music Doubts",
     description: "Get instant explanations for raga theory, swara patterns, and performance nuances.",
-    href: "/ai-guru",
+    href: "/ai-guru?query=What is the difference between Swara and Shruti in Carnatic music?",
   },
   {
     icon: GitCompare,
     title: "Compare Ragas",
     description: "Side-by-side analysis of Melakarta and Janya ragas with swara differences highlighted.",
-    href: "/ai-guru",
+    href: "/ai-guru?query=Compare the scales and swaras of Ragas Mohanam and Hamsadhwani side by side.",
   },
   {
     icon: NotebookPen,
     title: "Generate Notes & Quizzes",
     description: "AI-crafted study notes and practice quizzes tailored to your exam level.",
-    href: "/ai-guru",
+    href: "/ai-guru?query=Generate study notes and a practice quiz for raga Mayamalavagowla.",
   },
   {
     icon: Calendar,
     title: "Practice Schedules",
     description: "Personalized daily practice plans based on your progress and weak areas.",
-    href: "/student",
+    href: "/ai-guru?query=Create a weekly practice schedule for vocal singing focusing on swara exercises.",
   },
 ];
 

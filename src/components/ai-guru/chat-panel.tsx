@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Sparkles, Send, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { INSTRUMENTS, type Instrument } from "@/lib/ai/instruments";
@@ -23,16 +24,24 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
   const [language, setLanguage] = useState<"te" | "en">("en");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("query");
+  const queryTriggered = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  async function sendMessage() {
-    if (!input.trim() || loading) return;
+  useEffect(() => {
+    if (initialQuery && !queryTriggered.current) {
+      queryTriggered.current = true;
+      sendQueryMessage(initialQuery);
+    }
+  }, [initialQuery]);
 
-    const userMsg = input.trim();
-    setInput("");
+  async function sendQueryMessage(queryText: string) {
+    const userMsg = queryText.trim();
     setMessages((prev) => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
@@ -65,6 +74,13 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function sendMessage() {
+    if (!input.trim() || loading) return;
+    const userMsg = input.trim();
+    setInput("");
+    await sendQueryMessage(userMsg);
   }
 
   async function saveAsNote(msg: Message) {

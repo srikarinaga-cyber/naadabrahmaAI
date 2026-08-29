@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AiGuruChat } from "@/components/ai-guru/chat-panel";
@@ -26,7 +27,9 @@ export default function AiGuruPage() {
             for full access and note saving.
           </p>
         </div>
-        <AiGuruChat />
+        <Suspense fallback={<div className="text-center py-12 text-sm text-muted-foreground">Loading AI Guru...</div>}>
+          <AiGuruChat />
+        </Suspense>
       </main>
       <Footer />
     </div>

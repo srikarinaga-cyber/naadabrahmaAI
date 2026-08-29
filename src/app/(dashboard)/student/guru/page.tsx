@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import { AiGuruChat } from "@/components/ai-guru/chat-panel";
 
 export default function StudentGuruPage() {
@@ -11,7 +12,9 @@ export default function StudentGuruPage() {
           Ask doubts, compare ragas, get practice tips — powered by our music database.
         </p>
       </div>
-      <AiGuruChat requireAuth />
+      <Suspense fallback={<div className="text-sm text-gray-400 py-6">Loading AI Guru...</div>}>
+        <AiGuruChat requireAuth />
+      </Suspense>
     </div>
   );
 }
