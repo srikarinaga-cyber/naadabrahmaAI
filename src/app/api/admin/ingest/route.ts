@@ -8,7 +8,6 @@ import {
 import { requireRole } from "@/lib/api/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmbedding } from "@/lib/ai/syllabus";
-import { PDFParse } from "pdf-parse";
 
 import { NextResponse } from "next/server";
 
@@ -106,6 +105,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Parse PDF page-by-page
     console.log("Parsing PDF file...");
+    const { PDFParse } = await import("pdf-parse");
     const parser = new PDFParse({ data: pdfBuffer });
     const textResult = await parser.getText();
 
