@@ -97,6 +97,15 @@ export async function buildMusicContext(params: {
 
   const syllabusRes = await searchSyllabus(params.query);
 
+  console.log("buildMusicContext Query Counts:", {
+    melakartas: melakartasRes.data ? melakartasRes.data.length : 0,
+    janyas: janyasRes.data ? janyasRes.data.length : 0,
+    composers: composersRes.data ? composersRes.data.length : 0,
+    talas: talasRes.data ? talasRes.data.length : 0,
+    kritis: kritisRes.data ? kritisRes.data.length : 0,
+    syllabus: syllabusRes.length
+  });
+
   return {
     melakartas: (melakartasRes.data ?? []).map((m) => ({
       number: m.number,

@@ -138,6 +138,7 @@ export async function searchSyllabus(
       return [];
     }
 
+    console.log("Text search fallback results count:", data ? data.length : 0);
     return (data ?? []) as SyllabusChunkMatch[];
   } catch (err) {
     console.error("Fallback search exception:", err);
