@@ -253,7 +253,16 @@ export async function callGemini(params: {
     };
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (err) {
+    const rawText = await response.text().catch(() => "");
+    return {
+      answer: `AI Guru (Gemini) response parsing failed. Raw response: ${rawText || "Empty response"}`,
+    };
+  }
+
   const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!content) {
@@ -314,9 +323,15 @@ export async function callOpenAI(params: {
     };
   }
 
-  const data = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
+  let data: { choices?: Array<{ message?: { content?: string } }> };
+  try {
+    data = await response.json();
+  } catch (err) {
+    const rawText = await response.text().catch(() => "");
+    return {
+      answer: `AI Guru response parsing failed. Raw response: ${rawText || "Empty response"}`,
+    };
+  }
 
   const content = data.choices?.[0]?.message?.content;
   if (!content) {
