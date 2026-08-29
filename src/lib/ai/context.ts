@@ -255,6 +255,8 @@ export async function callOpenAI(params: {
   systemPrompt: string;
   message: string;
 }): Promise<AiChatResponse> {
+  console.log("AI Guru: GEMINI_API_KEY present:", !!process.env.GEMINI_API_KEY, "OPENAI_API_KEY present:", !!process.env.OPENAI_API_KEY);
+
   if (process.env.GEMINI_API_KEY) {
     return callGemini(params);
   }
