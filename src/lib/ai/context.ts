@@ -281,6 +281,8 @@ export async function callOpenAI(params: {
   message: string;
 }): Promise<AiChatResponse> {
   console.log("AI Guru: GEMINI_API_KEY present:", !!process.env["GEMINI_API_KEY"], "OPENAI_API_KEY present:", !!process.env["OPENAI_API_KEY"]);
+  console.log("GEMINI_API_KEY type:", typeof process.env["GEMINI_API_KEY"], "JSON value:", JSON.stringify(process.env["GEMINI_API_KEY"]));
+  console.log("OPENAI_API_KEY type:", typeof process.env["OPENAI_API_KEY"], "JSON value:", JSON.stringify(process.env["OPENAI_API_KEY"]));
   console.log("Runtime Env Keys:", Object.keys(process.env).filter(k => !k.startsWith("VERCEL") && !k.startsWith("AWS") && !k.startsWith("NODE")));
 
   if (process.env["GEMINI_API_KEY"]) {
