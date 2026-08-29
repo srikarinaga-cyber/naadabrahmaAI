@@ -36,7 +36,7 @@ export default function TanpuraPlayer() {
   // Initialize Audio Context on demand (user interaction)
   const initAudio = () => {
     if (!audioCtxRef.current) {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new AudioContextClass();
       const gainNode = ctx.createGain();
       gainNode.gain.setValueAtTime(volume, ctx.currentTime);
@@ -55,12 +55,14 @@ export default function TanpuraPlayer() {
   }, [volume]);
 
   // Stop sound synthesis
-  const stopTanpura = () => {
+  const stopTanpura = (shouldSetState = true) => {
     if (intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
       intervalIdRef.current = null;
     }
-    setIsPlaying(false);
+    if (shouldSetState) {
+      setIsPlaying(false);
+    }
     setActiveString(null);
   };
 
@@ -111,7 +113,7 @@ export default function TanpuraPlayer() {
         try {
           o.stop();
           o.disconnect();
-        } catch (e) {
+        } catch {
           // ignore
         }
       });
@@ -120,7 +122,7 @@ export default function TanpuraPlayer() {
   };
 
   // Schedule string pluck sequence: 1 -> 2 -> 3 -> 4
-  const startTanpura = () => {
+  const startTanpura = (shouldSetState = true) => {
     initAudio();
     const ctx = audioCtxRef.current;
     if (!ctx) return;
@@ -129,7 +131,9 @@ export default function TanpuraPlayer() {
       ctx.resume();
     }
 
-    setIsPlaying(true);
+    if (shouldSetState) {
+      setIsPlaying(true);
+    }
     const rootItem = PITCHES.find(p => p.name === selectedPitch) || PITCHES[3]; // Default to C
     const rootFreq = rootItem.freq;
 
@@ -174,11 +178,14 @@ export default function TanpuraPlayer() {
 
   useEffect(() => {
     if (isPlaying) {
-      stopTanpura();
-      startTanpura();
+      const timer = setTimeout(() => {
+        stopTanpura(false);
+        startTanpura(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPitch, tuning, tempo]);
+  }, [selectedPitch, tuning, tempo, isPlaying]);
 
   useEffect(() => {
     return () => {

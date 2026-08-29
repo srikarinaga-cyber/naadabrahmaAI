@@ -96,7 +96,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       streamRef.current = stream;
 
       // 2. Initialize AudioContext
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new AudioContextClass();
       audioCtxRef.current = ctx;
 
@@ -144,10 +144,11 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       };
 
       process();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Microphone capture failed:", err);
+      const isNotAllowed = err instanceof Error && err.name === "NotAllowedError";
       setErrorMsg(
-        err.name === "NotAllowedError"
+        isNotAllowed
           ? "Microphone access denied. Please grant permissions to track pitch."
           : "Could not initialize microphone audio."
       );

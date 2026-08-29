@@ -33,7 +33,7 @@ export interface Melakarta {
   avarohana: string;
   swaraFrequencies?: Record<string, number>;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   embedding?: number[];
   createdAt: string;
 }
@@ -48,7 +48,7 @@ export interface Janya {
   bhashanga: boolean;
   upanga: boolean;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   embedding?: number[];
   createdAt: string;
 }
@@ -59,7 +59,7 @@ export interface Composer {
   era?: string;
   biography?: string;
   mudra?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -69,7 +69,7 @@ export interface Tala {
   beats: number;
   angas: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -84,7 +84,7 @@ export interface Kriti {
   translation?: string;
   audioReferenceUrl?: string;
   difficultyLevel: ExamLevel;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   embedding?: number[];
   createdAt: string;
 }

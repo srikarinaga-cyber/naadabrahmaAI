@@ -89,7 +89,7 @@ export default function DashboardLayout({
               Welcome back, Srinivas
             </h3>
             <p className="text-xs text-[#1A2228]/60 mt-0.5">
-              Let's continue your musical learning journey.
+              Let&apos;s continue your musical learning journey.
             </p>
           </div>
           <div className="flex items-center space-x-4">

@@ -20,14 +20,10 @@ function AnimatedCounter({
 }) {
   const numericPart = parseInt(value.replace(/\D/g, ""), 10);
   const isNumeric = !Number.isNaN(numericPart) && /^\d+$/.test(value);
-  const [display, setDisplay] = useState(isNumeric ? 0 : value);
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    if (!inView) return;
-    if (!isNumeric) {
-      setDisplay(value);
-      return;
-    }
+    if (!inView || !isNumeric) return;
 
     let frame = 0;
     const totalFrames = 40;
@@ -40,11 +36,13 @@ function AnimatedCounter({
     }, 30);
 
     return () => clearInterval(interval);
-  }, [inView, isNumeric, numericPart, value]);
+  }, [inView, isNumeric, numericPart]);
+
+  const displayText = isNumeric ? display : (inView ? value : "");
 
   return (
     <span className="font-serif text-4xl font-bold text-kumkum md:text-5xl">
-      {isNumeric ? display : display}
+      {displayText}
       {suffix}
     </span>
   );
