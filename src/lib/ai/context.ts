@@ -231,7 +231,7 @@ export async function callGemini(params: {
 
   const promptText = `${params.systemPrompt}\n\nUser Question: ${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`;
 
-  const models = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-pro"];
+  const models = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
   let lastErrorText = "";
 
   for (const model of models) {
