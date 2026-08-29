@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, User } from "lucide-react";
 import { getComposers } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { Composer } from "@/types/music";
 
 const FALLBACK_COMPOSERS = [
   {
@@ -39,7 +40,7 @@ const FALLBACK_COMPOSERS = [
 
 export default async function ComposersPage() {
   const configured = isSupabaseConfigured();
-  let composers: any[] = [];
+  let composers: Composer[] = [];
 
   if (configured) {
     composers = await getComposers();
@@ -73,7 +74,7 @@ export default async function ComposersPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {composers.map((c: any) => (
+          {composers.map((c: Composer) => (
             <div
               key={c.id}
               className="glass-panel traditional-border rounded-2xl p-6 border-swara-gold/15 flex flex-col justify-between"

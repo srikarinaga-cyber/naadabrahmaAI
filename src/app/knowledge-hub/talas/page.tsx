@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock } from "lucide-react";
 import { getTalas } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { Tala } from "@/types/music";
 
 const FALLBACK_TALAS = [
   {
@@ -39,7 +40,7 @@ const FALLBACK_TALAS = [
 
 export default async function TalasPage() {
   const configured = isSupabaseConfigured();
-  let talas: any[] = [];
+  let talas: Tala[] = [];
 
   if (configured) {
     talas = await getTalas();
@@ -73,7 +74,7 @@ export default async function TalasPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {talas.map((t: any) => (
+           {talas.map((t: Tala) => (
             <div
               key={t.id}
               className="glass-panel traditional-border rounded-2xl p-6 border-swara-gold/15 flex flex-col justify-between"

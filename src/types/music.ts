@@ -11,7 +11,7 @@ export interface Institution {
   name: string;
   address?: string;
   contactEmail?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Profile {
@@ -20,8 +20,8 @@ export interface Profile {
   role: UserRole;
   institutionId?: string;
   avatarUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Melakarta {
@@ -35,7 +35,7 @@ export interface Melakarta {
   description?: string;
   metadata?: Record<string, unknown>;
   embedding?: number[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Janya {
@@ -50,7 +50,7 @@ export interface Janya {
   description?: string;
   metadata?: Record<string, unknown>;
   embedding?: number[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Composer {
@@ -60,7 +60,7 @@ export interface Composer {
   biography?: string;
   mudra?: string;
   metadata?: Record<string, unknown>;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Tala {
@@ -70,7 +70,7 @@ export interface Tala {
   angas: string;
   description?: string;
   metadata?: Record<string, unknown>;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Kriti {
@@ -87,7 +87,7 @@ export interface Kriti {
   difficultyLevel: ExamLevel;
   metadata?: Record<string, unknown>;
   embedding?: number[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface ExamQuestion {
@@ -102,7 +102,7 @@ export interface ExamQuestion {
   composerId?: string;
   kritiId?: string;
   embedding?: number[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface AIStudyNote {
@@ -113,7 +113,7 @@ export interface AIStudyNote {
   sourceRagaId?: string;
   sourceKritiId?: string;
   embedding?: number[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface UserProgress {
@@ -124,7 +124,7 @@ export interface UserProgress {
   status: ProgressStatus;
   score?: number;
   lastStudiedAt: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface StudyStreak {
@@ -132,7 +132,7 @@ export interface StudyStreak {
   currentStreak: number;
   longestStreak: number;
   lastActivityDate: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface UserBookmark {
@@ -140,7 +140,7 @@ export interface UserBookmark {
   userId: string;
   entityType: 'raga_m' | 'raga_j' | 'composer' | 'kriti' | 'note';
   entityId: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface PracticeSession {

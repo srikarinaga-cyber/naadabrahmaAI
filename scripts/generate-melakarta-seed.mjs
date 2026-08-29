@@ -19,7 +19,6 @@ if (!match) {
   process.exit(1);
 }
 
-// eslint-disable-next-line no-eval
 const data = eval(match[1]);
 
 let sql = `-- Seed all 72 Melakarta ragas\n\n`;

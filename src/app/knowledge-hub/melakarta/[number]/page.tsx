@@ -7,6 +7,12 @@ import { ArrowLeft, BookOpen, Music, Users } from "lucide-react";
 import { getMelakartaByNumber } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
+import { Janya, Kriti } from "@/types/music";
+
+interface JoinedKriti extends Kriti {
+  composers?: { name: string };
+  talas?: { name: string };
+}
 
 interface PageProps {
   params: Promise<{ number: string }>;
@@ -35,8 +41,8 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
     }
     melakartaData = {
       melakarta: seed,
-      janyas: [] as any[],
-      kritis: [] as any[]
+      janyas: [] as Janya[],
+      kritis: [] as JoinedKriti[]
     };
   }
 
@@ -113,7 +119,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
               </p>
             ) : (
               <div className="space-y-3">
-                {janyas.map((j: any) => (
+                {janyas.map((j: Janya) => (
                   <div
                     key={j.id}
                     className="flex items-center justify-between p-3 rounded-xl border border-swara-gold/10 bg-card/50"
@@ -139,7 +145,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
               </p>
             ) : (
               <div className="space-y-3">
-                {kritis.map((k: any) => (
+                {kritis.map((k: JoinedKriti) => (
                   <div
                     key={k.id}
                     className="p-3 rounded-xl border border-swara-gold/10 bg-card/50"

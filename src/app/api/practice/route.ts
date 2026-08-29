@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import {
   jsonOk,
-  jsonError,
   jsonUnauthorized,
   jsonServerError,
 } from "@/lib/api/response";
