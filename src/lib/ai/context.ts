@@ -195,7 +195,9 @@ export async function callOpenAI(params: {
   systemPrompt: string;
   message: string;
 }): Promise<AiChatResponse> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const rawApiKey = process.env.OPENAI_API_KEY;
+  const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
+  
   if (!apiKey) {
     return {
       answer:
