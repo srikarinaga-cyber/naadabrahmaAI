@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/server";
 import { mapMelakarta, mapJanya, mapComposer, mapTala, mapKriti } from "@/lib/mappers";
 
 export async function searchMusicCatalog(query: string, limit = 20) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase || !query.trim()) {
     return { melakartas: [], janyas: [], composers: [], talas: [], kritis: [] };
   }
@@ -40,7 +40,7 @@ export async function searchMusicCatalog(query: string, limit = 20) {
 }
 
 export async function getMelakartas(page = 1, pageSize = 24) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return { data: [], total: 0 };
 
   const from = (page - 1) * pageSize;
@@ -56,7 +56,7 @@ export async function getMelakartas(page = 1, pageSize = 24) {
 }
 
 export async function getMelakartaByNumber(number: number) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return null;
 
   const { data } = await supabase
@@ -85,7 +85,7 @@ export async function getMelakartaByNumber(number: number) {
 }
 
 export async function getJanyaById(id: string) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return null;
 
   const { data } = await supabase
@@ -112,7 +112,7 @@ export async function getJanyaById(id: string) {
 }
 
 export async function getTalas() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return [];
 
   const { data } = await supabase.from("talas").select("*").order("name");
@@ -120,7 +120,7 @@ export async function getTalas() {
 }
 
 export async function getComposers() {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return [];
 
   const { data } = await supabase.from("composers").select("*").order("name");
@@ -128,7 +128,7 @@ export async function getComposers() {
 }
 
 export async function getKritis(page = 1, pageSize = 20) {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) return { data: [], total: 0 };
 
   const from = (page - 1) * pageSize;

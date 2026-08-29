@@ -1,4 +1,4 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createStaticClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import type { LandingPageData } from "@/types/database";
 
 export async function getLandingPageData(): Promise<LandingPageData> {
@@ -11,7 +11,7 @@ export async function getLandingPageData(): Promise<LandingPageData> {
     };
   }
 
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   if (!supabase) {
     return {
       features: [],
