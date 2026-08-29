@@ -20,12 +20,15 @@ export async function GET(request: NextRequest) {
 
     const { data: buckets, error: err1 } = await supabaseAdmin.storage.listBuckets();
     const { data: files, error: err2 } = await supabaseAdmin.storage.from("syllabus").list();
+    const { data: musicFiles, error: err3 } = await supabaseAdmin.storage.from("Music").list();
 
     return NextResponse.json({
       buckets,
       bucketsError: err1 ? err1.message : null,
       files,
-      filesError: err2 ? err2.message : null
+      filesError: err2 ? err2.message : null,
+      musicFiles,
+      musicFilesError: err3 ? err3.message : null
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message });
