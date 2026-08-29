@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
     }
 
     return jsonOk(response);
-  } catch {
+  } catch (error) {
+    console.error("AI CHAT ROUTE ERROR:", error);
     return jsonServerError();
   }
 }

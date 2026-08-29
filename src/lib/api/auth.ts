@@ -2,16 +2,21 @@ import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/types/database";
 
 export async function getSessionUser() {
-  const supabase = await createClient();
-  if (!supabase) return null;
+  try {
+    const supabase = await createClient();
+    if (!supabase) return null;
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  if (error || !user) return null;
-  return user;
+    if (error || !user) return null;
+    return user;
+  } catch (err) {
+    console.error("Failed to get session user:", err);
+    return null;
+  }
 }
 
 export async function requireAuth() {
@@ -21,17 +26,22 @@ export async function requireAuth() {
 }
 
 export async function getUserProfile(userId: string) {
-  const supabase = await createClient();
-  if (!supabase) return null;
+  try {
+    const supabase = await createClient();
+    if (!supabase) return null;
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
-  if (error) return null;
-  return data;
+    if (error) return null;
+    return data;
+  } catch (err) {
+    console.error("Failed to get user profile:", err);
+    return null;
+  }
 }
 
 export async function requireRole(allowedRoles: UserRole[]) {
