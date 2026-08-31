@@ -18,7 +18,7 @@ export default function StudentDashboardPage() {
       desc: "Based on your last mock, your pitch accuracy in Sankarabharanam was 4.2Hz sharp on G3.",
       action: "Practice Scale",
       type: "Pitch Tune",
-      href: "/student",
+      href: "/student/practice",
     },
     {
       title: "Explore Raga Hamsadhwani",
