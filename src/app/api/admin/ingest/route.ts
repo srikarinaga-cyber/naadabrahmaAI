@@ -239,21 +239,43 @@ async function ingestSingleFile(
 
   // unpdf works in serverless environments without a web worker
   const { extractText } = await import("unpdf");
-  const { text: fullText, totalPages } = await extractText(
-    new Uint8Array(pdfBuffer),
-    { mergePages: false }
-  );
 
-  // extractText with mergePages:false returns per-page text
-  const pagesArray = Array.isArray(fullText) ? fullText : [fullText];
-  const pageTexts = pagesArray
-    .map((text: string, i: number) => ({
-      pageNumber: i + 1,
-      text: (text ?? "").trim(),
-    }))
-    .filter((p: { pageNumber: number; text: string }) => p.text.length > 0);
+  // Try per-page extraction first, fallback to merged
+  let pageTexts: Array<{ pageNumber: number; text: string }> = [];
+  try {
+    const result = await extractText(new Uint8Array(pdfBuffer), { mergePages: false });
+    console.log("unpdf result type:", typeof result.text, Array.isArray(result.text), "totalPages:", result.totalPages);
 
-  console.log(`Extracted ${pageTexts.length} pages from ${totalPages ?? pagesArray.length} total pages`);
+    if (Array.isArray(result.text)) {
+      pageTexts = result.text
+        .map((text: string, i: number) => ({ pageNumber: i + 1, text: (text ?? "").trim() }))
+        .filter((p: { pageNumber: number; text: string }) => p.text.length > 0);
+    }
+
+    // Fallback: try mergePages:true and split by double-newline
+    if (pageTexts.length === 0) {
+      console.log("Per-page extraction returned empty, trying merged extraction...");
+      const merged = await extractText(new Uint8Array(pdfBuffer), { mergePages: true });
+      const mergedText = typeof merged.text === "string" ? merged.text : (merged.text as string[]).join("\n");
+      console.log("Merged text length:", mergedText.length, "chars, first 200:", mergedText.slice(0, 200));
+
+      if (mergedText.trim().length > 0) {
+        // Split into ~2000-char chunks and treat each as a "page"
+        const chunkSize = 2000;
+        for (let i = 0; i < mergedText.length; i += chunkSize) {
+          const chunk = mergedText.slice(i, i + chunkSize).trim();
+          if (chunk.length > 50) {
+            pageTexts.push({ pageNumber: Math.floor(i / chunkSize) + 1, text: chunk });
+          }
+        }
+      }
+    }
+  } catch (parseErr) {
+    console.error("unpdf extraction error:", parseErr);
+    throw new Error(`PDF text extraction failed: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`);
+  }
+
+  console.log(`Extracted ${pageTexts.length} text sections from PDF`);
 
   const allChunks: Array<{
     title: string;
@@ -269,7 +291,10 @@ async function ingestSingleFile(
   }
 
   if (allChunks.length === 0) {
-    throw new Error("PDF parsing yielded no text or chunks.");
+    throw new Error(
+      "PDF parsing yielded no text. This file may be image-based (scanned PDF) without a text layer. " +
+      "Please use a text-based PDF or add OCR text to the document."
+    );
   }
 
   const batchSize = 10;
