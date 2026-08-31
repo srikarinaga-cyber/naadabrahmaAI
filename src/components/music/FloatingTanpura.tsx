@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Music, X, Volume2, Settings2, Sparkles, Sliders } from "lucide-react";
+import { Music, X, Volume2, Sparkles } from "lucide-react";
 
 // Standard pitch frequencies in Hz for the Adhara Shadja (Root Note)
 const PITCHES = [
@@ -224,7 +224,7 @@ export default function FloatingTanpura() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end overflow-visible">
       {/* Expanded Controller Card */}
       <AnimatePresence>
         {isOpen && (
@@ -413,7 +413,7 @@ export default function FloatingTanpura() {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`relative size-14 rounded-full flex items-center justify-center border border-swara-gold/30 shadow-2xl transition-all outline-none ${
+        className={`relative size-14 rounded-full flex items-center justify-center border border-swara-gold/30 shadow-2xl transition-all outline-none overflow-visible ${
           isPlaying
             ? "bg-kumkum text-white border-swara-gold/50"
             : "bg-gradient-to-r from-swara-gold to-marigold text-white"
@@ -422,8 +422,8 @@ export default function FloatingTanpura() {
         {/* Animated Glow Rings when Playing */}
         {isPlaying && (
           <>
-            <span className="absolute -inset-1 rounded-full bg-swara-gold/30 animate-ping -z-10" />
-            <span className="absolute -inset-2.5 rounded-full bg-kumkum/15 animate-[pulse_2.5s_infinite] -z-10" />
+            <span className="absolute -inset-2 rounded-full bg-swara-gold/25 animate-ping pointer-events-none" style={{ zIndex: -1 }} />
+            <span className="absolute -inset-4 rounded-full bg-kumkum/10 animate-pulse pointer-events-none" style={{ zIndex: -1 }} />
           </>
         )}
         
