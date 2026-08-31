@@ -84,9 +84,13 @@ export function MelakartaSwaraAudioPlayer({
     return audioCtxRef.current;
   }, []);
 
-  // Parse notes from string
+  // Parse notes from string — Ensure first note of Avarohana is S' (higher pitch 2.0x)
   const arohanaNotes = arohana.split(" ").filter(Boolean);
-  const avarohanaNotes = avarohana.split(" ").filter(Boolean);
+  const rawAvarohana = avarohana.split(" ").filter(Boolean);
+  const avarohanaNotes = rawAvarohana.map((note, idx) => {
+    if (idx === 0 && note === "S") return "S'";
+    return note;
+  });
   const fullSequence = [...arohanaNotes, ...avarohanaNotes];
 
   // ──────────────────────────────────────────────
