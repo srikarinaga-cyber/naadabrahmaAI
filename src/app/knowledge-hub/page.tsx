@@ -30,22 +30,31 @@ export default async function KnowledgeHubPage() {
             Knowledge Hub
           </Badge>
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            72 Melakarta Ragas
+            72 Janaka Ragas (Melakartas)
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            Explore the complete Venkatamakhin Melakarta system. Each raga links to its Janya derivatives and associated kritis.
+            Explore the complete 72 Parent Janaka Ragas system formulation by Venkatamakhin. Click any Melakarta to inspect its Swarasthanas with Veena & Violin audio playback and derived Janya Ragas.
           </p>
         </div>
 
         <div className="mb-8 flex flex-wrap gap-3">
-          <Link href="/knowledge-hub?tab=janyas" className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-kumkum/10 text-kumkum hover:bg-kumkum/15">
-            Janya Ragas
+          <Link
+            href="/knowledge-hub"
+            className="text-xs font-bold px-3.5 py-2 rounded-xl bg-kumkum text-white shadow-sm"
+          >
+            Janaka Ragas (72 Melakartas)
           </Link>
-          <Link href="/knowledge-hub/composers" className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80">
-            Composers
+          <Link
+            href="/knowledge-hub/composers"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted"
+          >
+            Vaggeyakaras (Composers)
           </Link>
-          <Link href="/knowledge-hub/talas" className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80">
-            Talas
+          <Link
+            href="/knowledge-hub/talas"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted"
+          >
+            35 Suladi Sapta Talas
           </Link>
         </div>
 
@@ -54,13 +63,15 @@ export default async function KnowledgeHubPage() {
             <Link
               key={m.number}
               href={`/knowledge-hub/melakarta/${m.number}`}
-              className="group rounded-xl border border-swara-gold/15 bg-card p-4 hover:border-kumkum/30 hover:shadow-sm transition-all"
+              className="group rounded-2xl border border-swara-gold/20 bg-card p-4 hover:border-kumkum/40 hover:shadow-md transition-all flex flex-col justify-between"
             >
-              <p className="text-[10px] font-bold text-kumkum uppercase">#{m.number}</p>
-              <p className="text-sm font-semibold mt-1 group-hover:text-kumkum transition-colors line-clamp-2">
-                {m.name}
-              </p>
-              <p className="text-[10px] text-muted-foreground mt-1">{m.chakra}</p>
+              <div>
+                <p className="text-[10px] font-bold text-kumkum uppercase">#{m.number}</p>
+                <p className="text-sm font-bold mt-1 group-hover:text-kumkum transition-colors line-clamp-2">
+                  {m.name}
+                </p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2 font-medium">Chakra: {m.chakra}</p>
             </Link>
           ))}
         </div>
