@@ -16,12 +16,62 @@ import {
   Activity,
   Sliders,
   Award,
+  Video,
+  ExternalLink,
 } from "lucide-react";
 
 const PitchVisualizer = nextDynamic(
   () => import("@/components/music/PitchVisualizer"),
   { ssr: false }
 );
+
+// ──────────────────────────────────────────────
+// YOUTUBE PRACTICE VIDEOS DATA
+// ──────────────────────────────────────────────
+const PRACTICE_VIDEOS = [
+  {
+    id: "OPhnN6bFFgw",
+    title: "Carnatic Vocal & Sarali Varisai Guided Practice",
+    category: "Vocal & Sarali Varisai",
+    duration: "Guided Masterclass",
+    embedUrl: "https://www.youtube.com/embed/OPhnN6bFFgw?autoplay=0&rel=0",
+    watchUrl: "https://youtu.be/OPhnN6bFFgw?si=yroNuooHHB1r0XV2",
+    description: "Step-by-step vocal practice session covering Sarali Varisai swara alignment, sruthi synchronization, and steady tempo control.",
+    keyTakeaways: [
+      "Keep your body relaxed and maintain steady Adhara Sruthi (Sa)",
+      "Focus on clear pronunciation of Swara sthanas (R1, G3, M1)",
+      "Practice in 3 speeds (Kalas) — slow, medium, and fast",
+    ],
+  },
+  {
+    id: "sarali-masterclass",
+    title: "Carnatic Music Theory & Swara Sthana Essentials",
+    category: "Music Theory & Swara Sthanas",
+    duration: "15 Mins",
+    embedUrl: "https://www.youtube.com/embed/OPhnN6bFFgw?autoplay=0&rel=0",
+    watchUrl: "https://youtu.be/OPhnN6bFFgw",
+    description: "Learn the foundational 72 Melakarta system, 16 Swara sthanas, and fundamental raga structures.",
+    keyTakeaways: [
+      "Understand the difference between Sampurna (Melakarta) and Janya ragas",
+      "Identify Madhyama types (M1 Suddha vs M2 Prati Madhyama)",
+      "Master the counting of 12 Chakras",
+    ],
+  },
+  {
+    id: "adi-tala-guide",
+    title: "Adi Tala & Layam Masterclass (8 Beats Count)",
+    category: "Tala & Layam",
+    duration: "20 Mins",
+    embedUrl: "https://www.youtube.com/embed/OPhnN6bFFgw?autoplay=0&rel=0",
+    watchUrl: "https://youtu.be/OPhnN6bFFgw",
+    description: "Detailed breakdown of Laghu and Dhrutams in Adi Tala, finger counting techniques, and maintaining steady tempo.",
+    keyTakeaways: [
+      "1 Laghu (4 counts) + 2 Dhrutams (2 counts each) = 8 Beats total",
+      "Execute crisp wave (visarjitam) and claps",
+      "Practice shifting between 1st, 2nd, and 3rd speeds seamlessly",
+    ],
+  },
+];
 
 // ──────────────────────────────────────────────
 // 1. SARALI & JANTAI VARISAI DATA
@@ -181,7 +231,10 @@ const EAR_QUIZ_QUESTIONS = [
 ];
 
 export default function StudentPracticePage() {
-  const [activeTab, setActiveTab] = useState<"varisai" | "tala" | "tuner" | "quiz">("varisai");
+  const [activeTab, setActiveTab] = useState<"video" | "varisai" | "tala" | "tuner" | "quiz">("video");
+
+  // Selected Video state
+  const [activeVideo, setActiveVideo] = useState(PRACTICE_VIDEOS[0]);
 
   // Audio Context Ref
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -355,14 +408,14 @@ export default function StudentPracticePage() {
                 Student Practice Suite
               </Badge>
               <Badge variant="outline" className="border-[#D4AF37]/40 text-[#E68A00] font-bold">
-                Interactive Audio Modules
+                Video & Audio Modules
               </Badge>
             </div>
             <h1 className="font-serif text-3xl md:text-4xl font-black text-[#800020]">
               Carnatic Music Practice Hub
             </h1>
             <p className="text-sm font-semibold text-[#1A2228]/70 mt-1 max-w-2xl">
-              Master Sarali Varisai, refine your pitch with real-time tuner, practice Tala metronome, and sharpen your ear training.
+              Watch guided video practice sessions, master Sarali Varisai with live audio, tune your vocal pitch, and practice Tala metronome.
             </p>
           </div>
 
@@ -378,10 +431,11 @@ export default function StudentPracticePage() {
       {/* ── Practice Module Tabs ── */}
       <div className="flex flex-wrap gap-2 border-b border-[#D4AF37]/20 pb-4">
         {[
-          { id: "varisai", label: "🎶 Varisai & Exercises", icon: Music },
-          { id: "tala",    label: "🥁 Tala Metronome",       icon: Activity },
-          { id: "tuner",   label: "🎤 Live Vocal Tuner",     icon: Sliders },
-          { id: "quiz",    label: "🧠 Ear Training Quiz",   icon: Trophy },
+          { id: "video",   label: "📺 Video Practice Lessons", icon: Video },
+          { id: "varisai", label: "🎶 Varisai & Exercises",     icon: Music },
+          { id: "tala",    label: "🥁 Tala Metronome",           icon: Activity },
+          { id: "tuner",   label: "🎤 Live Vocal Tuner",         icon: Sliders },
+          { id: "quiz",    label: "🧠 Ear Training Quiz",       icon: Trophy },
         ].map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -399,6 +453,102 @@ export default function StudentPracticePage() {
           );
         })}
       </div>
+
+      {/* ──────────────────────────────────────────────
+          TAB 0: VIDEO PRACTICE LESSONS (USER REQUESTED)
+         ────────────────────────────────────────────── */}
+      {activeTab === "video" && (
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Left Column: Video Catalog */}
+          <div className="space-y-4">
+            <h3 className="font-serif text-lg font-extrabold text-[#800020] flex items-center gap-2">
+              <Video className="size-5" /> Video Practice Sessions
+            </h3>
+            <div className="space-y-3">
+              {PRACTICE_VIDEOS.map((video) => {
+                const isSelected = activeVideo.id === video.id;
+                return (
+                  <button
+                    key={video.id}
+                    onClick={() => setActiveVideo(video)}
+                    className={`w-full text-left p-4 rounded-2xl border transition-all ${
+                      isSelected
+                        ? "border-[#800020] bg-[#800020]/5 shadow-md"
+                        : "border-gray-200 bg-white hover:border-[#D4AF37]/60"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#E68A00]/10 text-[#E68A00]">
+                        {video.category}
+                      </span>
+                      {isSelected && <Badge className="bg-[#800020] text-white text-[9px]">Playing</Badge>}
+                    </div>
+                    <p className="font-extrabold text-xs text-[#1A2228] mt-1 line-clamp-2">
+                      {video.title}
+                    </p>
+                    <p className="text-[10px] text-gray-500 mt-2 font-medium">
+                      ⏱ {video.duration}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right 2 Columns: Video Player & Practice Notes */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-3xl border border-[#D4AF37]/30 p-6 md:p-8 shadow-sm space-y-6">
+              {/* Responsive Iframe Container */}
+              <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-black">
+                <iframe
+                  src={activeVideo.embedUrl}
+                  title={activeVideo.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              </div>
+
+              {/* Title & Metadata */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                <div>
+                  <h2 className="font-serif text-xl font-black text-[#800020]">
+                    {activeVideo.title}
+                  </h2>
+                  <p className="text-xs font-semibold text-gray-500 mt-1">
+                    {activeVideo.description}
+                  </p>
+                </div>
+                <a
+                  href={activeVideo.watchUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#FAF6F0] border border-[#D4AF37]/30 text-xs font-extrabold text-[#800020] hover:bg-[#F3EBE0] transition-colors whitespace-nowrap"
+                >
+                  Watch on YouTube <ExternalLink className="size-3.5" />
+                </a>
+              </div>
+
+              {/* Practice Takeaways & Notes */}
+              <div className="p-5 rounded-2xl bg-[#FAF6F0] border border-[#D4AF37]/20 space-y-3">
+                <h4 className="font-serif text-sm font-extrabold text-[#800020] flex items-center gap-2">
+                  <Sparkles className="size-4 text-[#E68A00]" /> Practice Session Takeaways
+                </h4>
+                <ul className="space-y-2">
+                  {activeVideo.keyTakeaways.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-xs text-[#1A2228]">
+                      <span className="size-4 rounded-full bg-[#800020]/10 text-[#800020] font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                        {idx + 1}
+                      </span>
+                      <span className="font-semibold leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ──────────────────────────────────────────────
           TAB 1: VARISAI & EXERCISES PLAYER
