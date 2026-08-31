@@ -4,114 +4,115 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, User, Music2 } from "lucide-react";
-import { getComposers } from "@/lib/db/catalog";
-import { isSupabaseConfigured } from "@/lib/supabase/static";
-import { Composer } from "@/types/music";
+import { ArrowLeft, Sparkles } from "lucide-react";
 
-const FALLBACK_COMPOSERS = [
+interface Vaggeyakara {
+  name: string;
+  era: string;
+  mudra: string;
+  contributions: string;
+  famousKriti: string;
+}
+
+const FAMOUS_VAGGEYAKARAS: Vaggeyakara[] = [
   {
-    id: "1",
     name: "Saint Tyagaraja",
-    era: "18th Century (1767–1847)",
-    biography: "The most prolific of the Tanjore Trinity of Carnatic music. Composed thousands of sublime devotional kritis primarily in Telugu in praise of Lord Rama, pioneering the Pancharatna Kritis.",
+    era: "1767 – 1847 AD (Trinity Era)",
     mudra: "Tyagaraja",
+    contributions: "Composed thousands of Kritis, Divya Nama Kirthanas, and Pancharatna Kritis primarily in Telugu. Perfected the Sangati ornamentations.",
+    famousKriti: "Endaro Mahanubhavulu (Sri Raga / Adi Tala)",
   },
   {
-    id: "2",
     name: "Muthuswami Dikshitar",
-    era: "18th Century (1775–1835)",
-    biography: "One of the Trinity of Carnatic Music. Composed majestic, deeply spiritual kritis in Sanskrit with gamaka-rich, slow-tempo (Vilambita-kala) phrasing and intricate raga structures.",
+    era: "1775 – 1835 AD (Trinity Era)",
     mudra: "Guruguha",
+    contributions: "Composed majestic Sanskrit Kritis, Kamalamba Navavarna Kritis, and 72 Melakarta Kritis. Master of Vilambita Kala and Venkatamakhin raga system.",
+    famousKriti: "Vatapi Ganapatim (Hamsadhwani / Adi Tala)",
   },
   {
-    id: "3",
     name: "Syama Sastri",
-    era: "18th Century (1762–1827)",
-    biography: "The oldest of the Trinity. Devotee of Goddess Kamakshi of Kanchipuram, renowned for intricate rhythmic mastery, Swarajathis, and rare tala structures in Misra Chapu.",
-    mudra: "Syama Krishna",
+    era: "1762 – 1827 AD (Trinity Era)",
+    mudra: "Shyamakrishna",
+    contributions: "Master of intricate rhythm (Tala-Prasthara), Swarajathis, and Anandabhairavi compositions. Known for profound devotion to Goddess Kamakshi.",
+    famousKriti: "Kamakshi Swarajathi (Bhairavi / Chapu Tala)",
   },
   {
-    id: "4",
     name: "Purandara Dasa",
-    era: "15th-16th Century (1484–1564)",
-    biography: "Revered as the Pitamaha (Grandfather) of Carnatic music. Systematized the vocal foundation exercises (Sarali, Janta, Alankaram, Geetham) and composed thousands of Kannada Devaranamanis.",
+    era: "1484 – 1564 AD (Father of Carnatic Music)",
     mudra: "Purandara Vittala",
+    contributions: "Systematized Carnatic music pedagogy by introducing Sarali, Janti, Alankara varisai, Pillari Geethams in Mayamalavagowla raga.",
+    famousKriti: "Sri Gananatha (Malahari / Rupaka Tala)",
   },
   {
-    id: "5",
     name: "Swathi Thirunal Rama Varma",
-    era: "19th Century (1813–1846)",
-    biography: "The scholarly Maharaja of Travancore who composed over 400 musical works in 8 languages, including Varnams, Padams, Tillanas, and Navaratri Kritis.",
-    mudra: "Padmanabha / Sree Padmanabha",
+    era: "1813 – 1846 AD (King of Travancore)",
+    mudra: "Padmanabha / Sripadmanabha",
+    contributions: "Composed Navaratri Kritis, Utsava Prabandhams, Tillanas, and Hindustani-style Padams across 8 languages.",
+    famousKriti: "Bhavayami Raghuramam (Ragamalika / Rupaka Tala)",
   },
   {
-    id: "6",
     name: "Tallapaka Annamacharya",
-    era: "15th Century (1408–1503)",
-    biography: "The Padakavitha Pitamaha who composed over 32,000 Sankeertanas in praise of Lord Venkateswara of Tirumala in Telugu and Sanskrit.",
-    mudra: "Venkateswara / Venkatadri",
+    era: "1408 – 1503 AD (Padakavitha Pitamaha)",
+    mudra: "Venkata / Venkateswara",
+    contributions: "Composed over 32,000 Sankeertanas in praise of Lord Venkateswara at Tirumala in Telugu and Sanskrit.",
+    famousKriti: "Brahmam Okate (Bouli / Adi Tala)",
   },
   {
-    id: "7",
-    name: "Papanasam Sivan",
-    era: "20th Century (1890–1973)",
-    biography: "Acclaimed as the 'Tamil Tyagaraja' of modern times. Composed over 800 soul-stirring Tamil classical kritis and movie compositions.",
-    mudra: "Ramadasan",
-  },
-  {
-    id: "8",
-    name: "Bhadrachala Ramadasu (Kancherla Gopanna)",
-    era: "17th Century (1620–1680)",
-    biography: "Famous Carnatic saint-poet who built the Bhadrachalam Rama temple and composed legendary devotional Keerthanas that directly inspired Saint Tyagaraja.",
+    name: "Bhadrachala Ramadasu (Kancharla Gopanna)",
+    era: "1620 – 1680 AD",
     mudra: "Ramadasu",
+    contributions: "Pioneer of Carnatic Kirthana form and Bhakti movement songs, inspiring Saint Tyagaraja.",
+    famousKriti: "Ikshvaku Kula Tilaka (Yadukulakambhoji / Adi Tala)",
   },
   {
-    id: "9",
+    name: "Papanasam Sivan",
+    era: "1890 – 1973 AD (Modern Trinity)",
+    mudra: "Ramadasan",
+    contributions: "Composed over 800 soul-stirring Tamil Kritis and film classical compositions earning him the title Tamil Tyagayya.",
+    famousKriti: "Karpagame Kanparaai (Madhyamavati / Adi Tala)",
+  },
+  {
     name: "Patnam Subramania Iyer",
-    era: "19th-20th Century (1845–1902)",
-    biography: "Revered master composer of snappy Varnams and Tillanas. Created new ragas like Kadana Kutoohalam and composed in over 100 ragas.",
-    mudra: "Venkatesa",
+    era: "1845 – 1902 AD",
+    mudra: "Venkatesesa",
+    contributions: "Creator of popular concert Varnams and vibrant ragas like Kadanakutuhalam.",
+    famousKriti: "Raghuvamsa Sudha (Kadanakutuhalam / Adi Tala)",
   },
   {
-    id: "10",
-    name: "Lalgudi Jayaraman",
-    era: "20th Century (1930–2013)",
-    biography: "Legendary Carnatic violin maestro and genius composer of modern Tillanas, Varnams, and orchestral classical compositions.",
-    mudra: "Lalgudi",
-  },
-  {
-    id: "11",
     name: "Koteeswara Iyer",
-    era: "19th-20th Century (1869–1938)",
-    biography: "Pioneering composer who accomplished the monumental feat of composing kritis in all 72 Melakarta Ragas in Tamil.",
-    mudra: "Kavi Kunjara",
+    era: "1869 – 1938 AD",
+    mudra: "Kavirakshasa",
+    contributions: "First vaggeyakara to compose Kritis in all 72 Melakarta ragas in Tamil (Kanda Ganam).",
+    famousKriti: "Kanaka Mmayura (Kanakangi / Adi Tala)",
   },
   {
-    id: "12",
+    name: "Lalgudi G. Jayaraman",
+    era: "1930 – 2013 AD (Violin Maestro)",
+    mudra: "Lalgudi",
+    contributions: "Violin virtuoso who revolutionized Tillana compositions with rhythmic foot-tapping intricate swara patterns.",
+    famousKriti: "Thillana in Mand (Mand / Adi Tala)",
+  },
+  {
     name: "Harikesanallur Muthaiah Bhagavatar",
-    era: "19th-20th Century (1877–1945)",
-    biography: "Renowned Harikatha exponent and composer of Chamundamba Ashtottara kritis, creator of new ragas such as Hamsanandi, Niroshta, and Mohanakalyani.",
-    mudra: "Harikesha",
+    era: "1877 – 1955 AD",
+    mudra: "Harikesa",
+    contributions: "Scholar-composer who created new ragas like Niroshta (omitting labial swaras M & P) and Chamundamba Kritis.",
+    famousKriti: "Raja Raja Radhite (Niroshta / Adi Tala)",
   },
 ];
 
-export default async function ComposersPage() {
-  const configured = isSupabaseConfigured();
-  let composers: Composer[] = [];
-
-  if (configured) {
-    composers = await getComposers();
-  }
-
-  if (!composers || composers.length === 0) {
-    composers = FALLBACK_COMPOSERS;
-  }
-
+export default function ComposersPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Image: Traditional Carnatic Trinity Artwork */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15"
+        style={{ backgroundImage: "url('/images/knowledge-hub-bg.jpg')" }}
+      />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+
       <Navbar />
-      <main className="mx-auto max-w-6xl px-6 py-16">
+      <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
           href="/knowledge-hub"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors"
@@ -121,45 +122,40 @@ export default async function ComposersPage() {
 
         <div className="mb-10">
           <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4">
-            Carnatic Music Master Composers
+            Vaggeyakaras Directory
           </Badge>
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            Great Vaggeyakaras (Composers)
+            Great Carnatic Music Composers
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
-            Meet the iconic architects of Carnatic classical music, from Purandara Dasa (Pitamaha) and the Tanjore Trinity (Tyagaraja, Dikshitar, Syama Sastri) to modern maestros.
+            The revered masters (Vaggeyakaras) who authored lyrics, musical notations, and rhythmic structures. From Purandara Dasa to the Tanjore Trinity (Saint Tyagaraja, Muthuswami Dikshitar, Syama Sastri) and modern masters.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {composers.map((c: Composer) => (
+          {FAMOUS_VAGGEYAKARAS.map((c) => (
             <div
-              key={c.id}
-              className="glass-panel traditional-glow rounded-3xl p-6 border border-swara-gold/20 bg-card flex flex-col justify-between hover:shadow-md transition-all"
+              key={c.name}
+              className="glass-panel rounded-2xl border border-swara-gold/25 bg-card/90 backdrop-blur-md p-6 flex flex-col justify-between hover:border-kumkum/50 hover:shadow-lg transition-all"
             >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex size-10 items-center justify-center rounded-2xl bg-kumkum/10 ring-1 ring-swara-gold/30">
-                    <User className="size-5 text-kumkum" />
-                  </div>
-                  <Badge variant="outline" className="border-swara-gold/30 text-marigold text-[10px]">
-                    {c.era}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px]">
+                    Mudra: {c.mudra}
                   </Badge>
+                  <span className="text-[10px] text-muted-foreground font-mono">{c.era}</span>
                 </div>
-                <h3 className="font-serif text-xl font-bold text-kumkum mb-2">{c.name}</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed mb-4">{c.biography}</p>
+
+                <h3 className="font-serif text-xl font-bold text-kumkum">{c.name}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{c.contributions}</p>
               </div>
 
-              {c.mudra && (
-                <div className="border-t border-border/60 pt-4 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground text-[11px] flex items-center gap-1">
-                    <Music2 className="size-3 text-swara-gold" /> Mudra (Signature):
-                  </span>
-                  <span className="font-serif font-bold text-kumkum bg-kumkum/10 px-2.5 py-1 rounded-lg">
-                    {c.mudra}
-                  </span>
-                </div>
-              )}
+              <div className="mt-4 pt-3 border-t border-border/50 text-xs flex items-center gap-2 text-foreground">
+                <Sparkles className="size-3.5 text-swara-gold shrink-0" />
+                <span>
+                  <strong className="font-bold">Signature:</strong> {c.famousKriti}
+                </span>
+              </div>
             </div>
           ))}
         </div>

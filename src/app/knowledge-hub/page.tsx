@@ -22,7 +22,14 @@ export default async function KnowledgeHubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Image: Traditional Carnatic Trinity Artwork */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15"
+        style={{ backgroundImage: "url('/images/knowledge-hub-bg.jpg')" }}
+      />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <div className="mb-10">
@@ -32,7 +39,7 @@ export default async function KnowledgeHubPage() {
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
             72 Janaka Ragas (Melakartas)
           </h1>
-          <p className="text-muted-foreground mt-2 max-w-2xl">
+          <p className="text-muted-foreground mt-2 max-w-2xl leading-relaxed">
             Explore the complete 72 Parent Janaka Ragas system formulation by Venkatamakhin. Click any Melakarta to inspect its Swarasthanas with Veena & Violin audio playback and derived Janya Ragas.
           </p>
         </div>
@@ -46,13 +53,13 @@ export default async function KnowledgeHubPage() {
           </Link>
           <Link
             href="/knowledge-hub/composers"
-            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/90 backdrop-blur border border-border text-foreground hover:bg-muted"
           >
             Vaggeyakaras (Composers)
           </Link>
           <Link
             href="/knowledge-hub/talas"
-            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/90 backdrop-blur border border-border text-foreground hover:bg-muted"
           >
             35 Suladi Sapta Talas
           </Link>
@@ -63,7 +70,7 @@ export default async function KnowledgeHubPage() {
             <Link
               key={m.number}
               href={`/knowledge-hub/melakarta/${m.number}`}
-              className="group rounded-2xl border border-swara-gold/20 bg-card p-4 hover:border-kumkum/40 hover:shadow-md transition-all flex flex-col justify-between"
+              className="group rounded-2xl border border-swara-gold/25 bg-card/90 backdrop-blur-md p-4 hover:border-kumkum/50 hover:shadow-lg transition-all flex flex-col justify-between"
             >
               <div>
                 <p className="text-[10px] font-bold text-kumkum uppercase">#{m.number}</p>
