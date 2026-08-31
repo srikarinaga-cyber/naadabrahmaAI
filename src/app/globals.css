@@ -18,7 +18,7 @@
   --swara-gold-light: #f3e5ab;
 
   /* shadcn semantic tokens — light theme */
-  --background: var(--sandalwood);
+  --background: rgba(250, 246, 240, 0.7);
   --foreground: var(--shanti-slate);
   --card: #ffffff;
   --card-foreground: var(--shanti-slate);
@@ -83,7 +83,7 @@
 }
 
 .dark {
-  --background: var(--royal-navy);
+  --background: rgba(11, 17, 32, 0.7);
   --foreground: var(--sandalwood);
   --card: #141c2e;
   --card-foreground: var(--sandalwood);

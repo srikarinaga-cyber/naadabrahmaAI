@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, FileText, NotebookPen, Sparkles } from "lucide-react";
@@ -13,6 +14,28 @@ const highlights = [
 ];
 
 export function NotesPreview() {
+  const [files, setFiles] = useState<string[]>([
+    "carnatic_music_theory1.pdf",
+    "diploma_syllabus.pdf",
+    "grade_exam_portions.pdf",
+  ]);
+
+  useEffect(() => {
+    async function fetchFiles() {
+      try {
+        const res = await fetch("/api/syllabus/files");
+        const json = await res.json();
+        const fileList = json.data?.files ?? [];
+        if (fileList.length > 0) {
+          setFiles(fileList.map((f: any) => f.name));
+        }
+      } catch (err) {
+        console.error("[NotesPreview] Failed to fetch syllabus files:", err);
+      }
+    }
+    fetchFiles();
+  }, []);
+
   return (
     <section id="notes" className="py-24">
       <div className="mx-auto max-w-7xl px-6">
@@ -39,11 +62,7 @@ export function NotesPreview() {
               </div>
 
               <div className="space-y-3 p-5">
-                {[
-                  "carnatic_music_theory1.pdf",
-                  "diploma_syllabus.pdf",
-                  "grade_exam_portions.pdf",
-                ].map((file) => (
+                {files.map((file) => (
                   <div
                     key={file}
                     className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3"
