@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Play, Square, Volume2, Sliders, Music, Sparkles } from "lucide-react";
+import { Play, Square, Volume2, Sliders, Music, Sparkles, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,16 +23,20 @@ const BASE_PITCHES = [
 
 export function TanpuraTablaPlayer() {
   const [selectedPitch, setSelectedPitch] = useState(BASE_PITCHES[0]);
-  const [droneTuning, setDroneTuning] = useState<"Pa" | "Ma" | "Ni">("Pa");
-  
+  const [droneTuning, setDroneTuning] = useState<"Pa" | "Ma" | "Ni" | "Sa">("Pa");
+  const [fineTuneCents, setFineTuneCents] = useState(0);
+
   // Audio state
   const [isTanpura1Active, setIsTanpura1Active] = useState(false);
   const [isTanpura2Active, setIsTanpura2Active] = useState(false);
   const [isTablaActive, setIsTablaActive] = useState(false);
 
+  // String vibration state for visualizer
+  const [activeStringIndex, setActiveStringIndex] = useState<number | null>(null);
+
   // Volume Controls
-  const [tanpura1Vol, setTanpura1Vol] = useState(0.4);
-  const [tanpura2Vol, setTanpura2Vol] = useState(0.3);
+  const [tanpura1Vol, setTanpura1Vol] = useState(0.5);
+  const [tanpura2Vol, setTanpura2Vol] = useState(0.4);
   const [tablaVol, setTablaVol] = useState(0.5);
   const [bpm, setBpm] = useState(80);
 
@@ -59,12 +63,13 @@ export function TanpuraTablaPlayer() {
     baseHz: number,
     stringRatio: number,
     volume: number,
-    detuneCents: number = 0
+    additionalCents: number = 0
   ) => {
     try {
       const ctx = getAudioContext();
       const now = ctx.currentTime;
       const freq = baseHz * stringRatio;
+      const totalDetune = fineTuneCents + additionalCents;
 
       const masterGain = ctx.createGain();
       masterGain.connect(ctx.destination);
@@ -79,10 +84,13 @@ export function TanpuraTablaPlayer() {
       osc3.type = "sine";
 
       osc1.frequency.setValueAtTime(freq, now);
-      osc1.detune.setValueAtTime(detuneCents, now);
+      osc1.detune.setValueAtTime(totalDetune, now);
 
       osc2.frequency.setValueAtTime(freq * 2, now);
+      osc2.detune.setValueAtTime(totalDetune, now);
+
       osc3.frequency.setValueAtTime(freq * 3.01, now);
+      osc3.detune.setValueAtTime(totalDetune, now);
 
       // Jivari Metallic Buzz Filter
       const jivariFilter = ctx.createBiquadFilter();
@@ -91,8 +99,8 @@ export function TanpuraTablaPlayer() {
       jivariFilter.Q.setValueAtTime(3.0, now);
 
       masterGain.gain.setValueAtTime(0.001, now);
-      masterGain.gain.linearRampToValueAtTime(volume * 0.35, now + 0.04); // Pluck attack
-      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.8); // Long string decay
+      masterGain.gain.linearRampToValueAtTime(volume * 0.4, now + 0.04); // Pluck attack
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.9); // Long string decay
 
       osc1.connect(jivariFilter);
       osc2.connect(jivariFilter);
@@ -103,22 +111,31 @@ export function TanpuraTablaPlayer() {
       osc2.start(now);
       osc3.start(now);
 
-      osc1.stop(now + 2.8);
-      osc2.stop(now + 2.8);
-      osc3.stop(now + 2.8);
+      osc1.stop(now + 2.9);
+      osc2.stop(now + 2.9);
+      osc3.stop(now + 2.9);
     } catch (e) {
       console.warn("Tanpura pluck error:", e);
     }
   };
 
-  // Tanpura 1 Loop (Pa - Sa - Sa - Sa_low continuous strumming)
+  // Tanpura 1 Loop (Continuous 4-String Strumming)
   useEffect(() => {
     if (isTanpura1Active) {
       let step = 0;
-      const firstRatio = droneTuning === "Pa" ? 1.5 : droneTuning === "Ma" ? 1.3333 : 1.875;
+      const firstRatio =
+        droneTuning === "Pa"
+          ? 1.5
+          : droneTuning === "Ma"
+          ? 1.3333
+          : droneTuning === "Ni"
+          ? 1.875
+          : 2.0;
 
       const strum = () => {
         const base = selectedPitch.freq;
+        setActiveStringIndex(step);
+
         if (step === 0) pluckTanpuraString(base, firstRatio, tanpura1Vol, -2);
         else if (step === 1) pluckTanpuraString(base, 2.0, tanpura1Vol, 1);
         else if (step === 2) pluckTanpuraString(base, 2.0, tanpura1Vol, 0);
@@ -135,13 +152,20 @@ export function TanpuraTablaPlayer() {
     return () => {
       if (tanpura1TimerRef.current) clearInterval(tanpura1TimerRef.current);
     };
-  }, [isTanpura1Active, selectedPitch, droneTuning, tanpura1Vol]);
+  }, [isTanpura1Active, selectedPitch, droneTuning, tanpura1Vol, fineTuneCents]);
 
-  // Tanpura 2 Stereo Accompaniment Loop (Sa - Sa - Pa - Sa_low)
+  // Tanpura 2 Stereo Accompaniment Loop (Phase Offset Strumming)
   useEffect(() => {
     if (isTanpura2Active) {
       let step = 0;
-      const firstRatio = droneTuning === "Pa" ? 1.5 : droneTuning === "Ma" ? 1.3333 : 1.875;
+      const firstRatio =
+        droneTuning === "Pa"
+          ? 1.5
+          : droneTuning === "Ma"
+          ? 1.3333
+          : droneTuning === "Ni"
+          ? 1.875
+          : 2.0;
 
       const strum2 = () => {
         const base = selectedPitch.freq;
@@ -153,7 +177,6 @@ export function TanpuraTablaPlayer() {
         step = (step + 1) % 4;
       };
 
-      // Offset by 350ms for natural stereo interplay
       const timeout = setTimeout(() => {
         strum2();
         tanpura2TimerRef.current = setInterval(strum2, 700);
@@ -166,7 +189,7 @@ export function TanpuraTablaPlayer() {
     } else if (tanpura2TimerRef.current) {
       clearInterval(tanpura2TimerRef.current);
     }
-  }, [isTanpura2Active, selectedPitch, droneTuning, tanpura2Vol]);
+  }, [isTanpura2Active, selectedPitch, droneTuning, tanpura2Vol, fineTuneCents]);
 
   // Tabla / Mridangam Rhythm Pulse Generator
   const playTablaBeat = (isBayyanDha: boolean, isSyahiTin: boolean) => {
@@ -193,7 +216,7 @@ export function TanpuraTablaPlayer() {
       dayanOsc.start(now);
       dayanOsc.stop(now + 0.18);
 
-      // Bayyan (Bass drum head resonant stroke)
+      // Bayyan (Bass drum head)
       if (isBayyanDha) {
         const bayyanOsc = ctx.createOscillator();
         bayyanOsc.type = "sine";
@@ -222,7 +245,6 @@ export function TanpuraTablaPlayer() {
 
       const beatLoop = () => {
         setCurrentBeatStep(step);
-        // Play classic 8-beat Teentaal / Adi Theka (Dha Dhin Dhin Dha | Dha Dhin Dhin Dha)
         const isDha = step === 0 || step === 3 || step === 4 || step === 7;
         const isTin = step === 2 || step === 6;
 
@@ -257,13 +279,13 @@ export function TanpuraTablaPlayer() {
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
         <div>
           <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1">
-            Studio Concert Accompaniment Engine
+            Concert Studio Accompaniment Engine
           </Badge>
           <h2 className="font-serif text-2xl font-bold text-kumkum">
-            Rhythm with Tabla & Dual Tanpuras
+            Tanpura & Tabla Accompaniment Setter
           </h2>
           <p className="text-xs text-muted-foreground mt-1 max-w-xl">
-            Acoustic Tanpura drones (Pa-Sa & Ma-Sa) paired with an interactive Tabla/Mridangam rhythm pulse.
+            Dual acoustic Tanpuras with Jivari acoustic string resonance and fine-tune microtonal pitch adjustment.
           </p>
         </div>
 
@@ -289,49 +311,118 @@ export function TanpuraTablaPlayer() {
         </Button>
       </div>
 
-      {/* Sruthi Key & Tuning Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-muted/40 p-4 border border-border/50">
-        <div>
-          <label className="block text-xs font-semibold text-foreground mb-1">
-            Adhara Shadja Key (Sruthi):
-          </label>
-          <select
-            value={selectedPitch.name}
-            onChange={(e) => {
-              const p = BASE_PITCHES.find((item) => item.name === e.target.value);
-              if (p) setSelectedPitch(p);
-            }}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold"
-          >
-            {BASE_PITCHES.map((p) => (
-              <option key={p.name} value={p.name}>
-                {p.name} ({p.freq.toFixed(1)} Hz)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-foreground mb-1">
-            Tanpura Drone Tuning (Panchama / Madhyama / Nishada):
-          </label>
-          <div className="grid grid-cols-3 gap-1">
-            {(["Pa", "Ma", "Ni"] as const).map((t) => (
+      {/* Quick Sruthi Presets & Sruthi Selector */}
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <Sliders className="size-3.5 text-swara-gold" /> Quick Sruthi Presets:
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { label: "1.0 Kattai (C3)", pitchIdx: 0 },
+              { label: "2.0 Kattai (D3)", pitchIdx: 2 },
+              { label: "4.0 Kattai (F3)", pitchIdx: 5 },
+              { label: "5.0 Kattai (G3)", pitchIdx: 7 },
+            ].map((preset) => (
               <button
-                key={t}
-                onClick={() => setDroneTuning(t)}
-                className={`py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  droneTuning === t
-                    ? "bg-kumkum text-white shadow-sm"
-                    : "bg-background text-muted-foreground hover:bg-muted"
+                key={preset.label}
+                onClick={() => setSelectedPitch(BASE_PITCHES[preset.pitchIdx])}
+                className={`px-3 py-1 rounded-xl text-[11px] font-bold border transition-all ${
+                  selectedPitch.name === BASE_PITCHES[preset.pitchIdx].name
+                    ? "bg-kumkum text-white border-kumkum shadow-sm"
+                    : "bg-card text-muted-foreground border-border hover:border-kumkum/30"
                 }`}
               >
-                {t} Tuning ({t === "Pa" ? "P-S-S-S" : t === "Ma" ? "M-S-S-S" : "N-S-S-S"})
+                {preset.label}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Sruthi Key Dropdown & Micro Pitch Fine Tuning */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl bg-muted/40 p-4 border border-border/50">
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1">
+              Adhara Shadja Sruthi (Base Pitch):
+            </label>
+            <select
+              value={selectedPitch.name}
+              onChange={(e) => {
+                const p = BASE_PITCHES.find((item) => item.name === e.target.value);
+                if (p) setSelectedPitch(p);
+              }}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold"
+            >
+              {BASE_PITCHES.map((p) => (
+                <option key={p.name} value={p.name}>
+                  {p.name} ({p.freq.toFixed(1)} Hz)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1">
+              Drone String Tuning Pattern:
+            </label>
+            <div className="grid grid-cols-4 gap-1">
+              {(["Pa", "Ma", "Ni", "Sa"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setDroneTuning(t)}
+                  className={`py-1.5 rounded-xl text-[10px] font-bold transition-all ${
+                    droneTuning === t
+                      ? "bg-kumkum text-white shadow-sm"
+                      : "bg-background text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {t} ({t === "Pa" ? "P-S-S-S" : t === "Ma" ? "M-S-S-S" : t === "Ni" ? "N-S-S-S" : "S-S-S-S"})
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-xs font-semibold text-foreground mb-1">
+              <span>Micro Pitch Fine Tune:</span>
+              <span className="font-mono text-kumkum">{fineTuneCents > 0 ? `+${fineTuneCents}` : fineTuneCents} Cents</span>
+            </div>
+            <input
+              type="range"
+              min="-50"
+              max="50"
+              step="1"
+              value={fineTuneCents}
+              onChange={(e) => setFineTuneCents(parseInt(e.target.value, 10))}
+              className="w-full accent-kumkum h-1.5 bg-background rounded-lg mt-2"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Tanpura Acoustic String Vibration Visualizer */}
+      {(isTanpura1Active || isTanpura2Active) && (
+        <div className="rounded-2xl border border-swara-gold/25 bg-kumkum/5 p-4 flex items-center justify-between text-xs animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <Activity className="size-4 text-kumkum animate-pulse" />
+            <span className="font-bold text-foreground">Tanpura String Strumming Visualizer:</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {["1 (P/M/N)", "2 (Tara Sa)", "3 (Tara Sa)", "4 (Lower Sa)"].map((label, idx) => (
+              <div
+                key={label}
+                className={`px-3 py-1 rounded-xl text-[10px] font-bold font-mono transition-all ${
+                  activeStringIndex === idx
+                    ? "bg-kumkum text-white scale-105 shadow-sm ring-2 ring-swara-gold"
+                    : "bg-card text-muted-foreground border border-border/50"
+                }`}
+              >
+                String {label}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 3 Channels: Tanpura 1, Tanpura 2 & Tabla Controls */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -341,8 +432,8 @@ export function TanpuraTablaPlayer() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🪕</span>
               <div>
-                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 1</h4>
-                <p className="text-[10px] text-muted-foreground">Primary Drone (Left Channel)</p>
+                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 1 (Left)</h4>
+                <p className="text-[10px] text-muted-foreground">Primary Acoustic Drone</p>
               </div>
             </div>
 
@@ -379,8 +470,8 @@ export function TanpuraTablaPlayer() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🪕</span>
               <div>
-                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 2</h4>
-                <p className="text-[10px] text-muted-foreground">Stereo Drone (Right Channel)</p>
+                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 2 (Right)</h4>
+                <p className="text-[10px] text-muted-foreground">Stereo Acoustic Drone</p>
               </div>
             </div>
 
