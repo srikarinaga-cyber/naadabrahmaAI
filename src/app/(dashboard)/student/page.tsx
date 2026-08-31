@@ -7,6 +7,7 @@ import Link from "next/link";
 import nextDynamic from "next/dynamic";
 import { Check, Plus, Trash2, Sparkles, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
 const PitchVisualizer = nextDynamic(
   () => import("@/components/music/PitchVisualizer"),
@@ -91,6 +92,9 @@ export default function StudentDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* ── Tanpura & Tabla Rhythm Drone Console ── */}
+      <TanpuraTablaPlayer />
+
       {/* Overview Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between">
