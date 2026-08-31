@@ -59,11 +59,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground selection:bg-kumkum/20 selection:text-kumkum">
+        {/* Fixed background — outside all scroll containers */}
+        <MusicBackground />
         <ThemeProvider>
-          <MusicBackground />
           {children}
-          <FloatingTanpura />
         </ThemeProvider>
+        {/* Floating Tanpura — direct child of body so fixed positioning always works */}
+        <FloatingTanpura />
       </body>
     </html>
   );
