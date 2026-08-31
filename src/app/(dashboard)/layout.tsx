@@ -20,7 +20,6 @@ export default function DashboardLayout({
 
   const NAV_ITEMS: NavItem[] = [
     { name: "Student Home", href: "/student", icon: "📊", exact: true },
-    { name: "Practice Hub", href: "/student/practice", icon: "🎵" },
     { name: "Knowledge Hub", href: "/knowledge-hub", icon: "📖" },
     { name: "Notes & PDFs", href: "/notes", icon: "📝" },
     { name: "AI Guru Chat", href: "/student/guru", icon: "🧘‍♂️" },

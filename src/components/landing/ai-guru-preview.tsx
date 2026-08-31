@@ -19,34 +19,21 @@ const capabilities = [
     icon: HelpCircle,
     title: "Ask Music Doubts",
     description: "Get instant explanations for raga theory, swara patterns, and performance nuances.",
-    // Opens AI Guru with a sample music doubt query
-    href: "/ai-guru?query=Explain+raga+theory+and+swara+patterns+in+Carnatic+music",
-    color: "hover:border-kumkum/40 hover:bg-kumkum/5",
-    badge: "Ask →",
   },
   {
     icon: GitCompare,
     title: "Compare Ragas",
     description: "Side-by-side analysis of Melakarta and Janya ragas with swara differences highlighted.",
-    href: "/ai-guru?query=Compare+Mohanam+and+Hamsadhwani+ragas+with+swara+differences",
-    color: "hover:border-marigold/40 hover:bg-marigold/5",
-    badge: "Compare →",
   },
   {
     icon: NotebookPen,
     title: "Generate Notes & Quizzes",
     description: "AI-crafted study notes and practice quizzes tailored to your exam level.",
-    href: "/student/notes",
-    color: "hover:border-swara-gold/40 hover:bg-swara-gold/5",
-    badge: "Generate →",
   },
   {
     icon: Calendar,
     title: "Practice Schedules",
     description: "Personalized daily practice plans based on your progress and weak areas.",
-    href: "/ai-guru?query=Create+a+7-day+Carnatic+music+practice+schedule+for+a+beginner",
-    color: "hover:border-green-500/40 hover:bg-green-500/5",
-    badge: "Plan →",
   },
 ];
 
@@ -81,63 +68,45 @@ export function AiGuruPreview() {
               <Bot className="mr-1 size-3" />
               AI Guru
             </Badge>
-            <h2 className="font-serif text-3xl font-black text-kumkum md:text-4xl">
+            <h2 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
               Your Personal Carnatic Music Guru
             </h2>
-            <p className="leading-relaxed font-semibold text-muted-foreground">
-              Powered by Gemini AI with RAG architecture over our curated music database.
+            <p className="leading-relaxed text-muted-foreground">
+              Powered by GPT with RAG architecture over our curated music database.
               Ask doubts, compare ragas, generate quizzes, and receive theory
               explanations — available 24/7 for every instrument.
             </p>
 
-            {/* ── 4 Clickable Module Cards ── */}
-            <div className="grid gap-3 sm:grid-cols-2">
-              {capabilities.map((cap, i) => (
-                <motion.div
+            <div className="grid gap-4 sm:grid-cols-2">
+              {capabilities.map((cap) => (
+                <div
                   key={cap.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
+                  className="rounded-xl border border-swara-gold/15 bg-card/60 p-4 backdrop-blur-sm dark:bg-card/40"
                 >
-                  <Link
-                    href={cap.href}
-                    className={`group flex flex-col rounded-xl border border-swara-gold/15 bg-card/60 p-4 backdrop-blur-sm transition-all duration-200 dark:bg-card/40 ${cap.color} cursor-pointer`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <cap.icon className="size-5 text-kumkum group-hover:scale-110 transition-transform" aria-hidden />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-kumkum/60 group-hover:text-kumkum transition-colors">
-                        {cap.badge}
-                      </span>
-                    </div>
-                    <p className="text-sm font-extrabold text-foreground group-hover:text-kumkum transition-colors">
-                      {cap.title}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-muted-foreground leading-relaxed">
-                      {cap.description}
-                    </p>
-                  </Link>
-                </motion.div>
+                  <cap.icon className="mb-2 size-5 text-kumkum" aria-hidden />
+                  <p className="text-sm font-semibold">{cap.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {cap.description}
+                  </p>
+                </div>
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button
-                className="bg-kumkum hover:bg-kumkum-light font-bold"
-                render={<Link href="/student/notes" />}
-              >
-                Generate Study Notes
-                <ArrowRight className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="border-swara-gold/40 text-kumkum font-bold"
-                render={<Link href="/ai-guru" />}
-              >
-                Chat with AI Guru
-                <ArrowRight className="size-4" />
-              </Button>
-            </div>
+            <Button
+              className="bg-kumkum hover:bg-kumkum-light"
+              render={<Link href="/student/notes" />}
+            >
+              Generate Study Notes
+              <ArrowRight className="size-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="border-swara-gold/40 text-kumkum"
+              render={<Link href="/ai-guru" />}
+            >
+              Chat with AI Guru
+              <ArrowRight className="size-4" />
+            </Button>
           </motion.div>
 
           <motion.div
@@ -153,12 +122,12 @@ export function AiGuruPreview() {
                   <Sparkles className="size-4 text-kumkum" />
                 </div>
                 <div>
-                  <p className="text-sm font-extrabold">AI Guru</p>
-                  <p className="text-xs font-bold text-muted-foreground">
-                    Multilingual Carnatic assistant
+                  <p className="text-sm font-semibold">AI Guru</p>
+                  <p className="text-xs text-muted-foreground">
+                    Carnatic music assistant
                   </p>
                 </div>
-                <Badge className="ml-auto bg-marigold/15 text-marigold font-bold" variant="secondary">
+                <Badge className="ml-auto bg-marigold/15 text-marigold" variant="secondary">
                   Online
                 </Badge>
               </div>
@@ -170,7 +139,7 @@ export function AiGuruPreview() {
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-semibold leading-relaxed ${
+                      className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         msg.role === "user"
                           ? "bg-kumkum text-white"
                           : "bg-muted text-foreground"
@@ -182,26 +151,10 @@ export function AiGuruPreview() {
                 ))}
               </div>
 
-              {/* Quick action chips inside preview card */}
-              <div className="border-t border-border px-5 py-3">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {["Ask in Telugu", "Compare Ragas", "Practice Plan"].map(label => (
-                    <Link
-                      key={label}
-                      href={`/ai-guru?query=${encodeURIComponent(label)}`}
-                      className="text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-swara-gold/30 bg-swara-gold/10 text-swara-gold hover:bg-swara-gold/20 transition-all"
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-                <Link
-                  href="/ai-guru"
-                  className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm font-bold text-muted-foreground hover:border-kumkum/30 hover:text-kumkum transition-all"
-                >
+              <div className="border-t border-border px-5 py-4">
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                   Ask about ragas, talas, theory...
-                  <ArrowRight className="size-3.5 ml-auto" />
-                </Link>
+                </div>
               </div>
             </div>
           </motion.div>

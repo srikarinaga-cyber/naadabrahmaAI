@@ -156,7 +156,7 @@ export async function buildMusicContext(params: {
 export function buildSystemPrompt(params: {
   context: MusicContext;
   instrument?: Instrument;
-  language?: "te" | "en" | "hi" | "kn" | "ta";
+  language?: "te" | "en";
 }): string {
   const { context, instrument, language = "en" } = params;
 
@@ -191,23 +191,12 @@ CRITICAL RULES:
     prompt += `\nINSTRUMENT CONTEXT: ${instrument}\n${instrumentGuidance(instrument)}\n`;
   }
 
-  // Multilingual response instructions
-  const langInstructions: Record<string, string> = {
-    en: `Respond clearly in English. Use simple, accessible language suitable for all levels of Carnatic music students.`,
-    te: `Respond in Telugu (తెలుగు) script primarily. Use Telugu for explanations and English only for technical Carnatic terms (e.g., Arohana, Avarohana, Melakarta, Swara names like Sa Ri Ga Ma Pa Da Ni). 
-Example format: "మయామాళవగౌళ రాగం కర్నాటక సంగీతంలో చాలా ముఖ్యమైన రాగం. దీని ఆరోహణ: S R1 G3 M1 P D1 N3 S"`,
-    hi: `Respond in Hindi (हिन्दी) script primarily. Use Hindi for explanations and English only for technical Carnatic terms.
-Example format: "मायामालवगौला राग कर्नाटक संगीत का एक महत्वपूर्ण राग है। इसका आरोहण: S R1 G3 M1 P D1 N3 S"`,
-    kn: `Respond in Kannada (ಕನ್ನಡ) script primarily. Use Kannada for explanations and English only for technical Carnatic terms.
-Example format: "ಮಾಯಾಮಾಳವಗೌಳ ರಾಗ ಕರ್ನಾಟಕ ಸಂಗೀತದಲ್ಲಿ ಮಹತ್ವದ ರಾಗ. ಆರೋಹಣ: S R1 G3 M1 P D1 N3 S"`,
-    ta: `Respond in Tamil (தமிழ்) script primarily. Use Tamil for explanations and English only for technical Carnatic terms.
-Example format: "மாயாமாளவகௌளை ராகம் கர்னாடக இசையில் மிக முக்கியமான ராகம். ஆரோஹணம்: S R1 G3 M1 P D1 N3 S"`,
-  };
+  if (language === "te") {
+    prompt += `\nRespond in simple Telugu-English mix unless the user asks for pure Telugu.\n`;
+  }
 
-  prompt += `\n\nLANGUAGE INSTRUCTION:\n${langInstructions[language] ?? langInstructions["en"]}\n`;
-  prompt += `\nAlways keep Carnatic music technical terms (Swara names, Raga names, Tala names) in their original form regardless of language.`;
-
-  prompt += `\nFor raga-specific questions, structure your response with: answer, raga details, arohanam, avarohanam, famous kritis, important points, and practice tips.\nDo NOT claim real-time pitch analysis or instrument performance evaluation capabilities.`;
+  prompt += `\nFor raga-specific questions, structure your response with: answer, raga details, arohanam, avarohanam, famous kritis, important points, and practice tips.
+Do NOT claim real-time pitch analysis or instrument performance evaluation capabilities.`;
 
   return prompt;
 }

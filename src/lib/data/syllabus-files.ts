@@ -72,38 +72,7 @@ async function discoverPdfBuckets(
 
 export async function listSyllabusFiles(): Promise<SyllabusFileInfo[]> {
   const admin = createAdminClient();
-  if (!admin) {
-    // Return static mock files when Supabase is not configured
-    return [
-      {
-        name: "carnatic_music_theory1.pdf",
-        bucket: "static",
-        path: "carnatic_music_theory1.pdf",
-        size: null,
-        chunkCount: 12,
-        ingested: true,
-        signedUrl: null,
-      },
-      {
-        name: "diploma_syllabus.pdf",
-        bucket: "static",
-        path: "diploma_syllabus.pdf",
-        size: null,
-        chunkCount: 8,
-        ingested: true,
-        signedUrl: null,
-      },
-      {
-        name: "grade_exam_portions.pdf",
-        bucket: "static",
-        path: "grade_exam_portions.pdf",
-        size: null,
-        chunkCount: 5,
-        ingested: true,
-        signedUrl: null,
-      }
-    ];
-  }
+  if (!admin) return [];
 
   const ingestedCounts = new Map<string, number>();
 
@@ -144,24 +113,6 @@ export async function listSyllabusFiles(): Promise<SyllabusFileInfo[]> {
         signedUrl: signed?.signedUrl ?? null,
       });
     }
-  }
-
-  // Include files that exist in the database table but are not in Supabase Storage
-  for (const [fileName, chunkCount] of ingestedCounts.entries()) {
-    const alreadySeen = files.some(
-      (f) => f.name === fileName || f.path === fileName
-    );
-    if (alreadySeen) continue;
-
-    files.push({
-      name: fileName,
-      bucket: "database",
-      path: fileName,
-      size: null,
-      chunkCount,
-      ingested: true,
-      signedUrl: null,
-    });
   }
 
   return files.sort((a, b) => a.name.localeCompare(b.name));

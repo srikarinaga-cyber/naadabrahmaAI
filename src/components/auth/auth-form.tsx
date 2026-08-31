@@ -1,192 +1,258 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import { signIn, signUp } from "@/lib/auth/actions";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, User, Eye, EyeOff, Sparkles, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { signIn as serverSignIn, signUp as serverSignUp } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Info, Loader2, LogIn, UserPlus } from "lucide-react";
 
 interface AuthFormProps {
   mode: "login" | "signup";
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const [error, setError]     = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [supabaseReady, setSupabaseReady] = useState<boolean | null>(null);
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Check if Supabase is configured on the client side
-  useEffect(() => {
-    const hasUrl = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
-    const hasKey = Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    setSupabaseReady(hasUrl && hasKey);
-  }, []);
-
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setLoading(true);
     setError(null);
-    const action = mode === "login" ? signIn : signUp;
-    const result = await action(formData);
-    if (result?.error) {
-      setError(result.error);
+    setSuccess(null);
+
+    try {
+      let supabase = null;
+      try {
+        supabase = createClient();
+      } catch (err) {
+        console.warn("Browser Supabase client fallback:", err);
+      }
+
+      if (mode === "login") {
+        if (supabase) {
+          const { error: authError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          if (authError) {
+            setError(authError.message);
+            setLoading(false);
+            return;
+          }
+        } else {
+          const formData = new FormData();
+          formData.append("email", email);
+          formData.append("password", password);
+          const res = await serverSignIn(formData);
+          if (res?.error) {
+            setError(res.error);
+            setLoading(false);
+            return;
+          }
+        }
+        setSuccess("Login successful! Redirecting to student dashboard...");
+        setTimeout(() => {
+          router.push("/student");
+          router.refresh();
+        }, 600);
+      } else {
+        if (supabase) {
+          const { error: authError } = await supabase.auth.signUp({
+            email: email.trim(),
+            password,
+            options: {
+              data: { name: name.trim(), role: "student" },
+            },
+          });
+          if (authError) {
+            setError(authError.message);
+            setLoading(false);
+            return;
+          }
+        } else {
+          const formData = new FormData();
+          formData.append("email", email);
+          formData.append("password", password);
+          formData.append("name", name);
+          const res = await serverSignUp(formData);
+          if (res?.error) {
+            setError(res.error);
+            setLoading(false);
+            return;
+          }
+        }
+        setSuccess("Account created successfully! Redirecting...");
+        setTimeout(() => {
+          router.push("/student");
+          router.refresh();
+        }, 800);
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected authentication error occurred.");
       setLoading(false);
     }
   }
 
-  async function handleDemoLogin() {
-    setDemoLoading(true);
+  const handleDemoLogin = async () => {
+    setLoading(true);
     setError(null);
-    try {
-      const res = await fetch("/api/auth/demo", { method: "POST" });
-      if (res.ok) {
-        router.push("/student");
-        router.refresh();
-      } else {
-        setError("Demo login failed. Please try again.");
-        setDemoLoading(false);
-      }
-    } catch {
-      setError("Network error. Please try again.");
-      setDemoLoading(false);
-    }
-  }
+    setSuccess("Accessing Demo Student Dashboard...");
+    setTimeout(() => {
+      router.push("/student");
+      router.refresh();
+    }, 500);
+  };
 
   return (
-    <div className="space-y-5">
-
-      {/* ── Supabase not configured banner ── */}
-      {supabaseReady === false && (
-        <div className="rounded-xl border border-amber-300/60 bg-amber-50 p-4 dark:bg-amber-900/20 dark:border-amber-500/30">
-          <div className="flex gap-2.5">
-            <Info className="size-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-extrabold text-amber-800 dark:text-amber-300 mb-1">
-                Supabase Not Connected
-              </p>
-              <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 leading-relaxed">
-                Add <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded font-mono text-[10px]">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="bg-amber-100 dark:bg-amber-900/40 px-1 rounded font-mono text-[10px]">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to your <code className="font-mono text-[10px]">.env.local</code> file to enable real login.
-              </p>
-              <p className="text-xs font-bold text-amber-700 dark:text-amber-400 mt-1.5">
-                👇 Use Demo Mode below to explore the app without setup.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Demo Mode Button ── */}
-      <button
-        onClick={handleDemoLogin}
-        disabled={demoLoading}
-        className="w-full flex items-center justify-center gap-2.5 rounded-xl border-2 border-dashed border-swara-gold/50 bg-swara-gold/8 py-3 text-sm font-extrabold text-swara-gold hover:border-swara-gold hover:bg-swara-gold/15 transition-all duration-200 disabled:opacity-60"
-      >
-        {demoLoading ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <span className="text-base">🎵</span>
-        )}
-        {demoLoading ? "Logging in..." : "Try Demo Mode — No account needed"}
-      </button>
-
-      <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider">or</span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
-
-      {/* ── Real login form ── */}
-      <form action={handleSubmit} className="space-y-4">
-        {mode === "signup" && (
-          <div>
-            <label htmlFor="name" className="block text-xs font-extrabold text-muted-foreground mb-1.5 uppercase tracking-wider">
-              Full Name
-            </label>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {mode === "signup" && (
+        <div>
+          <label htmlFor="name" className="block text-xs font-semibold text-muted-foreground mb-1">
+            Full Name
+          </label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
               id="name"
               name="name"
               type="text"
               required
-              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-shadow"
-              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-all"
+              placeholder="Sangeetha Vidwan"
             />
           </div>
-        )}
-        <div>
-          <label htmlFor="email" className="block text-xs font-extrabold text-muted-foreground mb-1.5 uppercase tracking-wider">
-            Email
-          </label>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="email" className="block text-xs font-semibold text-muted-foreground mb-1">
+          Email Address
+        </label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             id="email"
             name="email"
             type="email"
             required
-            className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-shadow"
-            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-all"
+            placeholder="student@naadabrahma.ai"
           />
         </div>
-        <div>
-          <label htmlFor="password" className="block text-xs font-extrabold text-muted-foreground mb-1.5 uppercase tracking-wider">
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label htmlFor="password" className="block text-xs font-semibold text-muted-foreground">
             Password
           </label>
+        </div>
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             required
             minLength={6}
-            className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-shadow"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-xl border border-border bg-background pl-9 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-all"
             placeholder="••••••••"
           />
-          {mode === "login" && (
-            <p className="text-[10px] font-bold text-muted-foreground mt-1 text-right">
-              Min. 6 characters
-            </p>
-          )}
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
         </div>
+      </div>
 
-        {/* Error display */}
-        {error && (
-          <div className="flex gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 dark:bg-red-900/20 dark:border-red-500/30">
-            <AlertCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
-            <p className="text-xs font-bold text-red-700 dark:text-red-400 leading-relaxed">{error}</p>
-          </div>
+      {error && (
+        <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 rounded-xl px-3.5 py-2.5 animate-in fade-in duration-200">
+          <AlertCircle className="size-4 shrink-0" />
+          <p>{error}</p>
+        </div>
+      )}
+
+      {success && (
+        <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 rounded-xl px-3.5 py-2.5 animate-in fade-in duration-200">
+          <CheckCircle2 className="size-4 shrink-0" />
+          <p>{success}</p>
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-kumkum hover:bg-kumkum-light text-white font-medium py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Processing...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            {mode === "login" ? "Sign In" : "Create Student Account"}
+            <ArrowRight className="size-4" />
+          </span>
         )}
+      </Button>
 
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-kumkum hover:bg-kumkum-light font-extrabold py-2.5 h-auto gap-2"
-        >
-          {loading ? (
-            <><Loader2 className="size-4 animate-spin" /> Please wait...</>
-          ) : mode === "login" ? (
-            <><LogIn className="size-4" /> Sign In</>
-          ) : (
-            <><UserPlus className="size-4" /> Create Account</>
-          )}
-        </Button>
+      <div className="relative py-2">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border/60" />
+        </div>
+        <div className="relative flex justify-center text-[11px] uppercase">
+          <span className="bg-card px-2 text-muted-foreground font-medium">Or quick access</span>
+        </div>
+      </div>
 
-        <p className="text-center text-xs font-bold text-muted-foreground">
-          {mode === "login" ? (
-            <>
-              New here?{" "}
-              <Link href="/signup" className="text-kumkum font-extrabold hover:underline">
-                Create account
-              </Link>
-            </>
-          ) : (
-            <>
-              Already have an account?{" "}
-              <Link href="/login" className="text-kumkum font-extrabold hover:underline">
-                Sign in
-              </Link>
-            </>
-          )}
-        </p>
-      </form>
-    </div>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleDemoLogin}
+        disabled={loading}
+        className="w-full border-swara-gold/30 hover:border-swara-gold hover:bg-swara-gold/10 text-foreground font-medium rounded-xl text-xs py-2 transition-all flex items-center justify-center gap-1.5"
+      >
+        <Sparkles className="size-3.5 text-swara-gold" />
+        Continue as Demo Student
+      </Button>
+
+      <p className="text-center text-xs text-muted-foreground pt-2">
+        {mode === "login" ? (
+          <>
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-kumkum font-semibold hover:underline">
+              Sign up
+            </Link>
+          </>
+        ) : (
+          <>
+            Already registered?{" "}
+            <Link href="/login" className="text-kumkum font-semibold hover:underline">
+              Sign in
+            </Link>
+          </>
+        )}
+      </p>
+    </form>
   );
 }
+
