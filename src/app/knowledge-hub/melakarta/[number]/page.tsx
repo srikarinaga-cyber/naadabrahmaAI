@@ -7,6 +7,7 @@ import { ArrowLeft, Music, BookOpen, Users, Star, Info, GitBranch } from "lucide
 import { getMelakartaByNumber } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
+import { MelakartaSwaraAudioPlayer } from "@/components/music/MelakartaSwaraAudioPlayer";
 import { Janya, Kriti } from "@/types/music";
 
 interface JoinedKriti extends Kriti {
@@ -133,6 +134,16 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* ── Interactive Swarasthana Audio Player ── */}
+        <div className="mb-6">
+          <MelakartaSwaraAudioPlayer
+            ragaName={melakarta.name}
+            ragaNumber={melakarta.number}
+            arohana={melakarta.arohana}
+            avarohana={melakarta.avarohana}
+          />
         </div>
 
         {/* ── Scale Display ── */}
