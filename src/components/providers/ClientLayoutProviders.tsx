@@ -9,7 +9,7 @@ const MusicBackground = dynamic(
 );
 
 const FloatingTanpura = dynamic(
-  () => import("@/components/music/FloatingTanpura"),
+  () => import("@/components/music/FloatingTanpura").then((mod) => mod.FloatingTanpura),
   { ssr: false }
 );
 

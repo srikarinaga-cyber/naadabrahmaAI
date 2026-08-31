@@ -25,7 +25,7 @@ type InstrumentType = "Tanpura" | "Veena" | "Violin";
 
 const INSTRUMENTS: InstrumentType[] = ["Tanpura", "Veena", "Violin"];
 
-export default function FloatingTanpura() {
+export function FloatingTanpura() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedPitch, setSelectedPitch] = useState("C");
