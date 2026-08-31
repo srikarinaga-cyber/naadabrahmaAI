@@ -236,6 +236,15 @@ async function ingestSingleFile(
   }
 
   const pdfBuffer = Buffer.from(await downloadResult.data.arrayBuffer());
+
+  // Polyfill browser APIs that pdfjs-dist checks for but doesn't use in text-only mode
+  if (typeof globalThis.DOMMatrix === "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any).DOMMatrix = class DOMMatrix {
+      // Minimal stub so pdfjs-dist loads without throwing
+    };
+  }
+
   // Use require-style import to avoid ESM .default issues
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const pdfParse: (buf: Buffer) => Promise<{ text: string; numpages: number }> =
