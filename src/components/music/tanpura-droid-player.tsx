@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Play, Square, Sliders, Activity, Sparkles, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -201,23 +202,33 @@ export function TanpuraDroidStandalonePlayer() {
 
   return (
     <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 bg-card p-6 md:p-8 space-y-6 shadow-sm">
-      {/* Tanpura Droid Header */}
+      {/* Tanpura Droid Header with Tanpura Picture */}
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] font-bold">
-              Standalone Acoustic Drone Engine
-            </Badge>
-            <Badge variant="outline" className="border-swara-gold/40 text-swara-gold text-[10px] font-bold flex items-center gap-1">
-              <Smartphone className="size-3" /> Modeled after: Tanpura Droid App
-            </Badge>
+        <div className="flex items-center gap-4">
+          <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border-2 border-swara-gold/40 shadow-md bg-kumkum/10">
+            <Image
+              src="/tanpura-instrument.png"
+              alt="Acoustic Miraj Tanpura Instrument"
+              fill
+              className="object-cover"
+            />
           </div>
-          <h2 className="font-serif text-2xl font-bold text-kumkum flex items-center gap-2">
-            🪕 Tanpura Droid Studio Drone
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 max-w-xl">
-            Pure acoustic 4-string Tanpura drone tuned to classical <strong className="text-kumkum font-bold">SA - PA - SA</strong> with Jivari cotton thread buzz physics and male/female octave modes.
-          </p>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] font-bold">
+                Standalone Acoustic Drone Engine
+              </Badge>
+              <Badge variant="outline" className="border-swara-gold/40 text-swara-gold text-[10px] font-bold flex items-center gap-1">
+                <Smartphone className="size-3" /> Modeled after: Tanpura Droid App
+              </Badge>
+            </div>
+            <h2 className="font-serif text-2xl font-bold text-kumkum flex items-center gap-2">
+              🪕 Tanpura Droid Studio Drone
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+              Pure acoustic 4-string Tanpura drone tuned to classical <strong className="text-kumkum font-bold">SA - PA - SA</strong> with Jivari cotton thread buzz physics and male/female octave modes.
+            </p>
+          </div>
         </div>
 
         {/* Master Power Toggle */}
