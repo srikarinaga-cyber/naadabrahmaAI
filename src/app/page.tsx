@@ -11,6 +11,7 @@ import { AiGuruPreview } from "@/components/landing/ai-guru-preview";
 import { NotesPreview } from "@/components/landing/notes-preview";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { SupabaseSetupBanner } from "@/components/landing/supabase-setup-banner";
+import { TanpuraTablaSection } from "@/components/landing/tanpura-tabla-section";
 
 export const revalidate = 3600;
 
@@ -25,6 +26,7 @@ export default async function HomePage() {
       <Navbar />
       <main className="flex-1">
         <HeroSection />
+        <TanpuraTablaSection />
         <FeatureCards features={data.features} />
         <StatisticsSection statistics={data.statistics} />
         <KnowledgeHubPreview featuredRaga={data.featuredRaga} />
