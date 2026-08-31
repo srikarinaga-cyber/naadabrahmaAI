@@ -21,7 +21,7 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [instrument, setInstrument] = useState<Instrument>("vocal");
-  const [language, setLanguage] = useState<"te" | "en">("en");
+  const [language, setLanguage] = useState<"te" | "en" | "hi" | "kn" | "ta">("en");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   
@@ -102,8 +102,8 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
           <Sparkles className="size-4 text-kumkum" />
         </div>
         <div>
-          <p className="text-sm font-semibold">AI Guru</p>
-          <p className="text-xs text-muted-foreground">Carnatic music assistant</p>
+          <p className="text-sm font-extrabold">AI Guru</p>
+          <p className="text-xs font-bold text-muted-foreground">Multilingual Carnatic assistant • EN / TE / HI / KN / TA</p>
         </div>
       </div>
 
@@ -119,19 +119,40 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
         </select>
         <select
           value={language}
-          onChange={(e) => setLanguage(e.target.value as "te" | "en")}
-          className="rounded-lg border border-border bg-background px-2 py-1 text-xs"
+          onChange={(e) => setLanguage(e.target.value as "te" | "en" | "hi" | "kn" | "ta")}
+          className="rounded-lg border border-border bg-background px-2 py-1 text-xs font-bold"
         >
-          <option value="en">English</option>
-          <option value="te">Telugu-English</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+          <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+          <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
         </select>
       </div>
 
       <div className="h-96 overflow-y-auto space-y-4 p-5">
         {messages.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            Ask about ragas, talas, theory, or practice tips...
-          </p>
+          <div className="text-center py-8 space-y-3">
+            <p className="text-sm font-bold text-muted-foreground">
+              Ask about ragas, talas, theory, or practice tips...
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {[
+                "What is Mayamalavagowla?",
+                "Explain Adi Tala",
+                "Famous kritis of Tyagaraja",
+                "Kalyani raga arohana",
+              ].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => { setInput(q); }}
+                  className="text-xs font-bold px-3 py-1.5 rounded-full border border-swara-gold/30 bg-swara-gold/10 text-swara-gold hover:bg-swara-gold/20 transition-all"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
