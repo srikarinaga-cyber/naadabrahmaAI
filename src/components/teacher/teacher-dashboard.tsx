@@ -15,6 +15,10 @@ import {
   Search,
   ChevronRight,
   ClipboardList,
+  Trash2,
+  Globe,
+  Share2,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -150,6 +154,10 @@ export function TeacherDashboard() {
   const [assignments, setAssignments] = useState<DemoAssignment[]>(INITIAL_ASSIGNMENTS);
   const [students] = useState<DemoStudent[]>(INITIAL_STUDENTS);
 
+  // Student Filter State
+  const [studentSearch, setStudentSearch] = useState("");
+  const [studentStatusFilter, setStudentStatusFilter] = useState<string>("All");
+
   // New Class Form State
   const [showNewClassModal, setShowNewClassModal] = useState(false);
   const [newClassName, setNewClassName] = useState("");
@@ -159,13 +167,21 @@ export function TeacherDashboard() {
   // New Assignment Form State
   const [showNewAsgModal, setShowNewAsgModal] = useState(false);
   const [newAsgTitle, setNewAsgTitle] = useState("");
-  const [newAsgClass, setNewAsgClass] = useState(INITIAL_CLASSES[0].name);
+  const [newAsgClass, setNewAsgClass] = useState(INITIAL_CLASSES[0]?.name || "");
   const [newAsgDueDate, setNewAsgDueDate] = useState("");
 
-  // AI Copilot Generator
+  // AI Copilot Generator State
   const [copilotQuery, setCopilotQuery] = useState("");
+  const [copilotLanguage, setCopilotLanguage] = useState<"en" | "te" | "kn" | "ta" | "hi">("en");
   const [copilotResponse, setCopilotResponse] = useState<string | null>(null);
   const [copilotLoading, setCopilotLoading] = useState(false);
+  const [assignmentAssigned, setAssignmentAssigned] = useState(false);
+
+  // Dynamic Calculated Stats
+  const totalEnrolled = classes.reduce((sum, c) => sum + c.studentsCount, 0);
+  const avgPitch = Math.round(
+    students.reduce((acc, s) => acc + s.pitchAccuracy, 0) / (students.length || 1)
+  );
 
   const handleCreateClass = (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,15 +203,19 @@ export function TeacherDashboard() {
     setShowNewClassModal(false);
   };
 
+  const handleDeleteClass = (id: string) => {
+    setClasses(classes.filter((c) => c.id !== id));
+  };
+
   const handleCreateAssignment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAsgTitle.trim()) return;
 
     const created: DemoAssignment = {
       id: `asg-${Date.now()}`,
-      className: newAsgClass,
+      className: newAsgClass || classes[0]?.name || "General Batch",
       title: newAsgTitle.trim(),
-      type: "Vocal & Theory Submission",
+      type: "Vocal & Theory Practice",
       dueDate: newAsgDueDate || "Next Week",
       submittedCount: 0,
       totalCount: 12,
@@ -207,17 +227,35 @@ export function TeacherDashboard() {
     setShowNewAsgModal(false);
   };
 
-  const handleAskCopilot = async () => {
-    if (!copilotQuery.trim() || copilotLoading) return;
+  const handleDeleteAssignment = (id: string) => {
+    setAssignments(assignments.filter((a) => a.id !== id));
+  };
+
+  const handleAskCopilot = async (customPrompt?: string) => {
+    const queryToUse = customPrompt || copilotQuery;
+    if (!queryToUse.trim() || copilotLoading) return;
     setCopilotLoading(true);
     setCopilotResponse(null);
+    setAssignmentAssigned(false);
+
+    const langInstruction =
+      copilotLanguage === "te"
+        ? "Respond in simple Telugu."
+        : copilotLanguage === "kn"
+        ? "Respond in Kannada."
+        : copilotLanguage === "ta"
+        ? "Respond in Tamil."
+        : copilotLanguage === "hi"
+        ? "Respond in Hindi."
+        : "Respond in English.";
 
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: `You are a Carnatic Music Guru Assistant helping a teacher create a class lesson plan and assignment for: "${copilotQuery}". Give a structured lesson outline, key swarasthanas to practice, and 3 specific homework exercises.`,
+          message: `You are a Carnatic Music Guru Assistant helping a teacher create a full, detailed lesson plan and homework assignment for: "${queryToUse}". Provide: 1. Overview & Concept Breakdown 2. Swarasthana & Tala Exercise Steps 3. Practice Homework Tasks for Students. ${langInstruction}`,
+          language: copilotLanguage === "te" ? "te" : "en",
         }),
       });
 
@@ -225,14 +263,47 @@ export function TeacherDashboard() {
       if (json?.data?.answer) {
         setCopilotResponse(json.data.answer);
       } else {
-        setCopilotResponse("Lesson Plan Generated:\n\n1. Sarali Varisai Speed 1-3 Warmup\n2. Focus on Suddha Madhyama stability\n3. Assign 4-bar Alankaram rhythm exercise.");
+        setCopilotResponse(
+          `Detailed Plan for: "${queryToUse}"\n\n1. Concept Overview: Adi Tala (8 Aksharas = 1 Laghu of 4 beats + 2 Dhrutams of 2 beats).\n2. Class Practice Drills:\n  - Sarali Varisai in 3 Speeds with hand gestures (Talam).\n  - Pitch alignment on S-R-G-M-P-D-N-S.\n3. Homework Assignment:\n  - Record 2 cycles of Adi Tala Alankaram.\n  - Submit vocal sample to Teacher Portal.`
+        );
       }
     } catch {
-      setCopilotResponse("AI Copilot generated a custom 30-minute practice plan focused on Tala accuracy and Swara clarity.");
+      setCopilotResponse(
+        `Custom Lesson Plan for: "${queryToUse}"\n\n- Part A: Warm-up on Suddha Swaras (10 mins)\n- Part B: Core Tala Execution & Akshara count (15 mins)\n- Part C: Student Performance Evaluation & Feedback (5 mins)`
+      );
     } finally {
       setCopilotLoading(false);
     }
   };
+
+  const handlePublishCopilotAsAssignment = () => {
+    if (!copilotResponse) return;
+    const titleSnippet = copilotQuery.trim()
+      ? `AI Assignment: ${copilotQuery.trim()}`
+      : "AI Lesson Practice Drill";
+
+    const created: DemoAssignment = {
+      id: `asg-${Date.now()}`,
+      className: classes[0]?.name || "Carnatic Vocal Batch",
+      title: titleSnippet,
+      type: "AI Co-Teacher Homework",
+      dueDate: "3 Days from Today",
+      submittedCount: 0,
+      totalCount: classes[0]?.studentsCount || 10,
+    };
+
+    setAssignments([created, ...assignments]);
+    setAssignmentAssigned(true);
+  };
+
+  const filteredStudents = students.filter((s) => {
+    const matchesSearch =
+      s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+      s.class.toLowerCase().includes(studentSearch.toLowerCase());
+    const matchesStatus =
+      studentStatusFilter === "All" || s.status === studentStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="space-y-8">
@@ -245,7 +316,7 @@ export function TeacherDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground font-medium">Total Enrolled</p>
-              <p className="font-serif text-2xl font-bold text-foreground">29 Students</p>
+              <p className="font-serif text-2xl font-bold text-foreground">{totalEnrolled} Students</p>
             </div>
           </div>
         </div>
@@ -269,7 +340,7 @@ export function TeacherDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground font-medium">Avg Pitch Accuracy</p>
-              <p className="font-serif text-2xl font-bold text-emerald-600">92.4%</p>
+              <p className="font-serif text-2xl font-bold text-emerald-600">{avgPitch}%</p>
             </div>
           </div>
         </div>
@@ -280,15 +351,15 @@ export function TeacherDashboard() {
               <ClipboardList className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Pending Reviews</p>
-              <p className="font-serif text-2xl font-bold text-foreground">8 Exercises</p>
+              <p className="text-xs text-muted-foreground font-medium">Assignments</p>
+              <p className="font-serif text-2xl font-bold text-foreground">{assignments.length} Active</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* ── Navigation Tabs ── */}
-      <div className="flex items-center justify-between border-b border-border pb-2">
+      <div className="flex flex-wrap items-center justify-between border-b border-border pb-3 gap-3">
         <div className="flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab("classes")}
@@ -360,104 +431,159 @@ export function TeacherDashboard() {
       {/* ── TAB 1: CLASSES ── */}
       {activeTab === "classes" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {classes.map((cls) => (
-            <div
-              key={cls.id}
-              className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 bg-card p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
-                    {cls.level}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
-                    <Users className="size-3.5" /> {cls.studentsCount} Students
-                  </span>
-                </div>
-
-                <h3 className="font-serif text-lg font-bold text-kumkum mb-2">{cls.name}</h3>
-
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-4">
-                  <Calendar className="size-3.5 text-swara-gold" />
-                  {cls.schedule}
-                </p>
-
-                <div className="rounded-xl bg-muted/50 p-3 text-xs space-y-1 mb-6 border border-border/40">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                    Current Syllabus Topic:
-                  </span>
-                  <p className="font-medium text-foreground">{cls.currentTopic}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-border/60">
-                <button className="text-xs text-kumkum font-semibold hover:underline flex items-center gap-1">
-                  Manage Class <ChevronRight className="size-3.5" />
-                </button>
-                <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-                  <CheckCircle2 className="size-3" /> Active Batch
-                </span>
-              </div>
+          {classes.length === 0 ? (
+            <div className="col-span-3 text-center py-12 bg-card rounded-3xl border border-dashed border-border p-8">
+              <p className="text-sm text-muted-foreground mb-3">No active classes yet.</p>
+              <Button
+                onClick={() => setShowNewClassModal(true)}
+                className="bg-kumkum text-white text-xs"
+              >
+                Create First Batch
+              </Button>
             </div>
-          ))}
+          ) : (
+            classes.map((cls) => (
+              <div
+                key={cls.id}
+                className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 bg-card p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
+                      {cls.level}
+                    </Badge>
+                    <button
+                      onClick={() => handleDeleteClass(cls.id)}
+                      className="text-muted-foreground hover:text-red-600 transition-colors p-1"
+                      title="Delete Class"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+
+                  <h3 className="font-serif text-lg font-bold text-kumkum mb-2">{cls.name}</h3>
+
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-4">
+                    <Calendar className="size-3.5 text-swara-gold" />
+                    {cls.schedule}
+                  </p>
+
+                  <div className="rounded-xl bg-muted/50 p-3 text-xs space-y-1 mb-6 border border-border/40">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                      Current Syllabus Topic:
+                    </span>
+                    <p className="font-medium text-foreground">{cls.currentTopic}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-border/60">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+                    <Users className="size-3.5 text-kumkum" /> {cls.studentsCount} Enrolled
+                  </span>
+                  <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                    <CheckCircle2 className="size-3" /> Active Batch
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
       {/* ── TAB 2: ASSIGNMENTS ── */}
       {activeTab === "assignments" && (
         <div className="space-y-4">
-          {assignments.map((asg) => (
-            <div
-              key={asg.id}
-              className="glass-panel rounded-2xl border border-swara-gold/20 bg-card p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
-            >
-              <div className="space-y-1.5 max-w-xl">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-swara-gold/30 text-swara-gold text-[10px]">
-                    {asg.className}
-                  </Badge>
-                  <span className="text-[11px] text-muted-foreground">• {asg.type}</span>
-                </div>
-                <h4 className="font-serif text-base font-bold text-foreground">{asg.title}</h4>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Calendar className="size-3.5 text-kumkum" /> Due: {asg.dueDate}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4 shrink-0">
-                <div className="text-right">
-                  <p className="text-xs font-bold text-foreground">
-                    {asg.submittedCount} / {asg.totalCount} Submitted
-                  </p>
-                  <div className="w-32 bg-muted h-2 rounded-full mt-1.5 overflow-hidden">
-                    <div
-                      className="bg-kumkum h-full rounded-full"
-                      style={{ width: `${(asg.submittedCount / asg.totalCount) * 100}%` }}
-                    />
-                  </div>
-                </div>
-
-                <Button size="sm" variant="outline" className="border-swara-gold/30 text-xs gap-1">
-                  Review <ChevronRight className="size-3.5" />
-                </Button>
-              </div>
+          {assignments.length === 0 ? (
+            <div className="text-center py-12 bg-card rounded-3xl border border-dashed border-border p-8">
+              <p className="text-sm text-muted-foreground mb-3">No assignments created yet.</p>
+              <Button
+                onClick={() => setShowNewAsgModal(true)}
+                className="bg-kumkum text-white text-xs"
+              >
+                Create Assignment
+              </Button>
             </div>
-          ))}
+          ) : (
+            assignments.map((asg) => (
+              <div
+                key={asg.id}
+                className="glass-panel rounded-2xl border border-swara-gold/20 bg-card p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+              >
+                <div className="space-y-1.5 max-w-xl">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-swara-gold/30 text-swara-gold text-[10px]">
+                      {asg.className}
+                    </Badge>
+                    <span className="text-[11px] text-muted-foreground">• {asg.type}</span>
+                  </div>
+                  <h4 className="font-serif text-base font-bold text-foreground">{asg.title}</h4>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Calendar className="size-3.5 text-kumkum" /> Due: {asg.dueDate}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0">
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-foreground">
+                      {asg.submittedCount} / {asg.totalCount} Submitted
+                    </p>
+                    <div className="w-32 bg-muted h-2 rounded-full mt-1.5 overflow-hidden">
+                      <div
+                        className="bg-kumkum h-full rounded-full"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            Math.round((asg.submittedCount / (asg.totalCount || 1)) * 100)
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteAssignment(asg.id)}
+                    className="p-2 text-muted-foreground hover:text-red-600 transition-colors"
+                    title="Delete Assignment"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
       {/* ── TAB 3: STUDENTS TRACKER ── */}
       {activeTab === "students" && (
-        <div className="glass-panel rounded-3xl border border-swara-gold/20 bg-card overflow-hidden shadow-sm">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <h3 className="font-serif text-base font-bold text-kumkum">Class Performance Roster</h3>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search student..."
-                className="w-full rounded-xl border border-border bg-background pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-kumkum/30"
-              />
+        <div className="glass-panel rounded-3xl border border-swara-gold/20 bg-card overflow-hidden shadow-sm space-y-4">
+          <div className="px-6 py-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-serif text-base font-bold text-kumkum">Class Performance Roster</h3>
+              <p className="text-xs text-muted-foreground">Track student pitch accuracy, tala precision, and streaks.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={studentStatusFilter}
+                onChange={(e) => setStudentStatusFilter(e.target.value)}
+                className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium"
+              >
+                <option value="All">All Statuses</option>
+                <option value="Excellent">Excellent</option>
+                <option value="On Track">On Track</option>
+                <option value="Needs Practice">Needs Practice</option>
+              </select>
+
+              <div className="relative w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={studentSearch}
+                  onChange={(e) => setStudentSearch(e.target.value)}
+                  placeholder="Search student..."
+                  className="w-full rounded-xl border border-border bg-background pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-kumkum/30"
+                />
+              </div>
             </div>
           </div>
 
@@ -474,53 +600,103 @@ export function TeacherDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {students.map((std) => (
-                  <tr key={std.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-6 py-4 font-bold text-foreground">{std.name}</td>
-                    <td className="px-6 py-4 text-muted-foreground">{std.class}</td>
-                    <td className="px-6 py-4 font-semibold text-emerald-600">{std.pitchAccuracy}%</td>
-                    <td className="px-6 py-4 font-semibold text-swara-gold">{std.talaPrecision}%</td>
-                    <td className="px-6 py-4 font-medium">{std.streak} Days 🔥</td>
-                    <td className="px-6 py-4">
-                      <Badge
-                        variant="outline"
-                        className={
-                          std.status === "Excellent"
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
-                            : std.status === "Needs Practice"
-                            ? "border-amber-500/30 bg-amber-500/10 text-amber-600"
-                            : "border-blue-500/30 bg-blue-500/10 text-blue-600"
-                        }
-                      >
-                        {std.status}
-                      </Badge>
+                {filteredStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-8 text-muted-foreground">
+                      No matching students found.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredStudents.map((std) => (
+                    <tr key={std.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="px-6 py-4 font-bold text-foreground">{std.name}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{std.class}</td>
+                      <td className="px-6 py-4 font-semibold text-emerald-600">{std.pitchAccuracy}%</td>
+                      <td className="px-6 py-4 font-semibold text-swara-gold">{std.talaPrecision}%</td>
+                      <td className="px-6 py-4 font-medium">{std.streak} Days 🔥</td>
+                      <td className="px-6 py-4">
+                        <Badge
+                          variant="outline"
+                          className={
+                            std.status === "Excellent"
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+                              : std.status === "Needs Practice"
+                              ? "border-amber-500/30 bg-amber-500/10 text-amber-600"
+                              : "border-blue-500/30 bg-blue-500/10 text-blue-600"
+                          }
+                        >
+                          {std.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* ── TAB 4: AI GURU CO-TEACHER ASSISTANT ── */}
+      {/* ── TAB 4: DYNAMIC AI GURU CO-TEACHER ASSISTANT ── */}
       {activeTab === "ai-copilot" && (
         <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/30 bg-card p-6 md:p-8 space-y-6 shadow-sm">
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <div className="flex size-10 items-center justify-center rounded-2xl bg-swara-gold/20">
-              <Sparkles className="size-5 text-kumkum" />
+          <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-swara-gold/20">
+                <Sparkles className="size-5 text-kumkum" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-kumkum">AI Guru Co-Teacher Copilot</h3>
+                <p className="text-xs text-muted-foreground">
+                  Generate Carnatic lesson plans, tala exercises, and homework drills in any language.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-kumkum">AI Guru Co-Teacher Copilot</h3>
-              <p className="text-xs text-muted-foreground">
-                Generate custom Carnatic lesson plans, swarasthana practice drills, and homework quizzes for your batches.
-              </p>
+
+            {/* Multilingual Selector */}
+            <div className="flex items-center gap-2">
+              <Globe className="size-3.5 text-muted-foreground" />
+              <select
+                value={copilotLanguage}
+                onChange={(e) => setCopilotLanguage(e.target.value as any)}
+                className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-semibold"
+              >
+                <option value="en">English</option>
+                <option value="te">Telugu (తెలుగు)</option>
+                <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                <option value="ta">Tamil (தமிழ்)</option>
+                <option value="hi">Hindi (हिंदी)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Quick Preset Prompt Shortcuts */}
+          <div className="space-y-2">
+            <span className="text-[11px] font-semibold text-muted-foreground">Quick Lesson Generators:</span>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "For Aadi Taalam give complete information & practice drills",
+                "Mayamalavagowla 14 Sarali Swaras & Alankaram 3 speeds",
+                "Kalyani Raga Kamalajadhala Geetham notation breakdown",
+                "35 Suladi Sapta Tala Laghu-Dhrutam matrix guide",
+              ].map((preset, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCopilotQuery(preset);
+                    handleAskCopilot(preset);
+                  }}
+                  className="rounded-xl border border-swara-gold/30 bg-swara-gold/5 px-3 py-1.5 text-xs text-foreground hover:bg-swara-gold/15 transition-all text-left"
+                >
+                  💡 {preset}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="space-y-3">
             <label className="block text-xs font-semibold text-foreground">
-              What lesson or exercise outline do you need help creating?
+              Ask AI Guru for lesson plan or musical explanation:
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -528,11 +704,11 @@ export function TeacherDashboard() {
                 value={copilotQuery}
                 onChange={(e) => setCopilotQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAskCopilot()}
-                placeholder="e.g. 30-minute practice plan for Kalyani Raga Geetham with 3 Tala exercises"
+                placeholder="e.g. For Aadi Taalam give complete information"
                 className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30"
               />
               <Button
-                onClick={handleAskCopilot}
+                onClick={() => handleAskCopilot()}
                 disabled={copilotLoading || !copilotQuery.trim()}
                 className="bg-kumkum hover:bg-kumkum-light text-white shrink-0 gap-1.5"
               >
@@ -547,10 +723,31 @@ export function TeacherDashboard() {
           </div>
 
           {copilotResponse && (
-            <div className="rounded-2xl border border-swara-gold/30 bg-kumkum/5 p-5 space-y-3 animate-in fade-in duration-300">
-              <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
-                Generated Lesson Plan
-              </Badge>
+            <div className="rounded-2xl border border-swara-gold/30 bg-kumkum/5 p-5 space-y-4 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
+                  Generated Lesson Plan & Explanation
+                </Badge>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handlePublishCopilotAsAssignment}
+                  disabled={assignmentAssigned}
+                  className="border-kumkum/30 text-kumkum hover:bg-kumkum hover:text-white text-xs gap-1.5"
+                >
+                  {assignmentAssigned ? (
+                    <>
+                      <Check className="size-3.5 text-emerald-600" /> Published to Class
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="size-3.5" /> Assign to Class Batches
+                    </>
+                  )}
+                </Button>
+              </div>
+
               <pre className="whitespace-pre-wrap font-sans text-xs text-foreground leading-relaxed">
                 {copilotResponse}
               </pre>
