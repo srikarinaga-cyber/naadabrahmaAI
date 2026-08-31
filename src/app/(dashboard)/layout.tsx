@@ -20,10 +20,10 @@ export default function DashboardLayout({
 
   const NAV_ITEMS: NavItem[] = [
     { name: "Student Home", href: "/student", icon: "📊", exact: true },
+    { name: "Practice Hub", href: "/student/exam", icon: "🎵" },
     { name: "Knowledge Hub", href: "/knowledge-hub", icon: "📖" },
     { name: "Notes & PDFs", href: "/notes", icon: "📝" },
     { name: "AI Guru Chat", href: "/student/guru", icon: "🧘‍♂️" },
-    { name: "Exam Hub", href: "/student/exam", icon: "🎯" },
     { name: "Search", href: "/search", icon: "🔍" },
   ];
 
@@ -61,7 +61,7 @@ export default function DashboardLayout({
                   href={item.href}
                   className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     active
-                      ? "bg-[#800020]/5 text-[#800020] border-l-2 border-[#800020]"
+                      ? "bg-[#800020]/5 text-[#800020] border-l-2 border-[#800020] font-bold"
                       : "text-[#1A2228]/70 hover:bg-[#FAF6F0] hover:text-[#800020]"
                   }`}
                 >

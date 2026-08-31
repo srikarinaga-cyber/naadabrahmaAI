@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useState } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { Check, Plus, Trash2, Sparkles, BookOpen } from "lucide-react";
+import { Check, Plus, Trash2, Sparkles, BookOpen, Music, Volume2, Tv, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
@@ -68,30 +68,52 @@ export default function StudentDashboardPage() {
 
   const RECOMMENDATIONS = [
     {
-      title: "Perfect your G3 (Antara Gandhara)",
-      desc: "Based on your last practice, your pitch accuracy in Sankarabharanam was 4.2Hz sharp on G3.",
-      action: "Practice Scale",
-      type: "Pitch Tune",
-      href: "/student",
+      title: "Listen Swaras & Answer Audio Quizzes",
+      desc: "Test your pitch ear recognition on Veena & Violin swara phrases.",
+      action: "Open Ear Quiz",
+      type: "Practice Hub",
+      href: "/student/exam",
     },
     {
-      title: "Explore Raga Hamsadhwani",
-      desc: "A popular symmetric pentatonic Janya scale. Good for practicing basic compositions.",
-      action: "Learn Scale",
-      type: "Raga Study",
-      href: "/knowledge-hub",
+      title: "35 Suladi Sapta Talas Beat Player",
+      desc: "Practice rhythm beat sounds across all 35 Talas with custom BPM tempo.",
+      action: "Play 35 Talas",
+      type: "Practice Hub",
+      href: "/student/exam",
     },
     {
-      title: "Adi Tala Structure Quiz",
-      desc: "Review angas (1 Laghu, 2 Dhrutams) to master rhythmic calculations.",
-      action: "Take Quiz",
-      type: "Exam Prep",
+      title: "YouTube Carnatic Masterclasses",
+      desc: "Watch featured video lessons and vocal exercises directly in Practice Hub.",
+      action: "Watch Lessons",
+      type: "Practice Hub",
       href: "/student/exam",
     },
   ];
 
   return (
     <div className="space-y-8">
+      {/* ── Direct Banner Shortcut to Practice Hub ── */}
+      <div className="rounded-3xl border border-swara-gold/30 bg-gradient-to-r from-[#800020] via-[#5c0017] to-[#800020] p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <Badge className="bg-swara-gold text-shanti-slate border-none text-[10px] font-bold">
+            🎵 Practice Hub for Students
+          </Badge>
+          <h2 className="font-serif text-2xl font-bold">
+            Interactive Practice Hub
+          </h2>
+          <p className="text-xs text-amber-100/80 max-w-xl leading-relaxed">
+            Access <strong>Swara Audio Quizzes</strong> (Listen & Answer), <strong>35 Suladi Sapta Talas Beat Sound Player</strong>, and <strong>YouTube Masterclass Video Lessons</strong>.
+          </p>
+        </div>
+
+        <Link
+          href="/student/exam"
+          className="shrink-0 bg-swara-gold hover:bg-swara-gold/90 text-shanti-slate px-6 py-3 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-lg transition-all"
+        >
+          Open Practice Hub <ArrowRight className="size-4" />
+        </Link>
+      </div>
+
       {/* ── Tanpura & Tabla Rhythm Drone Console ── */}
       <TanpuraTablaPlayer />
 
@@ -147,7 +169,7 @@ export default function StudentDashboardPage() {
           <div className="flex justify-between items-center">
             <h4 className="font-serif text-lg font-bold text-[#800020] flex items-center gap-1.5">
               <Sparkles className="size-4 text-[#D4AF37]" />
-              AI Guru Personal Recommendations
+              Practice Hub Shortcuts & Recommendations
             </h4>
             <span className="text-[10px] bg-[#800020]/5 text-[#800020] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
               Updated Live
