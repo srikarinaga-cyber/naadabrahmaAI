@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Mail,
   Lock,
@@ -26,7 +25,6 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter();
   const [portal, setPortal] = useState<"student" | "teacher">("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,11 +72,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             return;
           }
         }
-        setSuccess(`Login successful! Redirecting to ${portal === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
-        setTimeout(() => {
-          router.push(targetDestination);
-          router.refresh();
-        }, 600);
+        setSuccess(`Login successful! Entering ${portal === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
+        window.location.href = targetDestination;
       } else {
         if (supabase) {
           const { error: authError } = await supabase.auth.signUp({
@@ -106,10 +101,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           }
         }
         setSuccess("Account created successfully! Redirecting...");
-        setTimeout(() => {
-          router.push(targetDestination);
-          router.refresh();
-        }, 800);
+        window.location.href = targetDestination;
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unexpected authentication error occurred.");
@@ -117,15 +109,12 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
   }
 
-  const handleDemoLogin = async (targetRole: "student" | "teacher") => {
+  const handleDemoLogin = (targetRole: "student" | "teacher") => {
     setLoading(true);
     setError(null);
-    setSuccess(`Accessing Demo ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
+    setSuccess(`Accessing ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
     const targetUrl = targetRole === "teacher" ? "/teacher" : "/student";
-    setTimeout(() => {
-      router.push(targetUrl);
-      router.refresh();
-    }, 500);
+    window.location.href = targetUrl;
   };
 
   const isEmailConfirmationError =
@@ -244,10 +233,10 @@ export function AuthForm({ mode }: AuthFormProps) {
               <div className="rounded-xl border border-amber-300/60 bg-amber-50 p-3 dark:bg-amber-950/30 text-xs text-amber-800 dark:text-amber-300 space-y-2">
                 <p className="font-semibold flex items-center gap-1.5">
                   <ShieldCheck className="size-4 text-amber-600 shrink-0" />
-                  Instant Demo Access Available
+                  Instant Access Available
                 </p>
                 <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                  Supabase email confirmation is required for new signups. Use Demo Mode below to enter without waiting:
+                  Supabase requires email verification. Click below to open your portal instantly:
                 </p>
                 <Button
                   type="button"
@@ -257,7 +246,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                   className="w-full border-amber-400 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs py-1.5 h-auto rounded-lg"
                 >
                   <Sparkles className="mr-1.5 size-3 text-amber-700" />
-                  Enter {portal === "teacher" ? "Teacher Portal" : "Student Dashboard"} Now
+                  Enter {portal === "teacher" ? "Teacher Portal" : "Student Dashboard"} Instantly
                 </Button>
               </div>
             )}
@@ -279,7 +268,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Processing...
+              Redirecting...
             </span>
           ) : (
             <span className="flex items-center gap-2">
