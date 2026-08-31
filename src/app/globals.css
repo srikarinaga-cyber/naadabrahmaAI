@@ -299,7 +299,10 @@ html {
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground; }
+  body { @apply bg-background text-foreground font-semibold; }
   html { @apply font-sans scroll-smooth; }
-  h1, h2, h3, h4 { @apply font-serif; }
+  p, span, li, td, th, label, a { font-weight: 600; }
+  h1 { @apply font-serif font-black; }
+  h2 { @apply font-serif font-extrabold; }
+  h3, h4 { @apply font-serif font-bold; }
 }
