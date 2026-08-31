@@ -236,14 +236,21 @@ async function ingestSingleFile(
   }
 
   const pdfBuffer = Buffer.from(await downloadResult.data.arrayBuffer());
-  const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({ data: pdfBuffer });
-  const textResult = await parser.getText();
+  // Use require-style import to avoid ESM .default issues
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const pdfParse: (buf: Buffer) => Promise<{ text: string; numpages: number }> =
+    (await import("pdf-parse" as string) as any).default ??
+    (await import("pdf-parse" as string) as any);
+  const pdfData = await pdfParse(pdfBuffer);
 
-  const pageTexts = textResult.pages.map((p) => ({
-    pageNumber: p.num,
-    text: p.text,
-  }));
+  // pdf-parse gives us the full text; split by form-feed chars to approximate pages
+  const rawPages = pdfData.text.split(/\f/);
+  const pageTexts = rawPages
+    .map((text: string, i: number) => ({
+      pageNumber: i + 1,
+      text: text.trim(),
+    }))
+    .filter((p: { pageNumber: number; text: string }) => p.text.length > 0);
 
   const allChunks: Array<{
     title: string;
