@@ -5,175 +5,301 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Naadabrahma brand palette */
-  --sandalwood: #faf6f0;
-  --sandalwood-dark: #f3ebe0;
-  --kumkum: #800020;
-  --kumkum-light: #9e1b32;
-  --marigold: #e68a00;
-  --marigold-light: #f0a500;
-  --shanti-slate: #1a2228;
-  --royal-navy: #0b1120;
-  --swara-gold: #d4af37;
-  --swara-gold-light: #f3e5ab;
+  /* ── Naadabrahma Carnatic Brand Palette ── */
+  --sandalwood:       #fdf6ec;
+  --sandalwood-dark:  #f5e6cf;
+  --kumkum:           #8b1a2f;
+  --kumkum-light:     #a82040;
+  --marigold:         #d4700a;
+  --marigold-light:   #e88c1a;
+  --shanti-slate:     #2a1a0e;
+  --royal-navy:       #1a0e05;
+  --swara-gold:       #c9973a;
+  --swara-gold-light: #e8c87a;
 
-  /* shadcn semantic tokens — light theme */
-  --background: rgba(250, 246, 240, 0.7);
-  --foreground: var(--shanti-slate);
-  --card: #ffffff;
-  --card-foreground: var(--shanti-slate);
-  --popover: #ffffff;
+  /* ── Module-specific accent overrides (set by JS) ── */
+  --module-bg-from:   #fdf6ec;
+  --module-bg-to:     #f5e2c0;
+  --module-accent:    #c9973a;
+  --module-glow:      rgba(201,151,58,0.15);
+
+  /* ── Light theme semantic tokens ── */
+  --background:         var(--sandalwood);
+  --foreground:         var(--shanti-slate);
+  --card:               rgba(255,248,238,0.92);
+  --card-foreground:    var(--shanti-slate);
+  --popover:            #fffaf2;
   --popover-foreground: var(--shanti-slate);
-  --primary: var(--kumkum);
+  --primary:            var(--kumkum);
   --primary-foreground: #ffffff;
-  --secondary: var(--sandalwood-dark);
+  --secondary:          var(--sandalwood-dark);
   --secondary-foreground: var(--shanti-slate);
-  --muted: var(--sandalwood-dark);
-  --muted-foreground: #5c6670;
-  --accent: var(--swara-gold-light);
-  --accent-foreground: var(--shanti-slate);
-  --destructive: #dc2626;
-  --border: rgba(212, 175, 55, 0.25);
-  --input: rgba(212, 175, 55, 0.2);
-  --ring: var(--kumkum);
-  --radius: 0.625rem;
+  --muted:              #f0e0c4;
+  --muted-foreground:   #6b4a2a;
+  --accent:             var(--swara-gold-light);
+  --accent-foreground:  var(--shanti-slate);
+  --destructive:        #c0392b;
+  --border:             rgba(201,151,58,0.30);
+  --input:              rgba(201,151,58,0.22);
+  --ring:               var(--kumkum);
+  --radius:             0.625rem;
 }
 
 @theme inline {
   --font-serif: var(--font-playfair);
-  --font-sans: var(--font-sans);
+  --font-sans:  var(--font-sans);
 
-  --color-sandalwood: var(--sandalwood);
-  --color-sandalwood-dark: var(--sandalwood-dark);
-  --color-kumkum: var(--kumkum);
-  --color-kumkum-light: var(--kumkum-light);
-  --color-marigold: var(--marigold);
-  --color-marigold-light: var(--marigold-light);
-  --color-shanti-slate: var(--shanti-slate);
-  --color-royal-navy: var(--royal-navy);
-  --color-swara-gold: var(--swara-gold);
+  --color-sandalwood:       var(--sandalwood);
+  --color-sandalwood-dark:  var(--sandalwood-dark);
+  --color-kumkum:           var(--kumkum);
+  --color-kumkum-light:     var(--kumkum-light);
+  --color-marigold:         var(--marigold);
+  --color-marigold-light:   var(--marigold-light);
+  --color-shanti-slate:     var(--shanti-slate);
+  --color-royal-navy:       var(--royal-navy);
+  --color-swara-gold:       var(--swara-gold);
   --color-swara-gold-light: var(--swara-gold-light);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-popover:            var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary:            var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
+  --color-secondary:          var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-destructive:        var(--destructive);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ── Dark theme ── */
 .dark {
-  --background: rgba(11, 17, 32, 0.7);
-  --foreground: var(--sandalwood);
-  --card: #141c2e;
-  --card-foreground: var(--sandalwood);
-  --popover: #141c2e;
-  --popover-foreground: var(--sandalwood);
-  --primary: var(--kumkum-light);
+  --background:         #1a0e05;
+  --foreground:         #fdf6ec;
+  --card:               #2a1a0a;
+  --card-foreground:    #fdf6ec;
+  --popover:            #231208;
+  --popover-foreground: #fdf6ec;
+  --primary:            var(--kumkum-light);
   --primary-foreground: #ffffff;
-  --secondary: #1a2228;
-  --secondary-foreground: var(--sandalwood);
-  --muted: #1a2228;
-  --muted-foreground: #a8b0ba;
-  --accent: rgba(212, 175, 55, 0.15);
-  --accent-foreground: var(--swara-gold);
-  --destructive: #ef4444;
-  --border: rgba(212, 175, 55, 0.15);
-  --input: rgba(212, 175, 55, 0.12);
-  --ring: var(--swara-gold);
+  --secondary:          #2e1c0e;
+  --secondary-foreground: #fdf6ec;
+  --muted:              #2e1c0e;
+  --muted-foreground:   #b8956a;
+  --accent:             rgba(201,151,58,0.18);
+  --accent-foreground:  var(--swara-gold);
+  --destructive:        #e74c3c;
+  --border:             rgba(201,151,58,0.20);
+  --input:              rgba(201,151,58,0.15);
+  --ring:               var(--swara-gold);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ══════════════════════════════
+   MODULE THEMES — applied via data-module on <html>
+   ══════════════════════════════ */
+
+/* Home — warm parchment + gold */
+[data-module="home"] {
+  --module-bg-from:  #fdf6ec;
+  --module-bg-to:    #f5e2c0;
+  --module-accent:   #c9973a;
+  --module-glow:     rgba(201,151,58,0.18);
+  --background:      #fdf6ec;
 }
-::-webkit-scrollbar-track {
-  background: var(--sandalwood-dark);
-}
-.dark ::-webkit-scrollbar-track {
-  background: var(--shanti-slate);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--kumkum-light);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--kumkum);
+.dark[data-module="home"],
+[data-module="home"] .dark {
+  --background: #1a0e05;
 }
 
+/* Knowledge Hub — deep maroon + antique gold */
+[data-module="knowledge-hub"] {
+  --module-bg-from:  #f9ede0;
+  --module-bg-to:    #e8c8a0;
+  --module-accent:   #8b1a2f;
+  --module-glow:     rgba(139,26,47,0.15);
+  --background:      #fdf0e6;
+  --border:          rgba(139,26,47,0.25);
+  --ring:            #8b1a2f;
+}
+.dark[data-module="knowledge-hub"],
+[data-module="knowledge-hub"] .dark {
+  --background: #1f0808;
+  --card: #2e1010;
+}
+
+/* Notes — cool sandalwood + teal accent */
+[data-module="notes"] {
+  --module-bg-from:  #f0f8f4;
+  --module-bg-to:    #d8ede4;
+  --module-accent:   #2e7d5e;
+  --module-glow:     rgba(46,125,94,0.15);
+  --background:      #f0f8f5;
+  --border:          rgba(46,125,94,0.25);
+  --primary:         #2e7d5e;
+  --ring:            #2e7d5e;
+}
+.dark[data-module="notes"],
+[data-module="notes"] .dark {
+  --background: #071a12;
+  --card: #0e2a1e;
+  --primary: #3aae80;
+}
+
+/* AI Guru — midnight indigo + violet */
+[data-module="ai-guru"] {
+  --module-bg-from:  #f0eeff;
+  --module-bg-to:    #ddd8f5;
+  --module-accent:   #6b3fa0;
+  --module-glow:     rgba(107,63,160,0.15);
+  --background:      #f3f0fd;
+  --border:          rgba(107,63,160,0.22);
+  --primary:         #6b3fa0;
+  --ring:            #6b3fa0;
+}
+.dark[data-module="ai-guru"],
+[data-module="ai-guru"] .dark {
+  --background: #0d0820;
+  --card: #18103a;
+  --primary: #9b6fd4;
+}
+
+/* Instruments — terracotta + saffron */
+[data-module="instruments"] {
+  --module-bg-from:  #fff3e8;
+  --module-bg-to:    #f5d5a8;
+  --module-accent:   #c05c10;
+  --module-glow:     rgba(192,92,16,0.18);
+  --background:      #fff3e8;
+  --border:          rgba(192,92,16,0.25);
+  --primary:         #c05c10;
+  --ring:            #c05c10;
+  --marigold:        #c05c10;
+}
+.dark[data-module="instruments"],
+[data-module="instruments"] .dark {
+  --background: #1a0800;
+  --card: #2e1200;
+  --primary: #e07830;
+}
+
+/* Student — warm ochre + lotus pink */
+[data-module="student"] {
+  --module-bg-from:  #fff8f0;
+  --module-bg-to:    #ffe0c8;
+  --module-accent:   #c85a3a;
+  --module-glow:     rgba(200,90,58,0.15);
+  --background:      #fff8f0;
+  --border:          rgba(200,90,58,0.22);
+  --primary:         #c85a3a;
+  --ring:            #c85a3a;
+}
+.dark[data-module="student"],
+[data-module="student"] .dark {
+  --background: #1a0a00;
+  --card: #2e1400;
+}
+
+/* Teacher — regal saffron + deep blue */
+[data-module="teacher"] {
+  --module-bg-from:  #fffce8;
+  --module-bg-to:    #f5e8a0;
+  --module-accent:   #8a6d00;
+  --module-glow:     rgba(138,109,0,0.18);
+  --background:      #fffce8;
+  --border:          rgba(138,109,0,0.25);
+  --primary:         #8a6d00;
+  --ring:            #8a6d00;
+}
+.dark[data-module="teacher"],
+[data-module="teacher"] .dark {
+  --background: #140f00;
+  --card: #231a00;
+}
+
+/* Admin — slate blue + silver */
+[data-module="admin"] {
+  --module-bg-from:  #f0f4f8;
+  --module-bg-to:    #d8e4f0;
+  --module-accent:   #2a4a8a;
+  --module-glow:     rgba(42,74,138,0.15);
+  --background:      #f0f4f8;
+  --border:          rgba(42,74,138,0.22);
+  --primary:         #2a4a8a;
+  --ring:            #2a4a8a;
+}
+.dark[data-module="admin"],
+[data-module="admin"] .dark {
+  --background: #040a18;
+  --card: #0a1428;
+}
+
+/* ══════════════════════════════
+   Scrollbar
+   ══════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--sandalwood-dark); }
+.dark ::-webkit-scrollbar-track { background: #2a1a0a; }
+::-webkit-scrollbar-thumb { background: var(--kumkum-light); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--kumkum); }
+
+/* ══════════════════════════════
+   Utility classes
+   ══════════════════════════════ */
 .traditional-glow {
   box-shadow:
-    0 0 20px rgba(128, 0, 32, 0.08),
-    0 0 3px rgba(212, 175, 55, 0.25);
+    0 0 24px rgba(139,26,47,0.10),
+    0 0 4px  rgba(201,151,58,0.30);
 }
 .dark .traditional-glow {
   box-shadow:
-    0 0 24px rgba(128, 0, 32, 0.15),
-    0 0 4px rgba(212, 175, 55, 0.2);
+    0 0 28px rgba(139,26,47,0.20),
+    0 0 5px  rgba(201,151,58,0.22);
 }
-.traditional-border {
-  border: 1px solid rgba(212, 175, 55, 0.25);
-}
+.traditional-border { border: 1px solid rgba(201,151,58,0.28); }
+
 .glass-panel {
-  background: rgba(250, 246, 240, 0.8);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(253,246,236,0.82);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(201,151,58,0.22);
 }
 .dark .glass-panel {
-  background: rgba(20, 28, 46, 0.75);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(42,26,10,0.78);
+  border: 1px solid rgba(201,151,58,0.16);
 }
 
+/* Paisley / dot grid texture */
 .chandan-grid {
-  background-size: 24px 24px;
-  background-image: radial-gradient(
-    circle,
-    rgba(128, 0, 32, 0.04) 1px,
-    transparent 1px
-  );
+  background-size: 28px 28px;
+  background-image: radial-gradient(circle, rgba(139,26,47,0.06) 1.5px, transparent 1.5px);
 }
 .dark .chandan-grid {
-  background-image: radial-gradient(
-    circle,
-    rgba(212, 175, 55, 0.06) 1px,
-    transparent 1px
-  );
+  background-image: radial-gradient(circle, rgba(201,151,58,0.08) 1.5px, transparent 1.5px);
+}
+
+/* Smooth theme transition */
+html {
+  transition: background-color 0.5s ease, color 0.3s ease;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans scroll-smooth;
-  }
-  h1,
-  h2,
-  h3,
-  h4 {
-    @apply font-serif;
-  }
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+  html { @apply font-sans scroll-smooth; }
+  h1, h2, h3, h4 { @apply font-serif; }
 }

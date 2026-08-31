@@ -115,7 +115,7 @@ export default function SearchPage() {
             )}
 
             {results.janyas.length > 0 && (
-              <ResultGroup title="Janya Ragas">
+              <ResultGroup title="Melakarta Ragas">
                 {results.janyas.map((j) => (
                   <div key={j.id} className="rounded-lg border border-border bg-card px-4 py-3 text-sm">
                     {j.name}

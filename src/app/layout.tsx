@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { FloatingTanpura } from "@/components/music/FloatingTanpura";
 import { MusicBackground } from "@/components/music/MusicBackground";
+import { ModuleThemeSwitcher } from "@/components/providers/ModuleThemeSwitcher";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -59,6 +60,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground selection:bg-kumkum/20 selection:text-kumkum">
+        {/* Module theme switcher — changes CSS vars on route change */}
+        <ModuleThemeSwitcher />
         {/* Fixed background — outside all scroll containers */}
         <MusicBackground />
         <ThemeProvider>

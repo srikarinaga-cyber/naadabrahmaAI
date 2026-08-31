@@ -81,7 +81,7 @@ const FALLBACK_FEATURES: Omit<PlatformFeature, "id" | "created_at">[] = [
 
 const FALLBACK_STATISTICS: Omit<PlatformStatistic, "id" | "created_at">[] = [
   { label: "Melakarta Ragas", value: "72", suffix: "", icon: "layers", sort_order: 1, is_active: true },
-  { label: "Janya Ragas", value: "1000", suffix: "+", icon: "git-branch", sort_order: 2, is_active: true },
+  { label: "Melakarta Ragas", value: "72", suffix: "", icon: "git-branch", sort_order: 2, is_active: true },
   { label: "Talas Catalogued", value: "35", suffix: "+", icon: "timer", sort_order: 3, is_active: true },
   { label: "Composers", value: "200", suffix: "+", icon: "user", sort_order: 4, is_active: true },
   { label: "Instruments Supported", value: "6", suffix: "", icon: "music-2", sort_order: 5, is_active: true },

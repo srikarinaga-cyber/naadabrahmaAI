@@ -33,13 +33,13 @@ export default async function KnowledgeHubPage() {
             72 Melakarta Ragas
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl">
-            Explore the complete Venkatamakhin Melakarta system. Each raga links to its Janya derivatives and associated kritis.
+            Explore the complete Venkatamakhin Melakarta system — the 72 parent scales that form the foundation of Carnatic music.
           </p>
         </div>
 
         <div className="mb-8 flex flex-wrap gap-3">
           <Link href="/knowledge-hub?tab=janyas" className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-kumkum/10 text-kumkum hover:bg-kumkum/15">
-            Janya Ragas
+            Melakarta Ragas
           </Link>
           <Link href="/knowledge-hub/composers" className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80">
             Composers
