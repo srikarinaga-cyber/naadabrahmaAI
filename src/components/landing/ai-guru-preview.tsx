@@ -19,21 +19,25 @@ const capabilities = [
     icon: HelpCircle,
     title: "Ask Music Doubts",
     description: "Get instant explanations for raga theory, swara patterns, and performance nuances.",
+    href: "/ai-guru",
   },
   {
     icon: GitCompare,
     title: "Compare Ragas",
     description: "Side-by-side analysis of Melakarta and Janya ragas with swara differences highlighted.",
+    href: "/knowledge-hub",
   },
   {
     icon: NotebookPen,
     title: "Generate Notes & Quizzes",
     description: "AI-crafted study notes and practice quizzes tailored to your exam level.",
+    href: "/student/exam",
   },
   {
     icon: Calendar,
     title: "Practice Schedules",
     description: "Personalized daily practice plans based on your progress and weak areas.",
+    href: "/student",
   },
 ];
 
@@ -77,36 +81,45 @@ export function AiGuruPreview() {
               explanations — available 24/7 for every instrument.
             </p>
 
+            {/* 4 Interactive Feature Cards */}
             <div className="grid gap-4 sm:grid-cols-2">
               {capabilities.map((cap) => (
-                <div
+                <Link
                   key={cap.title}
-                  className="rounded-xl border border-swara-gold/15 bg-card/60 p-4 backdrop-blur-sm dark:bg-card/40"
+                  href={cap.href}
+                  className="group rounded-xl border border-swara-gold/20 bg-card/80 p-4 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-kumkum hover:shadow-md dark:bg-card/60 block"
                 >
-                  <cap.icon className="mb-2 size-5 text-kumkum" aria-hidden />
-                  <p className="text-sm font-semibold">{cap.title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between mb-2">
+                    <cap.icon className="size-5 text-kumkum transition-transform group-hover:scale-110" aria-hidden />
+                    <ArrowRight className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-kumkum transition-all transform -translate-x-1 group-hover:translate-x-0" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground group-hover:text-kumkum transition-colors">
+                    {cap.title}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                     {cap.description}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
 
-            <Button
-              className="bg-kumkum hover:bg-kumkum-light"
-              render={<Link href="/student/notes" />}
-            >
-              Generate Study Notes
-              <ArrowRight className="size-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="border-swara-gold/40 text-kumkum"
-              render={<Link href="/ai-guru" />}
-            >
-              Chat with AI Guru
-              <ArrowRight className="size-4" />
-            </Button>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button
+                className="bg-kumkum hover:bg-kumkum-light"
+                render={<Link href="/student/notes" />}
+              >
+                Generate Study Notes
+                <ArrowRight className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="border-swara-gold/40 text-kumkum hover:bg-kumkum hover:text-white"
+                render={<Link href="/ai-guru" />}
+              >
+                Chat with AI Guru
+                <ArrowRight className="size-4" />
+              </Button>
+            </div>
           </motion.div>
 
           <motion.div
@@ -116,47 +129,52 @@ export function AiGuruPreview() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            <div className="traditional-glow overflow-hidden rounded-2xl border border-swara-gold/20 bg-card shadow-lg dark:bg-card/80">
-              <div className="flex items-center gap-3 border-b border-border bg-kumkum/5 px-5 py-4">
-                <div className="flex size-9 items-center justify-center rounded-full bg-kumkum/15">
-                  <Sparkles className="size-4 text-kumkum" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">AI Guru</p>
-                  <p className="text-xs text-muted-foreground">
-                    Carnatic music assistant
-                  </p>
-                </div>
-                <Badge className="ml-auto bg-marigold/15 text-marigold" variant="secondary">
-                  Online
-                </Badge>
-              </div>
-
-              <div className="space-y-4 p-5">
-                {sampleConversation.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-kumkum text-white"
-                          : "bg-muted text-foreground"
-                      }`}
-                    >
-                      {msg.message}
-                    </div>
+            <Link href="/ai-guru" className="block group">
+              <div className="traditional-glow overflow-hidden rounded-2xl border border-swara-gold/20 bg-card shadow-lg dark:bg-card/80 transition-all duration-300 group-hover:border-kumkum/40 group-hover:shadow-xl">
+                <div className="flex items-center gap-3 border-b border-border bg-kumkum/5 px-5 py-4">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-kumkum/15">
+                    <Sparkles className="size-4 text-kumkum" />
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <p className="text-sm font-semibold">AI Guru</p>
+                    <p className="text-xs text-muted-foreground">
+                      Carnatic music assistant
+                    </p>
+                  </div>
+                  <Badge className="ml-auto bg-marigold/15 text-marigold" variant="secondary">
+                    Online
+                  </Badge>
+                </div>
 
-              <div className="border-t border-border px-5 py-4">
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                  Ask about ragas, talas, theory...
+                <div className="space-y-4 p-5">
+                  {sampleConversation.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-kumkum text-white"
+                            : "bg-muted text-foreground"
+                        }`}
+                      >
+                        {msg.message}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-border px-5 py-4">
+                  <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground group-hover:border-kumkum/30 transition-colors">
+                    <span>Ask about ragas, talas, theory...</span>
+                    <span className="text-xs font-bold text-kumkum flex items-center gap-1">
+                      Start Chat <ArrowRight className="size-3" />
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </motion.div>
         </div>
       </div>
