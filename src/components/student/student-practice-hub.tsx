@@ -168,7 +168,7 @@ export function StudentPracticeHub() {
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Synthesize Swara Audio Phrase for Ear Training Quiz
+  // Synthesize High Volume Swara Audio Phrase for Ear Training Quiz
   const playSwaraAudioPhrase = async (swaras: string[]) => {
     if (isPlayingAudio) return;
     setIsPlayingAudio(true);
@@ -202,9 +202,10 @@ export function StudentPracticeHub() {
           filter.type = "lowpass";
           filter.frequency.setValueAtTime(hz * 4, now);
 
+          // Increased voice volume amplitude to 0.6
           masterGain.gain.setValueAtTime(0.001, now);
-          masterGain.gain.linearRampToValueAtTime(0.35, now + 0.015);
-          masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+          masterGain.gain.linearRampToValueAtTime(0.6, now + 0.015);
+          masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
 
           osc1.connect(filter);
           osc2.connect(filter);
@@ -212,8 +213,8 @@ export function StudentPracticeHub() {
 
           osc1.start(now);
           osc2.start(now);
-          osc1.stop(now + 0.6);
-          osc2.stop(now + 0.6);
+          osc1.stop(now + 0.65);
+          osc2.stop(now + 0.65);
         } else {
           const osc = ctx.createOscillator();
           const vibrato = ctx.createOscillator();
@@ -230,17 +231,18 @@ export function StudentPracticeHub() {
           filter.type = "lowpass";
           filter.frequency.setValueAtTime(hz * 3.5, now);
 
+          // Increased voice volume amplitude to 0.55
           masterGain.gain.setValueAtTime(0.001, now);
-          masterGain.gain.linearRampToValueAtTime(0.3, now + 0.05);
-          masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+          masterGain.gain.linearRampToValueAtTime(0.55, now + 0.05);
+          masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
 
           vibrato.start(now);
           osc.connect(filter);
           filter.connect(masterGain);
 
           osc.start(now);
-          vibrato.stop(now + 0.6);
-          osc.stop(now + 0.6);
+          vibrato.stop(now + 0.65);
+          osc.stop(now + 0.65);
         }
 
         await new Promise((res) => setTimeout(res, 650));

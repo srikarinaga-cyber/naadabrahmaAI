@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Play, Square, Clock, Info } from "lucide-react";
+import { Play, Square, Clock, Volume2, Sliders, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -14,6 +14,75 @@ export interface SuladiTala {
   totalBeats: number;
   angaNotation: string;
   description: string;
+}
+
+export interface TalaBeatRole {
+  beatIndex: number;
+  angaName: string;
+  actionName: string; // "Samam Clap" | "Finger Count" | "Dhrutam Clap" | "Usi Wave" | "Anudhrutam Clap"
+  pitchHz: number;
+  type: "samam" | "clap" | "finger" | "wave";
+}
+
+// Helper to compute exact Anga sequence beat roles for any of the 35 Suladi Sapta Talas
+export function computeTalaBeatRoles(tala: SuladiTala): TalaBeatRole[] {
+  const roles: TalaBeatRole[] = [];
+  let currentIdx = 0;
+
+  // Parse Anga components (e.g. "I4 O O", "I3 U O")
+  const angas = tala.angaNotation.split(/\s+/);
+
+  angas.forEach((anga) => {
+    if (anga.startsWith("I")) {
+      const len = tala.jathiValue; // Laghu length
+      for (let f = 0; f < len; f++) {
+        if (f === 0) {
+          roles.push({
+            beatIndex: currentIdx++,
+            angaName: `Laghu (${len})`,
+            actionName: roles.length === 0 ? "Samam Clap" : "Laghu Clap",
+            pitchHz: roles.length === 0 ? 880 : 784,
+            type: roles.length === 0 ? "samam" : "clap",
+          });
+        } else {
+          roles.push({
+            beatIndex: currentIdx++,
+            angaName: `Laghu (${len})`,
+            actionName: `Finger ${f}`,
+            pitchHz: 587,
+            type: "finger",
+          });
+        }
+      }
+    } else if (anga === "O") {
+      // Dhrutam (2 beats: Clap + Usi Wave)
+      roles.push({
+        beatIndex: currentIdx++,
+        angaName: "Dhrutam (2)",
+        actionName: "Dhrutam Clap",
+        pitchHz: 784,
+        type: "clap",
+      });
+      roles.push({
+        beatIndex: currentIdx++,
+        angaName: "Dhrutam (2)",
+        actionName: "Usi (Wave)",
+        pitchHz: 659,
+        type: "wave",
+      });
+    } else if (anga === "U") {
+      // Anudhrutam (1 beat: Clap)
+      roles.push({
+        beatIndex: currentIdx++,
+        angaName: "Anudhrutam (1)",
+        actionName: "Anudhrutam Clap",
+        pitchHz: 784,
+        type: "clap",
+      });
+    }
+  });
+
+  return roles;
 }
 
 // Complete 35 Suladi Sapta Tala dataset (7 Tala Families x 5 Jathis)
@@ -74,11 +143,16 @@ export function TalaMatrixPlayer() {
   const [activeTala, setActiveTala] = useState<SuladiTala>(SULADI_35_TALAS[21]); // Default to Adi Tala
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(0);
+  const [bpm, setBpm] = useState(80);
+  const [volume, setVolume] = useState(0.8);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Play wooden Manjira / Kanjira beat sound
-  const playClickSound = (isFirstBeat: boolean) => {
+  // Compute Anga Beat Roles for active Tala
+  const beatRoles = computeTalaBeatRoles(activeTala);
+
+  // Play exact beat sound signature for the specific Anga role
+  const playAngaBeatSound = (role: TalaBeatRole) => {
     try {
       const AudioContextClass =
         window.AudioContext ||
@@ -87,40 +161,80 @@ export function TalaMatrixPlayer() {
       if (ctx.state === "suspended") ctx.resume();
       audioCtxRef.current = ctx;
 
+      const now = ctx.currentTime;
+      const masterGain = ctx.createGain();
+      masterGain.connect(ctx.destination);
+
       const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      
+      if (role.type === "samam") {
+        // Samam Beat 1: High Pitch Resonant Metallic Clap (880 Hz)
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.15);
 
-      osc.type = isFirstBeat ? "sine" : "triangle";
-      osc.frequency.setValueAtTime(isFirstBeat ? 880 : 440, ctx.currentTime);
+        masterGain.gain.setValueAtTime(volume * 0.9, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      } else if (role.type === "clap") {
+        // Dhrutam / Laghu Clap: Crisp Mid Accent (784 Hz)
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(784, now);
+        osc.frequency.exponentialRampToValueAtTime(392, now + 0.12);
 
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        masterGain.gain.setValueAtTime(volume * 0.75, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      } else if (role.type === "wave") {
+        // Usi (Wave) Beat: Soft Diffuse Sound (659 Hz)
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(659, now);
+        osc.frequency.exponentialRampToValueAtTime(330, now + 0.18);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+        masterGain.gain.setValueAtTime(volume * 0.5, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      } else {
+        // Finger Count Beat: Tonal Click (587 Hz)
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587, now);
+        osc.frequency.exponentialRampToValueAtTime(293, now + 0.1);
 
-      osc.start();
-      osc.stop(ctx.currentTime + 0.12);
+        masterGain.gain.setValueAtTime(volume * 0.6, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      }
+
+      osc.connect(masterGain);
+      osc.start(now);
+      osc.stop(now + 0.2);
     } catch (e) {
-      console.warn("Click sound error:", e);
+      console.warn("Tala beat sound error:", e);
     }
   };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isPlaying) {
-      timer = setInterval(() => {
-        setCurrentBeat((prev) => {
-          const next = (prev + 1) % activeTala.totalBeats;
-          playClickSound(next === 0);
-          return next;
-        });
-      }, 500); // 120 BPM
+      const intervalMs = Math.round((60 / bpm) * 1000);
+      let step = 0;
+
+      const runBeat = () => {
+        setCurrentBeat(step);
+        const role = beatRoles[step] || {
+          beatIndex: step,
+          angaName: "Beat",
+          actionName: "Beat",
+          pitchHz: 587,
+          type: "finger",
+        };
+        playAngaBeatSound(role);
+        step = (step + 1) % activeTala.totalBeats;
+      };
+
+      runBeat();
+      timer = setInterval(runBeat, intervalMs);
     } else {
       setCurrentBeat(0);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, activeTala]);
+  }, [isPlaying, activeTala, bpm, volume]);
 
   const filteredTalas = SULADI_35_TALAS.filter((t) => {
     const matchJ = selectedJathi === "All" || t.jathi === selectedJathi;
@@ -134,8 +248,8 @@ export function TalaMatrixPlayer() {
       <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 bg-card p-6 md:p-8 space-y-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
           <div>
-            <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1">
-              35 Suladi Sapta Tala System
+            <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1 font-bold">
+              35 Suladi Sapta Tala Rhythm Synthesizer
             </Badge>
             <h2 className="font-serif text-2xl font-bold text-kumkum">{activeTala.name}</h2>
             <p className="text-xs text-muted-foreground mt-1">{activeTala.description}</p>
@@ -152,38 +266,75 @@ export function TalaMatrixPlayer() {
           >
             {isPlaying ? (
               <>
-                <Square className="size-4 fill-current animate-pulse" /> Stop Metronome
+                <Square className="size-4 fill-current animate-pulse" /> Stop Tala Beats
               </>
             ) : (
               <>
-                <Play className="size-4 fill-current" /> Start Tala Pulse
+                <Play className="size-4 fill-current" /> Start {activeTala.name} Beats
               </>
             )}
           </Button>
         </div>
 
-        {/* Akshara Beats Visualizer Bar */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-muted-foreground">Anga Notation: <strong className="text-kumkum">{activeTala.angaNotation}</strong></span>
-            <span className="text-kumkum font-bold">Cycle Beats: {activeTala.totalBeats} Aksharas</span>
+        {/* BPM Tempo & Volume Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/40 p-4 rounded-2xl border border-border/50">
+          <div>
+            <div className="flex justify-between text-xs font-semibold text-foreground mb-1">
+              <span>Tala BPM Speed Tempo:</span>
+              <span className="font-mono text-kumkum font-bold">{bpm} BPM</span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="180"
+              step="2"
+              value={bpm}
+              onChange={(e) => setBpm(parseInt(e.target.value, 10))}
+              className="w-full accent-kumkum h-1.5 bg-background rounded-lg mt-2"
+            />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: activeTala.totalBeats }).map((_, i) => (
+          <div>
+            <div className="flex justify-between text-xs font-semibold text-foreground mb-1">
+              <span>Beat Sound Volume (Voice Loudness):</span>
+              <span className="font-mono text-kumkum font-bold">{Math.round(volume * 100)}%</span>
+            </div>
+            <input
+              type="range"
+              min="0.2"
+              max="1.0"
+              step="0.05"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="w-full accent-kumkum h-1.5 bg-background rounded-lg mt-2"
+            />
+          </div>
+        </div>
+
+        {/* Akshara Beats Visualizer Bar with Exact Anga Roles */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className="text-muted-foreground">Anga Pattern: <strong className="text-kumkum font-serif text-sm">{activeTala.angaNotation}</strong></span>
+            <span className="text-kumkum font-bold">Total Cycle: {activeTala.totalBeats} Akshara Beats</span>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-7 md:grid-cols-10 gap-2">
+            {beatRoles.map((role, i) => (
               <div
                 key={i}
-                className={`size-10 rounded-xl font-bold text-xs flex flex-col items-center justify-center transition-all ${
+                className={`py-2 px-1 rounded-xl text-center font-bold text-xs flex flex-col items-center justify-center transition-all ${
                   isPlaying && currentBeat === i
-                    ? "bg-kumkum text-white scale-110 shadow-md ring-2 ring-swara-gold"
-                    : i === 0
-                    ? "bg-swara-gold/20 text-kumkum border border-swara-gold/40"
-                    : "bg-muted text-muted-foreground border border-border/50"
+                    ? "bg-kumkum text-white scale-110 shadow-lg ring-2 ring-swara-gold"
+                    : role.type === "samam"
+                    ? "bg-amber-500/20 text-amber-700 border border-amber-500/40"
+                    : role.type === "wave"
+                    ? "bg-purple-500/10 text-purple-700 border border-purple-500/30"
+                    : "bg-muted text-foreground border border-border/50"
                 }`}
               >
-                <span>{i + 1}</span>
-                <span className="text-[8px] font-normal opacity-70">
-                  {i === 0 ? "Samam" : "Beat"}
+                <span className="font-mono text-xs">{i + 1}</span>
+                <span className="text-[9px] font-medium opacity-85 truncate max-w-full">
+                  {role.actionName}
                 </span>
               </div>
             ))}
