@@ -237,23 +237,23 @@ async function ingestSingleFile(
 
   const pdfBuffer = Buffer.from(await downloadResult.data.arrayBuffer());
 
-  // Polyfill browser APIs that pdfjs-dist checks for but doesn't use in text-only mode
-  if (typeof globalThis.DOMMatrix === "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (globalThis as any).DOMMatrix = class DOMMatrix {
-      // Minimal stub so pdfjs-dist loads without throwing
-    };
-  }
+  // unpdf works in serverless environments without a web worker
+  const { extractText } = await import("unpdf");
+  const { text: fullText, totalPages } = await extractText(
+    new Uint8Array(pdfBuffer),
+    { mergePages: false }
+  );
 
-  // pdf-parse v2 exports a PDFParse class
-  const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({ data: pdfBuffer });
-  const textResult = await parser.getText();
+  // extractText with mergePages:false returns per-page text
+  const pagesArray = Array.isArray(fullText) ? fullText : [fullText];
+  const pageTexts = pagesArray
+    .map((text: string, i: number) => ({
+      pageNumber: i + 1,
+      text: (text ?? "").trim(),
+    }))
+    .filter((p: { pageNumber: number; text: string }) => p.text.length > 0);
 
-  const pageTexts = textResult.pages.map((p: { num: number; text: string }) => ({
-    pageNumber: p.num,
-    text: p.text,
-  }));
+  console.log(`Extracted ${pageTexts.length} pages from ${totalPages ?? pagesArray.length} total pages`);
 
   const allChunks: Array<{
     title: string;
