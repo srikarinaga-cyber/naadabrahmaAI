@@ -35,6 +35,12 @@ const BASE_KEYS = [
   { label: "G3 (5th Kattai)", freq: 196.00 },
 ];
 
+const INSTRUMENT_VOICES = [
+  { id: "veena",  label: "🪕 Saraswati Veena (Authentic Pluck)", desc: "Resonant brass-fret string pluck" },
+  { id: "drone",  label: "🎵 Pure Swara Tone",                   desc: "Smooth acoustic sine wave" },
+  { id: "violin", label: "🎻 Carnatic Violin",                   desc: "Sustained bowing timbre" },
+];
+
 const SWARA_COLORS: Record<string, string> = {
   S: "bg-kumkum/15 text-kumkum border-kumkum/40",
   R: "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300",
@@ -59,6 +65,7 @@ export function MelakartaSwaraAudioPlayer({
   avarohana,
 }: MelakartaSwaraAudioPlayerProps) {
   const [selectedKey, setSelectedKey] = useState(BASE_KEYS[0]);
+  const [voiceMode, setVoiceMode] = useState<"veena" | "drone" | "violin">("veena");
   const [tempoSecs, setTempoSecs] = useState(0.5); // seconds per note
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeNoteIndex, setActiveNoteIndex] = useState<number | null>(null);
@@ -82,7 +89,9 @@ export function MelakartaSwaraAudioPlayer({
   const avarohanaNotes = avarohana.split(" ").filter(Boolean);
   const fullSequence = [...arohanaNotes, ...avarohanaNotes];
 
-  // Synthesize rich swara tone with harmonics
+  // ──────────────────────────────────────────────
+  // VEENA & SWARA AUDIO SYNTHESIZER ENGINE
+  // ──────────────────────────────────────────────
   const playSwaraNote = useCallback((swara: string) => {
     const ctx = getAudioContext();
     const ratio = CARNATIC_SWARA_RATIOS[swara] || 1.0;
@@ -90,41 +99,115 @@ export function MelakartaSwaraAudioPlayer({
     const now = ctx.currentTime;
 
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.001, now);
-    masterGain.gain.exponentialRampToValueAtTime(0.6, now + 0.04);
-    masterGain.gain.exponentialRampToValueAtTime(0.001, now + tempoSecs * 0.95);
 
-    // Warm Body Filter
-    const filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(freq * 6, now);
+    if (voiceMode === "veena") {
+      // 🪕 VEENA SYNTHESIS ENGINE
+      // Pluck attack envelope: Sharp metallic pluck transient → warm string decay
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.9, now + 0.008); // Instant crisp pluck
+      masterGain.gain.exponentialRampToValueAtTime(0.4, now + 0.08);  // Initial decay
+      masterGain.gain.exponentialRampToValueAtTime(0.2, now + 0.3);   // Sustain
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + tempoSecs * 0.95);
 
-    masterGain.connect(filter);
-    filter.connect(ctx.destination);
+      // Veena Gourd & Fret Resonance Bandpass Filter
+      const bodyFilter = ctx.createBiquadFilter();
+      bodyFilter.type = "bandpass";
+      bodyFilter.frequency.setValueAtTime(freq * 2.1, now);
+      bodyFilter.Q.setValueAtTime(0.8, now);
 
-    // Harmonics stack (fundamental + overtones for warm acoustic feel)
-    const harmonics = [
-      { mult: 1, gain: 0.7 },
-      { mult: 2, gain: 0.3 },
-      { mult: 3, gain: 0.15 },
-      { mult: 4, gain: 0.08 },
-    ];
+      // Veena Warm Lowpass Filter
+      const warmthFilter = ctx.createBiquadFilter();
+      warmthFilter.type = "lowpass";
+      warmthFilter.frequency.setValueAtTime(freq * 12, now);
 
-    harmonics.forEach(({ mult, gain: g }) => {
+      masterGain.connect(bodyFilter);
+      bodyFilter.connect(warmthFilter);
+      warmthFilter.connect(ctx.destination);
+
+      // Veena Metallic String Pluck Transient (High Frequency Burst)
+      const pluckOsc = ctx.createOscillator();
+      pluckOsc.type = "triangle";
+      pluckOsc.frequency.setValueAtTime(freq * 8, now);
+      pluckOsc.frequency.exponentialRampToValueAtTime(freq, now + 0.02);
+      const pluckGain = ctx.createGain();
+      pluckGain.gain.setValueAtTime(0.3, now);
+      pluckGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+      pluckOsc.connect(pluckGain);
+      pluckGain.connect(masterGain);
+      pluckOsc.start(now);
+      pluckOsc.stop(now + 0.025);
+
+      // Veena Harmonics Stack (Fundamental + 5 Partial Overtones + Sub-octave)
+      const harmonics = [
+        { mult: 1,   gain: 0.85, type: "triangle" as OscillatorType },
+        { mult: 2,   gain: 0.45, type: "sawtooth" as OscillatorType },
+        { mult: 3,   gain: 0.25, type: "sawtooth" as OscillatorType },
+        { mult: 4,   gain: 0.15, type: "sine" as OscillatorType },
+        { mult: 5,   gain: 0.08, type: "sine" as OscillatorType },
+        { mult: 0.5, gain: 0.20, type: "triangle" as OscillatorType }, // Sub-octave warmth
+      ];
+
+      harmonics.forEach(({ mult, gain: g, type }) => {
+        const osc = ctx.createOscillator();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq * mult, now);
+
+        const hGain = ctx.createGain();
+        hGain.gain.setValueAtTime(g, now);
+        hGain.gain.exponentialRampToValueAtTime(g * 0.2, now + tempoSecs * 0.6);
+        hGain.gain.exponentialRampToValueAtTime(0.0001, now + tempoSecs * 0.95);
+
+        osc.connect(hGain);
+        hGain.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + tempoSecs);
+      });
+    } else if (voiceMode === "violin") {
+      // 🎻 VIOLIN VOICE SYNTHESIS ENGINE
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.7, now + 0.08); // Bowed attack
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + tempoSecs * 0.95);
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(freq * 5, now);
+
+      masterGain.connect(filter);
+      filter.connect(ctx.destination);
+
+      const osc1 = ctx.createOscillator();
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(freq, now);
+
+      const osc2 = ctx.createOscillator();
+      osc2.type = "sawtooth";
+      osc2.frequency.setValueAtTime(freq * 2, now);
+
+      osc1.connect(masterGain);
+      osc2.connect(masterGain);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + tempoSecs);
+      osc2.stop(now + tempoSecs);
+    } else {
+      // 🎵 PURE SWARA TONE
+      masterGain.gain.setValueAtTime(0.0001, now);
+      masterGain.gain.exponentialRampToValueAtTime(0.6, now + 0.04);
+      masterGain.gain.exponentialRampToValueAtTime(0.0001, now + tempoSecs * 0.95);
+
+      masterGain.connect(ctx.destination);
+
       const osc = ctx.createOscillator();
-      osc.type = mult === 1 ? "triangle" : "sawtooth";
-      osc.frequency.setValueAtTime(freq * mult, now);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now);
 
-      const hGain = ctx.createGain();
-      hGain.gain.setValueAtTime(g, now);
-
-      osc.connect(hGain);
-      hGain.connect(masterGain);
-
+      osc.connect(masterGain);
       osc.start(now);
       osc.stop(now + tempoSecs);
-    });
-  }, [getAudioContext, selectedKey, tempoSecs]);
+    }
+  }, [getAudioContext, selectedKey, tempoSecs, voiceMode]);
 
   const stopPlayback = useCallback(() => {
     if (playbackTimeoutRef.current) {
@@ -167,7 +250,7 @@ export function MelakartaSwaraAudioPlayer({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Badge className="bg-kumkum/15 text-kumkum font-black text-[10px]">
-              Swara Audio Synthesizer
+              🪕 Saraswati Veena Voice Engine
             </Badge>
             <span className="text-xs font-extrabold text-swara-gold">
               Raga #{ragaNumber}
@@ -177,7 +260,7 @@ export function MelakartaSwaraAudioPlayer({
             <Volume2 className="size-5 text-kumkum" /> Play Swarasthanas for {ragaName}
           </h3>
           <p className="text-xs font-semibold text-muted-foreground mt-0.5">
-            Click any Swara badge to pluck it individually, or press Play to hear the full Arohana & Avarohana scale.
+            Synthesizes authentic Veena voice string plucks for every Swarasthana. Press Play or tap any Swara badge!
           </p>
         </div>
 
@@ -196,14 +279,33 @@ export function MelakartaSwaraAudioPlayer({
             </>
           ) : (
             <>
-              <Play className="size-4 fill-current" /> Play Swarasthanas
+              <Play className="size-4 fill-current" /> Play Veena Swaras
             </>
           )}
         </button>
       </div>
 
-      {/* Controls: Sruthi Key & Speed */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-muted/30 border border-swara-gold/20">
+      {/* Controls: Instrument Voice, Sruthi Key & Speed */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-muted/30 border border-swara-gold/20">
+        
+        {/* Voice Selector */}
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1.5">
+            Instrument Voice Mode
+          </label>
+          <select
+            value={voiceMode}
+            onChange={(e) => setVoiceMode(e.target.value as any)}
+            disabled={isPlaying}
+            className="w-full bg-background border border-border rounded-xl p-2.5 text-xs font-extrabold text-foreground focus:ring-2 focus:ring-kumkum/30 disabled:opacity-50"
+          >
+            {INSTRUMENT_VOICES.map((v) => (
+              <option key={v.id} value={v.id}>{v.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Sruthi Key */}
         <div>
           <label className="block text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1.5">
             Adhara Shadja (Sruthi Key)
@@ -223,6 +325,7 @@ export function MelakartaSwaraAudioPlayer({
           </select>
         </div>
 
+        {/* Speed */}
         <div>
           <div className="flex justify-between items-center mb-1.5">
             <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
@@ -249,7 +352,7 @@ export function MelakartaSwaraAudioPlayer({
         {/* Arohana */}
         <div>
           <p className="text-xs font-extrabold uppercase tracking-wider text-kumkum mb-2 flex items-center gap-1.5">
-            <Music className="size-3.5" /> Arohana (Ascending Swarasthanas)
+            <Music className="size-3.5" /> Arohana (Veena Swarasthanas)
           </p>
           <div className="flex flex-wrap gap-2.5">
             {arohanaNotes.map((note, idx) => {
@@ -280,7 +383,7 @@ export function MelakartaSwaraAudioPlayer({
         {/* Avarohana */}
         <div>
           <p className="text-xs font-extrabold uppercase tracking-wider text-kumkum mb-2 flex items-center gap-1.5">
-            <Music className="size-3.5 rotate-180" /> Avarohana (Descending Swarasthanas)
+            <Music className="size-3.5 rotate-180" /> Avarohana (Veena Swarasthanas)
           </p>
           <div className="flex flex-wrap gap-2.5">
             {avarohanaNotes.map((note, idx) => {
