@@ -1,43 +1,30 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { TeacherDashboard } from "@/components/teacher/teacher-dashboard";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
-export default function TeacherStubPage() {
+export default function TeacherPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col justify-between">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/15 p-10 md:p-12">
-          <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-kumkum/10 ring-1 ring-swara-gold/30">
-            <Users className="size-8 text-kumkum" />
-          </div>
-          
-          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4">
-            Module Preview
+      <main className="mx-auto max-w-6xl w-full px-6 py-12">
+        <div className="mb-8">
+          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-3 py-1 px-3">
+            <Users className="mr-1.5 size-3.5" />
+            Carnatic Music Academy • Guru Workspace
           </Badge>
-          
-          <h1 className="font-serif text-3xl font-bold text-kumkum mb-4">
-            Teacher Portal
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-kumkum">
+            Teacher Portal & Guru Command Center
           </h1>
-          
-          <p className="text-muted-foreground leading-relaxed mb-8">
-            The Teacher Portal is under development. Soon, gurus will be able to manage students, distribute assignments, evaluate pitch practice sessions, and track class progress in a single unified dashboard.
+          <p className="text-muted-foreground mt-2 text-sm max-w-3xl leading-relaxed">
+            Manage your Carnatic vocal and instrumental batches, assign pitch & rhythm exercises, evaluate student performance, and generate AI-assisted lesson plans.
           </p>
-
-          <Button
-            size="sm"
-            className="bg-kumkum hover:bg-kumkum-light"
-            nativeButton={false}
-            render={<Link href="/" />}
-          >
-            <ArrowLeft className="mr-2 size-4" /> Go back to Home
-          </Button>
         </div>
+
+        <TeacherDashboard />
       </main>
       <Footer />
     </div>
