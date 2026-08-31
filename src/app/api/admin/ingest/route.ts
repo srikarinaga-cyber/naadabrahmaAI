@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileName = body.sourceFile || "carnatic_music_theory1.pdf";
+    const sourceBucket = (body as any).sourceBucket || "syllabus";
     const forceReingest = !!body.forceReingest;
 
     const supabaseAdmin = createAdminClient();
@@ -86,16 +87,16 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 4. Download file from Supabase Storage bucket 'syllabus'
-    const bucketName = "syllabus";
+    // 4. Download file from Supabase Storage bucket
+    const bucketName = sourceBucket;
     console.log(`Downloading '${fileName}' from Supabase Storage bucket '${bucketName}'...`);
     
     let downloadResult = await supabaseAdmin.storage.from(bucketName).download(fileName);
     
-    // Fallback: If it failed, try with 'syllabus/' prefix path
+    // Fallback: If it failed, try with bucket prefix path
     if (downloadResult.error) {
-      console.warn(`Could not download ${fileName} directly: ${downloadResult.error.message}. Trying syllabus/${fileName} path...`);
-      downloadResult = await supabaseAdmin.storage.from(bucketName).download(`syllabus/${fileName}`);
+      console.warn(`Could not download ${fileName} directly: ${downloadResult.error.message}. Trying ${bucketName}/${fileName} path...`);
+      downloadResult = await supabaseAdmin.storage.from(bucketName).download(`${bucketName}/${fileName}`);
     }
 
     if (downloadResult.error) {
