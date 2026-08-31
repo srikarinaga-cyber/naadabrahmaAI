@@ -1,17 +1,8 @@
 "use client";
 
 import React from "react";
-import dynamic from "next/dynamic";
-
-const MusicBackground = dynamic(
-  () => import("@/components/music/MusicBackground").then((mod) => mod.MusicBackground),
-  { ssr: false }
-);
-
-const FloatingTanpura = dynamic(
-  () => import("@/components/music/FloatingTanpura").then((mod) => mod.FloatingTanpura),
-  { ssr: false }
-);
+import { MusicBackground } from "@/components/music/MusicBackground";
+import { FloatingTanpura } from "@/components/music/FloatingTanpura";
 
 export function ClientLayoutProviders({ children }: { children: React.ReactNode }) {
   return (

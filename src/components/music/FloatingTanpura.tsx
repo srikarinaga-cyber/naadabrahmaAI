@@ -26,6 +26,7 @@ type InstrumentType = "Tanpura" | "Veena" | "Violin";
 const INSTRUMENTS: InstrumentType[] = ["Tanpura", "Veena", "Violin"];
 
 export function FloatingTanpura() {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedPitch, setSelectedPitch] = useState("C");
@@ -216,12 +217,18 @@ export function FloatingTanpura() {
   }, [selectedPitch, tuning, tempo, isPlaying, instrument]);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
       }
     };
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end overflow-visible">

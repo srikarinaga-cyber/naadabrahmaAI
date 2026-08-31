@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ClientLayoutProviders } from "@/components/providers/ClientLayoutProviders";
+import { FloatingTanpura } from "@/components/music/FloatingTanpura";
+import { MusicBackground } from "@/components/music/MusicBackground";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -59,7 +60,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground selection:bg-kumkum/20 selection:text-kumkum">
         <ThemeProvider>
-          <ClientLayoutProviders>{children}</ClientLayoutProviders>
+          <MusicBackground />
+          {children}
+          <FloatingTanpura />
         </ThemeProvider>
       </body>
     </html>
