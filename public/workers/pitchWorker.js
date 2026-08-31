@@ -68,7 +68,6 @@ function detectPitchYin(buffer, sampleRate, threshold) {
         minTau = tau;
       }
     }
-    // Clarity / confidence score can be estimated based on how clean the minimum is
     tauResult = minTau;
   }
 
@@ -93,8 +92,8 @@ function detectPitchYin(buffer, sampleRate, threshold) {
   const pitch = sampleRate / betterTau;
   const clarity = 1 - yinBuffer[tauResult]; // clarity is inversely related to normalized difference error
 
-  // Human vocal range check (typically 50Hz to 2000Hz for singing)
-  if (pitch >= 50 && pitch <= 2000 && clarity > 0.4) {
+  // Human vocal range check (singing pitch filtering: 95Hz to 1400Hz with high clarity)
+  if (pitch >= 95 && pitch <= 1400 && clarity > 0.65) {
     return { pitch, clarity };
   }
 

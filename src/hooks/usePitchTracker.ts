@@ -26,7 +26,7 @@ const SWARAS = [
   { name: "Tara Shadja (High Sa)", swara: "S'", cents: 1200 },
 ];
 
-// Fallback pitch detection using autocorrelation (works on all mobile/desktop browsers without worker)
+// Fallback pitch detection using autocorrelation with strict vocal range filtering
 function autoCorrelate(buf: Float32Array, sampleRate: number): { pitch: number; clarity: number } {
   const SIZE = buf.length;
   let rms = 0;
@@ -35,7 +35,7 @@ function autoCorrelate(buf: Float32Array, sampleRate: number): { pitch: number; 
     rms += val * val;
   }
   rms = Math.sqrt(rms / SIZE);
-  if (rms < 0.01) return { pitch: -1, clarity: 0 }; // Too quiet / silent
+  if (rms < 0.02) return { pitch: -1, clarity: 0 }; // Ignore background room noise
 
   let r1 = 0;
   let r2 = SIZE - 1;
@@ -86,7 +86,8 @@ function autoCorrelate(buf: Float32Array, sampleRate: number): { pitch: number; 
   const pitch = sampleRate / T0;
   const clarity = maxval / c[0];
 
-  if (pitch >= 50 && pitch <= 1800 && clarity > 0.35) {
+  // Strictly filter singing vocal range: 95 Hz to 1400 Hz
+  if (pitch >= 95 && pitch <= 1400 && clarity > 0.55) {
     return { pitch, clarity };
   }
   return { pitch: -1, clarity: 0 };
@@ -111,7 +112,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
 
   // Convert Hz to relative Carnatic Swaras based on base frequency (Adhara Shadja)
   const mapHzToSwara = (hz: number): SwaraMatch | null => {
-    if (hz <= 0) return null;
+    if (hz < 95 || hz > 1400) return null;
 
     const ratio = hz / baseFreq;
     let normalizedRatio = ratio;
@@ -149,7 +150,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
     };
   };
 
-  // Start capturing audio from microphone (mobile & desktop compatible)
+  // Start capturing audio from microphone (mobile & desktop compatible with High-Pass filter)
   const startTracking = async () => {
     setErrorMsg(null);
     try {
@@ -163,7 +164,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       });
       streamRef.current = stream;
 
-      // 2. Initialize AudioContext (Mobile Safari requirement: resume context on user gesture)
+      // 2. Initialize AudioContext
       const AudioContextClass =
         window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -174,18 +175,26 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       audioCtxRef.current = ctx;
 
       const sourceNode = ctx.createMediaStreamSource(stream);
+
+      // 3. High-Pass Filter (85 Hz cutoff) to filter out ambient room hum & low sub-bass noise
+      const highPassFilter = ctx.createBiquadFilter();
+      highPassFilter.type = "highpass";
+      highPassFilter.frequency.setValueAtTime(85, ctx.currentTime);
+
       const analyser = ctx.createAnalyser();
       analyser.fftSize = bufferSize;
-      sourceNode.connect(analyser);
+
+      sourceNode.connect(highPassFilter);
+      highPassFilter.connect(analyser);
       analyserRef.current = analyser;
 
-      // 3. Attempt Web Worker initialization with fallback
+      // 4. Attempt Web Worker initialization with fallback
       try {
         const worker = new Worker("/workers/pitchWorker.js");
         workerRef.current = worker;
         worker.onmessage = (e) => {
           const { pitch: detectedPitch, clarity: detectedClarity } = e.data;
-          if (detectedPitch > 0 && detectedClarity > 0.4) {
+          if (detectedPitch >= 95 && detectedPitch <= 1400 && detectedClarity > 0.55) {
             setPitch(detectedPitch);
             setClarity(detectedClarity);
             setMatchedSwara(mapHzToSwara(detectedPitch));
@@ -203,7 +212,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
 
       const pcmData = new Float32Array(bufferSize);
 
-      // 4. Processing Loop
+      // 5. Processing Loop
       const process = () => {
         if (analyserRef.current) {
           analyserRef.current.getFloatTimeDomainData(pcmData);
@@ -215,12 +224,11 @@ export function usePitchTracker(baseFreq: number = 130.81) {
               threshold: 0.15,
             });
           } else {
-            // Main thread autocorrelation fallback for mobile browsers
             const { pitch: detectedPitch, clarity: detectedClarity } = autoCorrelate(
               pcmData,
               ctx.sampleRate
             );
-            if (detectedPitch > 0) {
+            if (detectedPitch >= 95 && detectedPitch <= 1400) {
               setPitch(detectedPitch);
               setClarity(detectedClarity);
               setMatchedSwara(mapHzToSwara(detectedPitch));
