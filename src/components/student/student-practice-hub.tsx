@@ -5,17 +5,16 @@ import {
   Play,
   Volume2,
   Tv,
-  Award,
   CheckCircle2,
-  Sparkles,
-  HelpCircle,
   Video,
-  BookOpen,
   RotateCcw,
+  Clock,
   Music,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TalaMatrixPlayer } from "@/components/music/tala-matrix-player";
 
 interface YouTubeLesson {
   id: string;
@@ -29,7 +28,7 @@ interface YouTubeLesson {
 interface EarQuizQuestion {
   id: string;
   title: string;
-  swarasToPlay: string[]; // e.g. ["S", "R1", "G3", "M1", "P"]
+  swarasToPlay: string[];
   options: string[];
   correctAnswer: string;
   explanation: string;
@@ -37,6 +36,14 @@ interface EarQuizQuestion {
 
 // Curated YouTube Masterclass Video Lessons for Carnatic Music
 const YOUTUBE_LESSONS: YouTubeLesson[] = [
+  {
+    id: "yt-featured",
+    title: "Carnatic Music Vocal & Tala Practice Masterclass",
+    category: "Featured Masterclass",
+    instructor: "Carnatic Vidwan Lessons",
+    youtubeId: "OPhnN6bFFgw",
+    description: "Comprehensive Carnatic music lesson covering raga swarasthana practice, tala counts, and vocal exercises.",
+  },
   {
     id: "yt-1",
     title: "Carnatic Vocal Foundation: Mayamalavagowla Sarali Varisai",
@@ -146,7 +153,7 @@ const SWARA_FREQS: Record<string, number> = {
 };
 
 export function StudentPracticeHub() {
-  const [activeTab, setActiveTab] = useState<"ear-quiz" | "youtube" | "theory">("ear-quiz");
+  const [activeTab, setActiveTab] = useState<"ear-quiz" | "35-talas" | "youtube">("ear-quiz");
 
   // Ear Quiz State
   const [currentQuizIdx, setCurrentQuizIdx] = useState(0);
@@ -280,10 +287,10 @@ export function StudentPracticeHub() {
               Carnatic Student Practice Hub
             </Badge>
             <h1 className="font-serif text-2xl md:text-3xl font-bold text-kumkum">
-              Practice Hub & Audio Ear Training
+              Practice Hub & Rhythm Sound Engine
             </h1>
             <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
-              Listen to authentic Veena & Violin swara audio clips, test your ear pitch recognition, and watch masterclass video lessons directly.
+              Practice 35 Suladi Sapta Tala beats sound, test your ear pitch recognition, and watch masterclass video lessons.
             </p>
           </div>
 
@@ -311,6 +318,17 @@ export function StudentPracticeHub() {
         >
           <Volume2 className="size-4" />
           Listen Swaras & Answer ({SWARA_EAR_QUIZZES.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("35-talas")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+            activeTab === "35-talas"
+              ? "bg-kumkum text-white shadow-sm font-bold"
+              : "bg-card text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          <Clock className="size-4" />
+          35 Suladi Sapta Talas Beat Sound Player
         </button>
         <button
           onClick={() => setActiveTab("youtube")}
@@ -456,7 +474,14 @@ export function StudentPracticeHub() {
         </div>
       )}
 
-      {/* ── TAB 2: YOUTUBE MASTERCLASSES ── */}
+      {/* ── TAB 2: 35 SULADI SAPTA TALAS BEAT SOUND PLAYER ── */}
+      {activeTab === "35-talas" && (
+        <div className="space-y-6">
+          <TalaMatrixPlayer />
+        </div>
+      )}
+
+      {/* ── TAB 3: YOUTUBE MASTERCLASSES ── */}
       {activeTab === "youtube" && (
         <div className="space-y-6">
           {/* Active Player */}
@@ -484,7 +509,7 @@ export function StudentPracticeHub() {
           </div>
 
           {/* Video Lesson Selection Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {YOUTUBE_LESSONS.map((video) => (
               <div
                 key={video.id}
