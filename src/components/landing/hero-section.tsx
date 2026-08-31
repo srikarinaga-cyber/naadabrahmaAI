@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const fadeUp: Variants = {
+const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
@@ -14,7 +14,7 @@ const fadeUp: Variants = {
     transition: {
       duration: 0.6,
       delay: i * 0.1,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   }),
 };
@@ -63,7 +63,11 @@ export function HeroSection() {
           variants={fadeUp}
           className="flex flex-col items-center gap-4 sm:flex-row lg:justify-start"
         >
-          <Button size="lg" className="h-11 bg-kumkum px-6 hover:bg-kumkum-light">
+          <Button
+            size="lg"
+            className="h-11 bg-kumkum px-6 hover:bg-kumkum-light"
+            render={<Link href="/login" />}
+          >
             Launch Learning Portal
             <ArrowRight className="size-4" aria-hidden />
           </Button>

@@ -1,24 +1,18 @@
 import { createStaticClient, isSupabaseConfigured } from "@/lib/supabase/static";
+import { getLandingFallbackData } from "@/lib/data/landing-fallback";
+import { normalizePlatformFeatures } from "@/lib/data/module-routes";
 import type { LandingPageData } from "@/types/database";
 
 export async function getLandingPageData(): Promise<LandingPageData> {
+  const fallback = getLandingFallbackData();
+
   if (!isSupabaseConfigured()) {
-    return {
-      features: [],
-      statistics: [],
-      testimonials: [],
-      featuredRaga: null,
-    };
+    return fallback;
   }
 
   const supabase = createStaticClient();
   if (!supabase) {
-    return {
-      features: [],
-      statistics: [],
-      testimonials: [],
-      featuredRaga: null,
-    };
+    return fallback;
   }
 
   const [featuresResult, statisticsResult, testimonialsResult, ragaResult] =
@@ -58,10 +52,21 @@ export async function getLandingPageData(): Promise<LandingPageData> {
     console.error("[landing] featured raga fetch failed:", ragaResult.error.message);
   }
 
+  const features =
+    featuresResult.data && featuresResult.data.length > 0
+      ? normalizePlatformFeatures(featuresResult.data)
+      : fallback.features;
+
   return {
-    features: featuresResult.data ?? [],
-    statistics: statisticsResult.data ?? [],
-    testimonials: testimonialsResult.data ?? [],
+    features,
+    statistics:
+      statisticsResult.data && statisticsResult.data.length > 0
+        ? statisticsResult.data
+        : fallback.statistics,
+    testimonials:
+      testimonialsResult.data && testimonialsResult.data.length > 0
+        ? testimonialsResult.data
+        : fallback.testimonials,
     featuredRaga: ragaResult.data ?? null,
   };
 }

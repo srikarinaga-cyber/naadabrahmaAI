@@ -129,6 +129,14 @@ insert into platform_features (title, description, icon, tag, href, sort_order) 
     'Enterprise',
     '/admin',
     6
+),
+(
+    'Notes Generation',
+    'Browse official syllabus PDFs, view ingested topics, and generate AI study notes from your exam syllabus.',
+    'notebook-pen',
+    'Notes & PDFs',
+    '/notes',
+    7
 );
 
 -- Seed platform statistics

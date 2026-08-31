@@ -53,27 +53,79 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Parse request body
-    let body: { sourceFile?: string; forceReingest?: boolean } = {};
+    let body: {
+      sourceFile?: string;
+      forceReingest?: boolean;
+      ingestAll?: boolean;
+      sourceBucket?: string;
+      sourcePath?: string;
+    } = {};
     try {
       body = await request.json();
     } catch {
       // Accept empty body
     }
 
-    const fileName = body.sourceFile || "carnatic_music_theory1.pdf";
-    const sourceBucket = (body as any).sourceBucket || "syllabus";
-    const forceReingest = !!body.forceReingest;
-
     const supabaseAdmin = createAdminClient();
     if (!supabaseAdmin) {
       return jsonServerError("Admin Supabase client is not configured.");
     }
 
+    if (body.ingestAll) {
+      const buckets = await discoverIngestBuckets(supabaseAdmin);
+      const results: Array<{ file: string; bucket: string; ingested: boolean; chunksCount?: number; error?: string }> = [];
+
+      for (const bucket of buckets) {
+        const pdfs = await listIngestPdfs(supabaseAdmin, bucket);
+        for (const pdf of pdfs) {
+          const { count } = await supabaseAdmin
+            .from("syllabus_knowledge")
+            .select("*", { count: "exact", head: true })
+            .or(`source_file.eq.${pdf.name},source_file.eq.${pdf.path}`);
+
+          if (count && count > 0 && !body.forceReingest) {
+            results.push({ file: pdf.name, bucket, ingested: false, chunksCount: count });
+            continue;
+          }
+
+          try {
+            const result = await ingestSingleFile(
+              supabaseAdmin,
+              pdf.name,
+              bucket,
+              !!body.forceReingest,
+              pdf.path
+            );
+            results.push({ file: pdf.name, bucket, ingested: true, chunksCount: result.chunksCount });
+          } catch (err) {
+            results.push({
+              file: pdf.name,
+              bucket,
+              ingested: false,
+              error: err instanceof Error ? err.message : "Ingestion failed",
+            });
+          }
+        }
+      }
+
+      return jsonOk({
+        message: "Batch ingestion complete",
+        results,
+        ingested: results.filter((r) => r.ingested).length,
+        skipped: results.filter((r) => !r.ingested && !r.error).length,
+      });
+    }
+
+    const fileName = body.sourceFile || "carnatic_music_theory1.pdf";
+    const sourceBucket = body.sourceBucket || "syllabus";
+    const forceReingest = !!body.forceReingest;
+    const sourcePath = body.sourcePath || fileName;
+
     // 3. Prevent duplicate ingestion if not forced
     const { count, error: countError } = await supabaseAdmin
       .from("syllabus_knowledge")
       .select("*", { count: "exact", head: true })
-      .eq("source_file", fileName);
+      .or(`source_file.eq.${fileName},source_file.eq.${sourcePath}`);
 
     if (countError) {
       console.error("Count check failed:", countError.message);
@@ -87,89 +139,145 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 4. Download file from Supabase Storage bucket
-    const bucketName = sourceBucket;
-    console.log(`Downloading '${fileName}' from Supabase Storage bucket '${bucketName}'...`);
-    
-    let downloadResult = await supabaseAdmin.storage.from(bucketName).download(fileName);
-    
-    // Fallback: If it failed, try with bucket prefix path
-    if (downloadResult.error) {
-      console.warn(`Could not download ${fileName} directly: ${downloadResult.error.message}. Trying ${bucketName}/${fileName} path...`);
-      downloadResult = await supabaseAdmin.storage.from(bucketName).download(`${bucketName}/${fileName}`);
+    const result = await ingestSingleFile(
+      supabaseAdmin,
+      fileName,
+      sourceBucket,
+      forceReingest,
+      sourcePath
+    );
+
+    return jsonOk({
+      message: `Successfully ingested syllabus from '${fileName}'.`,
+      chunksCount: result.chunksCount,
+      ingested: true,
+      hasEmbeddings: !!process.env.OPENAI_API_KEY,
+    });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "An unexpected error occurred during ingestion.";
+    console.error("Ingestion server action exception:", error);
+    return jsonServerError(errMsg);
+  }
+}
+
+type SupabaseAdmin = NonNullable<ReturnType<typeof createAdminClient>>;
+
+const INGEST_BUCKETS = ["syllabus", "Music", "music", "notes", "pdfs"];
+
+async function discoverIngestBuckets(admin: SupabaseAdmin): Promise<string[]> {
+  const buckets = new Set<string>(INGEST_BUCKETS);
+  const { data } = await admin.storage.listBuckets();
+  for (const bucket of data ?? []) {
+    buckets.add(bucket.name);
+  }
+  return [...buckets];
+}
+
+async function listIngestPdfs(
+  admin: SupabaseAdmin,
+  bucket: string,
+  prefix = ""
+): Promise<Array<{ name: string; path: string }>> {
+  const results: Array<{ name: string; path: string }> = [];
+  const { data: entries, error } = await admin.storage.from(bucket).list(prefix, { limit: 200 });
+
+  if (error) return results;
+
+  for (const entry of entries ?? []) {
+    if (entry.name.startsWith(".")) continue;
+    const entryPath = prefix ? `${prefix}${entry.name}` : entry.name;
+
+    if (entry.id === null && !entry.name.toLowerCase().endsWith(".pdf")) {
+      results.push(...(await listIngestPdfs(admin, bucket, `${entryPath}/`)));
+      continue;
     }
 
-    if (downloadResult.error) {
-      console.error("Storage download failed:", downloadResult.error);
-      return jsonError(`Failed to retrieve '${fileName}' from storage: ${downloadResult.error.message}`, 404);
-    }
+    if (!entry.name.toLowerCase().endsWith(".pdf")) continue;
+    results.push({ name: entry.name, path: entryPath });
+  }
 
-    const pdfBuffer = Buffer.from(await downloadResult.data.arrayBuffer());
-    console.log(`Successfully downloaded PDF buffer. Size: ${pdfBuffer.length} bytes.`);
+  return results;
+}
 
-    // 5. Parse PDF page-by-page
-    console.log("Parsing PDF file...");
-    const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: pdfBuffer });
-    const textResult = await parser.getText();
+async function ingestSingleFile(
+  supabaseAdmin: SupabaseAdmin,
+  fileName: string,
+  bucketName: string,
+  forceReingest: boolean,
+  storagePath?: string
+): Promise<{ chunksCount: number }> {
+  const downloadPath = storagePath ?? fileName;
 
-    const pageTexts = textResult.pages.map((p) => ({
-      pageNumber: p.num,
-      text: p.text,
-    }));
-    console.log(`Parsed PDF. Total pages extracted: ${pageTexts.length}`);
+  const { count } = await supabaseAdmin
+    .from("syllabus_knowledge")
+    .select("*", { count: "exact", head: true })
+    .or(`source_file.eq.${fileName},source_file.eq.${downloadPath}`);
 
-    // 6. Chunk each page into logically sized segments
-    const allChunks: Array<{
-      title: string;
-      section: string;
-      content: string;
-      page_number: number;
-      source_file: string;
-      language: string;
-    }> = [];
+  if (count !== null && count > 0 && forceReingest) {
+    await supabaseAdmin
+      .from("syllabus_knowledge")
+      .delete()
+      .or(`source_file.eq.${fileName},source_file.eq.${downloadPath}`);
+  }
 
-    for (const page of pageTexts) {
-      const pageChunks = chunkPageText(page.text, page.pageNumber, fileName);
-      allChunks.push(...pageChunks);
-    }
+  console.log(`Downloading '${downloadPath}' from bucket '${bucketName}'...`);
+  let downloadResult = await supabaseAdmin.storage.from(bucketName).download(downloadPath);
 
-    console.log(`Generated ${allChunks.length} content chunks from PDF.`);
+  if (downloadResult.error) {
+    downloadResult = await supabaseAdmin.storage
+      .from(bucketName)
+      .download(`${bucketName}/${downloadPath}`);
+  }
 
-    if (allChunks.length === 0) {
-      return jsonError("PDF parsing yielded no text or chunks.");
-    }
+  if (downloadResult.error) {
+    throw new Error(
+      `Failed to retrieve '${downloadPath}' from storage: ${downloadResult.error.message}`
+    );
+  }
 
-    // 7. Clear existing records for this file if re-ingesting
-    if (count !== null && count > 0 && forceReingest) {
-      console.log(`Clearing old chunks for '${fileName}'...`);
-      const { error: deleteError } = await supabaseAdmin
-        .from("syllabus_knowledge")
-        .delete()
-        .eq("source_file", fileName);
+  const pdfBuffer = Buffer.from(await downloadResult.data.arrayBuffer());
+  const { PDFParse } = await import("pdf-parse");
+  const parser = new PDFParse({ data: pdfBuffer });
+  const textResult = await parser.getText();
 
-      if (deleteError) {
-        return jsonServerError(`Failed to clean up old syllabus knowledge: ${deleteError.message}`);
-      }
-    }
+  const pageTexts = textResult.pages.map((p) => ({
+    pageNumber: p.num,
+    text: p.text,
+  }));
 
-    // 8. Generate embeddings and save to database
-    console.log("Generating embeddings and saving to Supabase...");
-    const batchSize = 10;
-    const processedChunks: Array<{
-      title: string;
-      section: string;
-      content: string;
-      page_number: number;
-      chunk_index: number;
-      source_file: string;
-      language: string;
-      embedding: number[] | null;
-    }> = [];
+  const allChunks: Array<{
+    title: string;
+    section: string;
+    content: string;
+    page_number: number;
+    source_file: string;
+    language: string;
+  }> = [];
 
-    for (let i = 0; i < allChunks.length; i += batchSize) {
-      const batch = allChunks.slice(i, i + batchSize);
-      const promises = batch.map(async (chunk, indexInBatch) => {
+  for (const page of pageTexts) {
+    allChunks.push(...chunkPageText(page.text, page.pageNumber, fileName));
+  }
+
+  if (allChunks.length === 0) {
+    throw new Error("PDF parsing yielded no text or chunks.");
+  }
+
+  const batchSize = 10;
+  const processedChunks: Array<{
+    title: string;
+    section: string;
+    content: string;
+    page_number: number;
+    chunk_index: number;
+    source_file: string;
+    language: string;
+    embedding: number[] | null;
+  }> = [];
+
+  for (let i = 0; i < allChunks.length; i += batchSize) {
+    const batch = allChunks.slice(i, i + batchSize);
+    const batchResults = await Promise.all(
+      batch.map(async (chunk, indexInBatch) => {
         const absoluteIndex = i + indexInBatch;
         let embedding: number[] | null = null;
         if (process.env.OPENAI_API_KEY) {
@@ -185,34 +293,21 @@ export async function POST(request: NextRequest) {
           language: chunk.language,
           embedding,
         };
-      });
-
-      const batchResults = await Promise.all(promises);
-      processedChunks.push(...batchResults);
-    }
-
-    // Insert into table
-    const { error: insertError } = await supabaseAdmin
-      .from("syllabus_knowledge")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .insert(processedChunks as any);
-
-    if (insertError) {
-      console.error("Database insertion failed:", insertError.message);
-      return jsonServerError(`Database insertion failed: ${insertError.message}`);
-    }
-
-    return jsonOk({
-      message: `Successfully ingested syllabus from '${fileName}'.`,
-      chunksCount: processedChunks.length,
-      ingested: true,
-      hasEmbeddings: !!process.env.OPENAI_API_KEY,
-    });
-  } catch (error: unknown) {
-    const errMsg = error instanceof Error ? error.message : "An unexpected error occurred during ingestion.";
-    console.error("Ingestion server action exception:", error);
-    return jsonServerError(errMsg);
+      })
+    );
+    processedChunks.push(...batchResults);
   }
+
+  const { error: insertError } = await supabaseAdmin
+    .from("syllabus_knowledge")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .insert(processedChunks as any);
+
+  if (insertError) {
+    throw new Error(`Database insertion failed: ${insertError.message}`);
+  }
+
+  return { chunksCount: processedChunks.length };
 }
 
 /**

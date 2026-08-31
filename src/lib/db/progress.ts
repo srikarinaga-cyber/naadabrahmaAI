@@ -30,7 +30,7 @@ export async function updateStudyStreak(userId: string) {
     return streak;
   }
 
-  const lastDate = new Date(streak.last_activity_date);
+  const lastDate = new Date(streak.last_activity_date ?? today);
   const todayDate = new Date(today);
   const diffDays = Math.floor(
     (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)

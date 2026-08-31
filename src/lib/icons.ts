@@ -6,6 +6,7 @@ import {
   Layers,
   Music,
   Music2,
+  NotebookPen,
   Shield,
   Sparkles,
   Timer,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
+  "notebook-pen": NotebookPen,
   "book-open": BookOpen,
   sparkles: Sparkles,
   music: Music,

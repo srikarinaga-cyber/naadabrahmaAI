@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
+import Link from "next/link";
 import nextDynamic from "next/dynamic";
 
 const PitchVisualizer = nextDynamic(
@@ -16,20 +17,23 @@ export default function StudentDashboardPage() {
       title: "Perfect your G3 (Antara Gandhara)",
       desc: "Based on your last mock, your pitch accuracy in Sankarabharanam was 4.2Hz sharp on G3.",
       action: "Practice Scale",
-      type: "Pitch Tune"
+      type: "Pitch Tune",
+      href: "/student",
     },
     {
       title: "Explore Raga Hamsadhwani",
       desc: "A popular symmetric pentatonic Janya scale. Good for practicing basic compositions.",
       action: "Learn Scale",
-      type: "Raga Study"
+      type: "Raga Study",
+      href: "/knowledge-hub",
     },
     {
       title: "Adi Tala Structure Quiz",
       desc: "Review angas (1 Laghu, 2 Dhrutams) to master rhythmic calculations.",
       action: "Take Quiz",
-      type: "Exam Prep"
-    }
+      type: "Exam Prep",
+      href: "/student/exam",
+    },
   ];
 
   const STATS = [
@@ -90,9 +94,12 @@ export default function StudentDashboardPage() {
                   <h5 className="text-xs font-extrabold text-[#1A2228]">{rec.title}</h5>
                   <p className="text-[11px] text-gray-500 leading-relaxed">{rec.desc}</p>
                 </div>
-                <button className="whitespace-nowrap px-3 py-1.5 rounded-lg bg-[#FAF6F0] hover:bg-[#F3EBE0] text-[10px] font-extrabold text-[#800020] border border-[#D4AF37]/20 transition-all">
+                <Link
+                  href={rec.href}
+                  className="whitespace-nowrap px-3 py-1.5 rounded-lg bg-[#FAF6F0] hover:bg-[#F3EBE0] text-[10px] font-extrabold text-[#800020] border border-[#D4AF37]/20 transition-all"
+                >
                   {rec.action}
-                </button>
+                </Link>
               </div>
             ))}
           </div>

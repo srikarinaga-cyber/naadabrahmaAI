@@ -56,7 +56,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${sans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans text-foreground selection:bg-kumkum/20 selection:text-kumkum">
+      <body className="min-h-full flex flex-col bg-background font-sans text-foreground selection:bg-kumkum/20 selection:text-kumkum">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

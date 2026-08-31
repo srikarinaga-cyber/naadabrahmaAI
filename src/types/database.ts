@@ -165,6 +165,123 @@ export interface Database {
         };
         Relationships: [];
       };
+      janyas: {
+        Row: {
+          id: string;
+          name: string;
+          parent_melakarta_id: string | null;
+          arohana: string;
+          avarohana: string;
+          description: string | null;
+          embedding: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          parent_melakarta_id?: string | null;
+          arohana: string;
+          avarohana: string;
+          description?: string | null;
+          embedding?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          parent_melakarta_id?: string | null;
+          arohana?: string;
+          avarohana?: string;
+          description?: string | null;
+          embedding?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      composers: {
+        Row: {
+          id: string;
+          name: string;
+          period: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          period?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          period?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      talas: {
+        Row: {
+          id: string;
+          name: string;
+          beats: number | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          beats?: number | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          beats?: number | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      kritis: {
+        Row: {
+          id: string;
+          title: string;
+          melakarta_id: string | null;
+          janya_id: string | null;
+          composer_id: string | null;
+          tala: string | null;
+          language: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          melakarta_id?: string | null;
+          janya_id?: string | null;
+          composer_id?: string | null;
+          tala?: string | null;
+          language?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          melakarta_id?: string | null;
+          janya_id?: string | null;
+          composer_id?: string | null;
+          tala?: string | null;
+          language?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
@@ -195,258 +312,6 @@ export interface Database {
         };
         Relationships: [];
       };
-      syllabus_knowledge: {
-        Row: {
-          id: string;
-          title: string | null;
-          section: string | null;
-          content: string;
-          source_file: string;
-          page_number: number;
-          chunk_index: number;
-          language: string;
-          embedding: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          title?: string | null;
-          section?: string | null;
-          content: string;
-          source_file: string;
-          page_number: number;
-          chunk_index?: number;
-          language?: string;
-          embedding?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string | null;
-          section?: string | null;
-          content?: string;
-          source_file?: string;
-          page_number?: number;
-          chunk_index?: number;
-          language?: string;
-          embedding?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      janyas: {
-        Row: {
-          id: string;
-          name: string;
-          parent_melakarta_id: string;
-          arohana: string;
-          avarohana: string;
-          vakra: boolean;
-          bhashanga: boolean;
-          upanga: boolean;
-          description: string | null;
-          metadata: Json | null;
-          embedding: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          parent_melakarta_id: string;
-          arohana: string;
-          avarohana: string;
-          vakra?: boolean;
-          bhashanga?: boolean;
-          upanga?: boolean;
-          description?: string | null;
-          metadata?: Json | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          parent_melakarta_id?: string;
-          arohana?: string;
-          avarohana?: string;
-          vakra?: boolean;
-          bhashanga?: boolean;
-          upanga?: boolean;
-          description?: string | null;
-          metadata?: Json | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      composers: {
-        Row: {
-          id: string;
-          name: string;
-          era: string | null;
-          biography: string | null;
-          mudra: string | null;
-          famous_compositions: string[] | null;
-          metadata: Json | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          era?: string | null;
-          biography?: string | null;
-          mudra?: string | null;
-          famous_compositions?: string[] | null;
-          metadata?: Json | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          era?: string | null;
-          biography?: string | null;
-          mudra?: string | null;
-          famous_compositions?: string[] | null;
-          metadata?: Json | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      talas: {
-        Row: {
-          id: string;
-          name: string;
-          beats: number;
-          angas: string;
-          aksharas: number | null;
-          structure: string | null;
-          description: string | null;
-          metadata: Json | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          beats: number;
-          angas: string;
-          aksharas?: number | null;
-          structure?: string | null;
-          description?: string | null;
-          metadata?: Json | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          beats?: number;
-          angas?: string;
-          aksharas?: number | null;
-          structure?: string | null;
-          description?: string | null;
-          metadata?: Json | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      kritis: {
-        Row: {
-          id: string;
-          title: string;
-          composer_id: string | null;
-          melakarta_id: string | null;
-          janya_id: string | null;
-          tala_id: string | null;
-          notation: string | null;
-          lyrics: string | null;
-          translation: string | null;
-          audio_reference_url: string | null;
-          difficulty_level: string;
-          metadata: Json | null;
-          embedding: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          composer_id?: string | null;
-          melakarta_id?: string | null;
-          janya_id?: string | null;
-          tala_id?: string | null;
-          notation?: string | null;
-          lyrics?: string | null;
-          translation?: string | null;
-          audio_reference_url?: string | null;
-          difficulty_level?: string;
-          metadata?: Json | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          composer_id?: string | null;
-          melakarta_id?: string | null;
-          janya_id?: string | null;
-          tala_id?: string | null;
-          notation?: string | null;
-          lyrics?: string | null;
-          translation?: string | null;
-          audio_reference_url?: string | null;
-          difficulty_level?: string;
-          metadata?: Json | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      exam_questions: {
-        Row: {
-          id: string;
-          type: string;
-          level: string;
-          question_text: string;
-          options: Json | null;
-          correct_answer: string;
-          explanation: string | null;
-          raga_id: string | null;
-          composer_id: string | null;
-          kriti_id: string | null;
-          embedding: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          type: string;
-          level: string;
-          question_text: string;
-          options?: Json | null;
-          correct_answer: string;
-          explanation?: string | null;
-          raga_id?: string | null;
-          composer_id?: string | null;
-          kriti_id?: string | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          type?: string;
-          level?: string;
-          question_text?: string;
-          options?: Json | null;
-          correct_answer?: string;
-          explanation?: string | null;
-          raga_id?: string | null;
-          composer_id?: string | null;
-          kriti_id?: string | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
       ai_notes: {
         Row: {
           id: string;
@@ -455,8 +320,8 @@ export interface Database {
           content: string;
           source_raga_id: string | null;
           source_kriti_id: string | null;
-          embedding: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -465,8 +330,8 @@ export interface Database {
           content: string;
           source_raga_id?: string | null;
           source_kriti_id?: string | null;
-          embedding?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -475,80 +340,8 @@ export interface Database {
           content?: string;
           source_raga_id?: string | null;
           source_kriti_id?: string | null;
-          embedding?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      user_progress: {
-        Row: {
-          id: string;
-          user_id: string;
-          entity_type: string;
-          entity_id: string;
-          status: string;
-          score: number | null;
-          topics_completed: string[] | null;
-          quiz_score: number | null;
-          daily_streak: number;
-          badges: string[] | null;
-          last_studied_at: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          entity_type: string;
-          entity_id: string;
-          status?: string;
-          score?: number | null;
-          topics_completed?: string[] | null;
-          quiz_score?: number | null;
-          daily_streak?: number;
-          badges?: string[] | null;
-          last_studied_at?: string;
           created_at?: string;
           updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          entity_type?: string;
-          entity_id?: string;
-          status?: string;
-          score?: number | null;
-          topics_completed?: string[] | null;
-          quiz_score?: number | null;
-          daily_streak?: number;
-          badges?: string[] | null;
-          last_studied_at?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      study_streaks: {
-        Row: {
-          user_id: string;
-          current_streak: number;
-          longest_streak: number;
-          last_activity_date: string;
-          created_at: string;
-        };
-        Insert: {
-          user_id: string;
-          current_streak?: number;
-          longest_streak?: number;
-          last_activity_date?: string;
-          created_at?: string;
-        };
-        Update: {
-          user_id?: string;
-          current_streak?: number;
-          longest_streak?: number;
-          last_activity_date?: string;
-          created_at?: string;
         };
         Relationships: [];
       };
@@ -572,60 +365,6 @@ export interface Database {
           user_id?: string;
           entity_type?: string;
           entity_id?: string;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      teacher_classes: {
-        Row: {
-          id: string;
-          teacher_id: string;
-          name: string;
-          description: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          teacher_id: string;
-          name: string;
-          description?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          teacher_id?: string;
-          name?: string;
-          description?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      assignments: {
-        Row: {
-          id: string;
-          class_id: string;
-          title: string;
-          description: string | null;
-          pdf_attachment_url: string | null;
-          due_date: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          class_id: string;
-          title: string;
-          description?: string | null;
-          pdf_attachment_url?: string | null;
-          due_date: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          class_id?: string;
-          title?: string;
-          description?: string | null;
-          pdf_attachment_url?: string | null;
-          due_date?: string;
           created_at?: string;
         };
         Relationships: [];
@@ -660,162 +399,207 @@ export interface Database {
         };
         Relationships: [];
       };
-      class_enrollments: {
+      exam_questions: {
         Row: {
           id: string;
-          class_id: string;
-          student_id: string;
-          enrolled_at: string;
-        };
-        Insert: {
-          id?: string;
-          class_id: string;
-          student_id: string;
-          enrolled_at?: string;
-        };
-        Update: {
-          id?: string;
-          class_id?: string;
-          student_id?: string;
-          enrolled_at?: string;
-        };
-        Relationships: [];
-      };
-      ragas: {
-        Row: {
-          id: string;
-          name: string;
-          melakarta_number: number | null;
-          arohanam: string;
-          avarohanam: string;
-          swaras: string | null;
-          parent_melakarta: string | null;
-          rasa: string | null;
-          time: string | null;
-          famous_kritis: string[] | null;
-          audio_url: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          melakarta_number?: number | null;
-          arohanam: string;
-          avarohanam: string;
-          swaras?: string | null;
-          parent_melakarta?: string | null;
-          rasa?: string | null;
-          time?: string | null;
-          famous_kritis?: string[] | null;
-          audio_url?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          melakarta_number?: number | null;
-          arohanam?: string;
-          avarohanam?: string;
-          swaras?: string | null;
-          parent_melakarta?: string | null;
-          rasa?: string | null;
-          time?: string | null;
-          famous_kritis?: string[] | null;
-          audio_url?: string | null;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-      quizzes: {
-        Row: {
-          id: string;
-          question: string;
-          option_a: string;
-          option_b: string;
-          option_c: string;
-          option_d: string;
+          type: string;
+          level: string;
+          question_text: string;
+          options: Json;
           correct_answer: string;
-          difficulty: string | null;
-          topic: string | null;
           explanation: string | null;
+          raga_id: string | null;
+          composer_id: string | null;
+          kriti_id: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
-          question: string;
-          option_a: string;
-          option_b: string;
-          option_c: string;
-          option_d: string;
+          type?: string;
+          level?: string;
+          question_text: string;
+          options: Json;
           correct_answer: string;
-          difficulty?: string | null;
-          topic?: string | null;
           explanation?: string | null;
+          raga_id?: string | null;
+          composer_id?: string | null;
+          kriti_id?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
-          question?: string;
-          option_a?: string;
-          option_b?: string;
-          option_c?: string;
-          option_d?: string;
+          type?: string;
+          level?: string;
+          question_text?: string;
+          options?: Json;
           correct_answer?: string;
-          difficulty?: string | null;
-          topic?: string | null;
           explanation?: string | null;
+          raga_id?: string | null;
+          composer_id?: string | null;
+          kriti_id?: string | null;
           created_at?: string;
         };
         Relationships: [];
       };
-      ai_chat_history: {
+      user_progress: {
         Row: {
           id: string;
           user_id: string;
-          user_message: string;
-          ai_response: string;
-          language: string;
+          entity_type: string;
+          entity_id: string;
+          status: string;
+          score: number | null;
+          last_studied_at: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          user_message: string;
-          ai_response: string;
-          language?: string;
+          entity_type: string;
+          entity_id: string;
+          status?: string;
+          score?: number | null;
+          last_studied_at?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          user_message?: string;
-          ai_response?: string;
-          language?: string;
+          entity_type?: string;
+          entity_id?: string;
+          status?: string;
+          score?: number | null;
+          last_studied_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      study_streaks: {
+        Row: {
+          id: string;
+          user_id: string;
+          current_streak: number;
+          longest_streak: number;
+          last_activity_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          current_streak?: number;
+          longest_streak?: number;
+          last_activity_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          current_streak?: number;
+          longest_streak?: number;
+          last_activity_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      teacher_classes: {
+        Row: {
+          id: string;
+          teacher_id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          teacher_id: string;
+          name: string;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          teacher_id?: string;
+          name?: string;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      assignments: {
+        Row: {
+          id: string;
+          class_id: string;
+          title: string;
+          description: string | null;
+          pdf_attachment_url: string | null;
+          due_date: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          class_id: string;
+          title: string;
+          description?: string | null;
+          pdf_attachment_url?: string | null;
+          due_date?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          class_id?: string;
+          title?: string;
+          description?: string | null;
+          pdf_attachment_url?: string | null;
+          due_date?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      syllabus_knowledge: {
+        Row: {
+          id: string;
+          title: string;
+          section: string;
+          content: string;
+          page_number: number | null;
+          source_file: string;
+          language: string | null;
+          embedding: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          section: string;
+          content: string;
+          page_number?: number | null;
+          source_file: string;
+          language?: string | null;
+          embedding?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          section?: string;
+          content?: string;
+          page_number?: number | null;
+          source_file?: string;
+          language?: string | null;
+          embedding?: string | null;
           created_at?: string;
         };
         Relationships: [];
       };
     };
     Views: Record<string, never>;
-    Functions: {
-      match_syllabus_knowledge: {
-        Args: {
-          query_embedding: number[];
-          match_threshold: number;
-          match_count: number;
-        };
-        Returns: {
-          id: string;
-          title: string | null;
-          section: string | null;
-          content: string;
-          source_file: string;
-          page_number: number;
-          language: string;
-          similarity: number;
-        }[];
-      };
-    };
+    Functions: Record<string, never>;
     Enums: {
       user_role: UserRole;
     };
@@ -829,7 +613,6 @@ export type PlatformStatistic =
   Database["public"]["Tables"]["platform_statistics"]["Row"];
 export type Testimonial = Database["public"]["Tables"]["testimonials"]["Row"];
 export type Melakarta = Database["public"]["Tables"]["melakartas"]["Row"];
-export type SyllabusKnowledge = Database["public"]["Tables"]["syllabus_knowledge"]["Row"];
 
 export interface MelakartaMetadata {
   western_equivalent?: string;

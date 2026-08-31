@@ -46,21 +46,10 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <div className="hidden items-center gap-2 sm:flex">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-kumkum"
-              nativeButton={false}
-              render={<Link href="/login" />}
-            >
+            <Button variant="ghost" size="sm" className="text-kumkum" render={<Link href="/login" />}>
               Sign In
             </Button>
-            <Button
-              size="sm"
-              className="bg-kumkum hover:bg-kumkum-light"
-              nativeButton={false}
-              render={<Link href="/signup" />}
-            >
+            <Button size="sm" className="bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
               Get Started
             </Button>
           </div>
@@ -96,19 +85,10 @@ export function Navbar() {
                 ))}
               </nav>
               <div className="mt-auto flex flex-col gap-2 p-4">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  nativeButton={false}
-                  render={<Link href="/login" />}
-                >
+                <Button variant="outline" className="w-full" render={<Link href="/login" />}>
                   Sign In
                 </Button>
-                <Button
-                  className="w-full bg-kumkum hover:bg-kumkum-light"
-                  nativeButton={false}
-                  render={<Link href="/signup" />}
-                >
+                <Button className="w-full bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
                   Get Started
                 </Button>
               </div>

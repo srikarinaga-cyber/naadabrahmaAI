@@ -4,6 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+interface NavItem {
+  name: string;
+  href: string;
+  icon: string;
+  exact?: boolean;
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -11,19 +18,26 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
 
-  const NAV_ITEMS = [
-    { name: "Student Home", href: "/student", icon: "📊" },
-    { name: "Knowledge Hub", href: "/knowledge", icon: "📖" },
+  const NAV_ITEMS: NavItem[] = [
+    { name: "Student Home", href: "/student", icon: "📊", exact: true },
+    { name: "Knowledge Hub", href: "/knowledge-hub", icon: "📖" },
+    { name: "Notes & PDFs", href: "/notes", icon: "📝" },
     { name: "AI Guru Chat", href: "/student/guru", icon: "🧘‍♂️" },
     { name: "Exam Hub", href: "/student/exam", icon: "🎯" },
+    { name: "Search", href: "/search", icon: "🔍" },
   ];
+
+  function isNavActive(item: NavItem) {
+    if (item.exact) {
+      return pathname === item.href;
+    }
+    return pathname.startsWith(item.href);
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row">
-      {/* Sidebar navigation */}
       <aside className="w-full md:w-64 border-r border-[#D4AF37]/20 bg-white flex flex-col justify-between p-6">
         <div className="space-y-8">
-          {/* Dashboard Logo */}
           <div className="flex items-center space-x-2">
             <span className="text-xl">🕉️</span>
             <div>
@@ -36,30 +50,32 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-1">
+          <nav className="space-y-1" aria-label="Student portal navigation">
             {NAV_ITEMS.map((item) => {
-              // Exact matches or subdirectory active states
-              const isActive = pathname.startsWith(item.href) || pathname === `/student${item.href}`;
+              const active = isNavActive(item);
+              const isExternalModule = item.href === "/knowledge-hub" || item.href === "/search";
+
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                    isActive
+                    active
                       ? "bg-[#800020]/5 text-[#800020] border-l-2 border-[#800020]"
                       : "text-[#1A2228]/70 hover:bg-[#FAF6F0] hover:text-[#800020]"
                   }`}
                 >
                   <span className="text-base">{item.icon}</span>
                   <span>{item.name}</span>
+                  {isExternalModule && active && (
+                    <span className="ml-auto text-[8px] text-gray-400">↗</span>
+                  )}
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* User profile footer info */}
         <div className="border-t border-[#D4AF37]/10 pt-4 mt-8 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full bg-[#800020]/10 flex items-center justify-center font-bold text-[#800020] text-xs">
@@ -80,9 +96,7 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main dashboard content viewport */}
       <main className="flex-1 p-6 md:p-10 overflow-y-auto max-w-5xl mx-auto w-full">
-        {/* Top Header */}
         <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/10">
           <div>
             <h3 className="font-serif text-2xl font-semibold text-[#800020]">
@@ -93,11 +107,12 @@ export default function DashboardLayout({
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            {/* Streak Badge */}
             <div className="bg-[#E68A00]/10 border border-[#E68A00]/25 rounded-lg px-3 py-1.5 flex items-center space-x-2">
               <span className="text-sm">🔥</span>
               <div>
-                <p className="text-[10px] uppercase font-bold text-[#E68A00] tracking-wide -mb-0.5">Streak</p>
+                <p className="text-[10px] uppercase font-bold text-[#E68A00] tracking-wide -mb-0.5">
+                  Streak
+                </p>
                 <p className="text-xs font-extrabold text-[#1A2228]">7 Days</p>
               </div>
             </div>

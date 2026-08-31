@@ -6,9 +6,10 @@ import { Separator } from "@/components/ui/separator";
 const footerLinks = {
   Platform: [
     { label: "Knowledge Hub", href: "/knowledge-hub" },
+    { label: "Notes & PDFs", href: "/notes" },
     { label: "AI Guru", href: "/ai-guru" },
     { label: "Search", href: "/search" },
-    { label: "Examinations", href: "/exams" },
+    { label: "Examinations", href: "/student/exam" },
   ],
   Roles: [
     { label: "Students", href: "/student" },
