@@ -65,7 +65,7 @@ export function TanpuraTablaPlayer() {
   const octaveMultiplier = octave === "low" ? 0.5 : octave === "high" ? 2.0 : 1.0;
   const currentHz = selectedPitch.baseFreq * octaveMultiplier;
 
-  // Pluck a single Tanpura Droid string with metallic Jivari acoustic resonance
+  // Pluck a single Tanpura string with metallic Jivari acoustic resonance
   const pluckTanpuraString = (
     baseHz: number,
     stringRatio: number,
@@ -126,7 +126,7 @@ export function TanpuraTablaPlayer() {
     }
   };
 
-  // Tanpura Droid 1 Strumming Loop
+  // Tanpura Droid 1 Strumming Loop (PA - SA - SA - SA / SA PA SA Pattern)
   useEffect(() => {
     if (isTanpura1Active) {
       let step = 0;
@@ -284,13 +284,13 @@ export function TanpuraTablaPlayer() {
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
         <div>
           <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1 font-bold">
-            Tanpura Droid Acoustic Reference Engine
+            Classical Tanpura (SA - PA - SA) Engine
           </Badge>
           <h2 className="font-serif text-2xl font-bold text-kumkum flex items-center gap-2">
-            🪕 Tanpura Droid & Rhythm Console
+            🪕 Acoustic Tanpura & Rhythm Console
           </h2>
           <p className="text-xs text-muted-foreground mt-1 max-w-xl">
-            Modelled after Tanpura Droid with Jivari cotton thread buzz physics, male/female octave modes, and 4-string tunings.
+            Acoustic 4-string Tanpura tuned to classical <strong className="text-kumkum font-bold">SA - PA - SA (PA SA SA SA)</strong> with Jivari acoustic thread buzz physics.
           </p>
         </div>
 
@@ -306,17 +306,17 @@ export function TanpuraTablaPlayer() {
         >
           {isTanpura1Active || isTanpura2Active || isTablaActive ? (
             <>
-              <Square className="size-4 fill-current animate-pulse" /> Stop Tanpura Droid
+              <Square className="size-4 fill-current animate-pulse" /> Stop Tanpura Drone
             </>
           ) : (
             <>
-              <Play className="size-4 fill-current" /> Start Tanpura Droid
+              <Play className="size-4 fill-current" /> Start SA-PA-SA Tanpura
             </>
           )}
         </Button>
       </div>
 
-      {/* Sruthi Presets & Octave Switcher (Tanpura Droid Reference) */}
+      {/* Sruthi Presets & Octave Switcher */}
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-2xl bg-muted/40 p-4 border border-border/50">
           {/* Base Sruthi Key */}
@@ -367,25 +367,31 @@ export function TanpuraTablaPlayer() {
           </div>
         </div>
 
-        {/* Tanpura Droid Tuning & Performance Controls */}
+        {/* Tanpura Tuning Patterns (SA PA SA) & Performance Controls */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl bg-muted/40 p-4 border border-border/50">
-          {/* String 1 Tuning (Pa / Ma / Ni / Sa) */}
+          {/* Swara Tuning Pattern (SA PA SA) */}
           <div>
             <label className="block text-xs font-semibold text-foreground mb-1">
-              String 1 Tuning (Panchama / Madhyama / Nishada / Shadja):
+              Tanpura Swara Tuning (SA PA SA Classical Pattern):
             </label>
             <div className="grid grid-cols-4 gap-1">
-              {(["Pa", "Ma", "Ni", "Sa"] as const).map((t) => (
+              {[
+                { id: "Pa", label: "SA-PA-SA", sub: "PA SA SA SA" },
+                { id: "Ma", label: "SA-MA-SA", sub: "MA SA SA SA" },
+                { id: "Ni", label: "SA-NI-SA", sub: "NI SA SA SA" },
+                { id: "Sa", label: "SA-SA-SA", sub: "SA SA SA SA" },
+              ].map((t) => (
                 <button
-                  key={t}
-                  onClick={() => setDroneTuning(t)}
-                  className={`py-1.5 rounded-xl text-[10px] font-bold transition-all ${
-                    droneTuning === t
+                  key={t.id}
+                  onClick={() => setDroneTuning(t.id as "Pa" | "Ma" | "Ni" | "Sa")}
+                  className={`py-1.5 rounded-xl text-[10px] font-bold flex flex-col items-center justify-center transition-all ${
+                    droneTuning === t.id
                       ? "bg-kumkum text-white shadow-sm"
                       : "bg-background text-muted-foreground hover:bg-muted"
                   }`}
                 >
-                  {t} ({t === "Pa" ? "P-S-S-S" : t === "Ma" ? "M-S-S-S" : t === "Ni" ? "N-S-S-S" : "S-S-S-S"})
+                  <span>{t.label}</span>
+                  <span className="text-[8px] opacity-80">{t.sub}</span>
                 </button>
               ))}
             </div>
@@ -427,15 +433,20 @@ export function TanpuraTablaPlayer() {
         </div>
       </div>
 
-      {/* Tanpura Droid String Strumming Visualizer */}
+      {/* Tanpura SA PA SA String Strumming Visualizer */}
       {(isTanpura1Active || isTanpura2Active) && (
         <div className="rounded-2xl border border-swara-gold/25 bg-kumkum/5 p-4 flex items-center justify-between text-xs animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
             <Activity className="size-4 text-kumkum animate-pulse" />
-            <span className="font-bold text-foreground">Tanpura Droid String Vibrator:</span>
+            <span className="font-bold text-foreground">SA-PA-SA Tanpura String Strummer:</span>
           </div>
           <div className="flex items-center gap-3">
-            {["1 (P/M/N)", "2 (Tara Sa)", "3 (Tara Sa)", "4 (Lower Sa)"].map((label, idx) => (
+            {[
+              `1 (${droneTuning === "Pa" ? "Pa" : droneTuning === "Ma" ? "Ma" : droneTuning === "Ni" ? "Ni" : "Sa"})`,
+              "2 (Tara Sa)",
+              "3 (Tara Sa)",
+              "4 (Lower Sa)",
+            ].map((label, idx) => (
               <div
                 key={label}
                 className={`px-3 py-1 rounded-xl text-[10px] font-bold font-mono transition-all ${
@@ -459,8 +470,8 @@ export function TanpuraTablaPlayer() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🪕</span>
               <div>
-                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 1 (Left)</h4>
-                <p className="text-[10px] text-muted-foreground">Primary Acoustic Drone</p>
+                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 1 (SA PA SA)</h4>
+                <p className="text-[10px] text-muted-foreground">Primary Drone (Left Channel)</p>
               </div>
             </div>
 
@@ -497,8 +508,8 @@ export function TanpuraTablaPlayer() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🪕</span>
               <div>
-                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 2 (Right)</h4>
-                <p className="text-[10px] text-muted-foreground">Stereo Acoustic Drone</p>
+                <h4 className="font-serif text-sm font-bold text-kumkum">Tanpura 2 (SA PA SA)</h4>
+                <p className="text-[10px] text-muted-foreground">Stereo Drone (Right Channel)</p>
               </div>
             </div>
 
