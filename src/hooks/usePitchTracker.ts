@@ -26,18 +26,86 @@ const SWARAS = [
   { name: "Tara Shadja (High Sa)", swara: "S'", cents: 1200 },
 ];
 
+// Fallback pitch detection using autocorrelation (works on all mobile/desktop browsers without worker)
+function autoCorrelate(buf: Float32Array, sampleRate: number): { pitch: number; clarity: number } {
+  const SIZE = buf.length;
+  let rms = 0;
+  for (let i = 0; i < SIZE; i++) {
+    const val = buf[i];
+    rms += val * val;
+  }
+  rms = Math.sqrt(rms / SIZE);
+  if (rms < 0.01) return { pitch: -1, clarity: 0 }; // Too quiet / silent
+
+  let r1 = 0;
+  let r2 = SIZE - 1;
+  const thres = 0.2;
+  for (let i = 0; i < SIZE / 2; i++) {
+    if (Math.abs(buf[i]) < thres) {
+      r1 = i;
+      break;
+    }
+  }
+  for (let i = 1; i < SIZE / 2; i++) {
+    if (Math.abs(buf[SIZE - i]) < thres) {
+      r2 = SIZE - i;
+      break;
+    }
+  }
+
+  const buf2 = buf.slice(r1, r2);
+  const c = new Float32Array(buf2.length);
+  for (let i = 0; i < buf2.length; i++) {
+    for (let j = 0; j < buf2.length - i; j++) {
+      c[i] = c[i] + buf2[j] * buf2[j + i];
+    }
+  }
+
+  let d = 0;
+  while (c[d] > c[d + 1]) d++;
+  let maxval = -1;
+  let maxpos = -1;
+  for (let i = d; i < buf2.length; i++) {
+    if (c[i] > maxval) {
+      maxval = c[i];
+      maxpos = i;
+    }
+  }
+  let T0 = maxpos;
+
+  if (T0 <= 0 || T0 >= buf2.length) return { pitch: -1, clarity: 0 };
+
+  // Parabolic interpolation
+  const x1 = c[T0 - 1];
+  const x2 = c[T0];
+  const x3 = c[T0 + 1];
+  const a = (x1 + x3 - 2 * x2) / 2;
+  const b = (x3 - x1) / 2;
+  if (a !== 0) T0 = T0 - b / (2 * a);
+
+  const pitch = sampleRate / T0;
+  const clarity = maxval / c[0];
+
+  if (pitch >= 50 && pitch <= 1800 && clarity > 0.35) {
+    return { pitch, clarity };
+  }
+  return { pitch: -1, clarity: 0 };
+}
+
 export function usePitchTracker(baseFreq: number = 130.81) {
   const [isTuning, setIsTuning] = useState(false);
   const [pitch, setPitch] = useState<number>(-1);
   const [clarity, setClarity] = useState<number>(0);
   const [matchedSwara, setMatchedSwara] = useState<SwaraMatch | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isPlayingSynth, setIsPlayingSynth] = useState(false);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const animationFrameIdRef = useRef<number | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const synthOscRef = useRef<OscillatorNode | null>(null);
 
   const bufferSize = 2048;
 
@@ -48,7 +116,7 @@ export function usePitchTracker(baseFreq: number = 130.81) {
     const ratio = hz / baseFreq;
     let normalizedRatio = ratio;
 
-    // Shift octaves to normalize between [0.95, 2.05] relative ratio
+    // Shift octaves to normalize between [0.94, 2.06] relative ratio
     while (normalizedRatio < 0.94) {
       normalizedRatio *= 2;
     }
@@ -56,10 +124,10 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       normalizedRatio /= 2;
     }
 
-    // Calculate cents offset relative to the base frequency
+    // Calculate cents offset relative to base frequency
     const cents = 1200 * Math.log2(normalizedRatio);
 
-    // Find the closest Swara interval
+    // Find closest Swara interval
     let closest = SWARAS[0];
     let minDiff = 1e9;
 
@@ -81,23 +149,28 @@ export function usePitchTracker(baseFreq: number = 130.81) {
     };
   };
 
-  // Start capturing audio from microphone
+  // Start capturing audio from microphone (mobile & desktop compatible)
   const startTracking = async () => {
     setErrorMsg(null);
     try {
       // 1. Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
         },
       });
       streamRef.current = stream;
 
-      // 2. Initialize AudioContext
-      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      // 2. Initialize AudioContext (Mobile Safari requirement: resume context on user gesture)
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       const ctx = new AudioContextClass();
+      if (ctx.state === "suspended") {
+        await ctx.resume();
+      }
       audioCtxRef.current = ctx;
 
       const sourceNode = ctx.createMediaStreamSource(stream);
@@ -106,39 +179,56 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       sourceNode.connect(analyser);
       analyserRef.current = analyser;
 
-      // 3. Initialize Web Worker
-      const worker = new Worker("/workers/pitchWorker.js");
-      workerRef.current = worker;
-
-      const pcmData = new Float32Array(bufferSize);
-
-      // Listen for background calculations from worker
-      worker.onmessage = (e) => {
-        const { pitch: detectedPitch, clarity: detectedClarity } = e.data;
-        if (detectedPitch > 0 && detectedClarity > 0.6) {
-          setPitch(detectedPitch);
-          setClarity(detectedClarity);
-          const swara = mapHzToSwara(detectedPitch);
-          setMatchedSwara(swara);
-        } else {
-          setPitch(-1);
-          setMatchedSwara(null);
-        }
-      };
+      // 3. Attempt Web Worker initialization with fallback
+      try {
+        const worker = new Worker("/workers/pitchWorker.js");
+        workerRef.current = worker;
+        worker.onmessage = (e) => {
+          const { pitch: detectedPitch, clarity: detectedClarity } = e.data;
+          if (detectedPitch > 0 && detectedClarity > 0.4) {
+            setPitch(detectedPitch);
+            setClarity(detectedClarity);
+            setMatchedSwara(mapHzToSwara(detectedPitch));
+          } else {
+            setPitch(-1);
+            setMatchedSwara(null);
+          }
+        };
+      } catch (workerErr) {
+        console.warn("Web worker inline fallback active:", workerErr);
+        workerRef.current = null;
+      }
 
       setIsTuning(true);
 
+      const pcmData = new Float32Array(bufferSize);
+
       // 4. Processing Loop
       const process = () => {
-        if (analyserRef.current && workerRef.current) {
+        if (analyserRef.current) {
           analyserRef.current.getFloatTimeDomainData(pcmData);
-          
-          // Send Float32 PCM chunk to worker thread
-          workerRef.current.postMessage({
-            buffer: pcmData,
-            sampleRate: ctx.sampleRate,
-            threshold: 0.15,
-          });
+
+          if (workerRef.current) {
+            workerRef.current.postMessage({
+              buffer: pcmData,
+              sampleRate: ctx.sampleRate,
+              threshold: 0.15,
+            });
+          } else {
+            // Main thread autocorrelation fallback for mobile browsers
+            const { pitch: detectedPitch, clarity: detectedClarity } = autoCorrelate(
+              pcmData,
+              ctx.sampleRate
+            );
+            if (detectedPitch > 0) {
+              setPitch(detectedPitch);
+              setClarity(detectedClarity);
+              setMatchedSwara(mapHzToSwara(detectedPitch));
+            } else {
+              setPitch(-1);
+              setMatchedSwara(null);
+            }
+          }
         }
         animationFrameIdRef.current = requestAnimationFrame(process);
       };
@@ -149,33 +239,68 @@ export function usePitchTracker(baseFreq: number = 130.81) {
       const isNotAllowed = err instanceof Error && err.name === "NotAllowedError";
       setErrorMsg(
         isNotAllowed
-          ? "Microphone access denied. Please grant permissions to track pitch."
-          : "Could not initialize microphone audio."
+          ? "Microphone permission denied. Please enable mic access in your mobile or browser settings."
+          : "Audio input device not available or blocked."
       );
       stopTracking();
     }
   };
 
+  // Play synthetic Tanpura / Swara tone to test system audio detection
+  const playTestTone = (freqMultiplier: number = 1.0) => {
+    try {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = audioCtxRef.current || new AudioContextClass();
+      if (ctx.state === "suspended") ctx.resume();
+
+      if (synthOscRef.current) {
+        synthOscRef.current.stop();
+        synthOscRef.current = null;
+        setIsPlayingSynth(false);
+        return;
+      }
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(baseFreq * freqMultiplier, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.0);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 3.0);
+      synthOscRef.current = osc;
+      setIsPlayingSynth(true);
+
+      setTimeout(() => setIsPlayingSynth(false), 3000);
+    } catch (e) {
+      console.warn("Synth play error:", e);
+    }
+  };
+
   const stopTracking = () => {
-    // Stop layout loops
     if (animationFrameIdRef.current) {
       cancelAnimationFrame(animationFrameIdRef.current);
       animationFrameIdRef.current = null;
     }
 
-    // Terminate worker
     if (workerRef.current) {
       workerRef.current.terminate();
       workerRef.current = null;
     }
 
-    // Stop all media tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
 
-    // Close audio context
     if (audioCtxRef.current) {
       audioCtxRef.current.close();
       audioCtxRef.current = null;
@@ -187,7 +312,6 @@ export function usePitchTracker(baseFreq: number = 130.81) {
     setClarity(0);
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
@@ -203,7 +327,9 @@ export function usePitchTracker(baseFreq: number = 130.81) {
     clarity,
     matchedSwara,
     errorMsg,
+    isPlayingSynth,
     startTracking,
     stopTracking,
+    playTestTone,
   };
 }

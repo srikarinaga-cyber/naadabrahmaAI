@@ -2,20 +2,73 @@
 
 export const dynamic = "force-dynamic";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
+import { Check, Plus, Trash2, Sparkles, BookOpen } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const PitchVisualizer = nextDynamic(
   () => import("@/components/music/PitchVisualizer"),
   { ssr: false }
 );
 
+interface Goal {
+  id: string;
+  task: string;
+  done: boolean;
+}
+
+interface Bookmark {
+  id: string;
+  title: string;
+  raga: string;
+}
+
 export default function StudentDashboardPage() {
+  const [goals, setGoals] = useState<Goal[]>([
+    { id: "g1", task: "Practice Mayamalavagowla scales in 3 speeds", done: true },
+    { id: "g2", task: "Review 18th Century Carnatic Trinity eras", done: false },
+    { id: "g3", task: "Perform a 5-minute Adhara Shadja Tanpura hum", done: false },
+  ]);
+
+  const [newGoalText, setNewGoalText] = useState("");
+  const [showAddGoal, setShowAddGoal] = useState(false);
+
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([
+    { id: "b1", title: "Kriti: Vatapi Ganapatim", raga: "Hamsadhwani • Adi Tala" },
+    { id: "b2", title: "Composer: Muthuswami Dikshitar", raga: "Carnatic Trinity Era" },
+    { id: "b3", title: "Raga: Bhairavi (Janya)", raga: "Parent: Melakarta #20 Natabhairavi" },
+  ]);
+
+  const completedGoalsCount = goals.filter((g) => g.done).length;
+  const progressPercent = Math.round((completedGoalsCount / (goals.length || 1)) * 100);
+
+  const toggleGoal = (id: string) => {
+    setGoals(
+      goals.map((g) => (g.id === id ? { ...g, done: !g.done } : g))
+    );
+  };
+
+  const handleAddGoal = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGoalText.trim()) return;
+    setGoals([
+      ...goals,
+      { id: `g-${Date.now()}`, task: newGoalText.trim(), done: false },
+    ]);
+    setNewGoalText("");
+    setShowAddGoal(false);
+  };
+
+  const removeBookmark = (id: string) => {
+    setBookmarks(bookmarks.filter((b) => b.id !== id));
+  };
+
   const RECOMMENDATIONS = [
     {
       title: "Perfect your G3 (Antara Gandhara)",
-      desc: "Based on your last mock, your pitch accuracy in Sankarabharanam was 4.2Hz sharp on G3.",
+      desc: "Based on your last practice, your pitch accuracy in Sankarabharanam was 4.2Hz sharp on G3.",
       action: "Practice Scale",
       type: "Pitch Tune",
       href: "/student",
@@ -36,42 +89,60 @@ export default function StudentDashboardPage() {
     },
   ];
 
-  const STATS = [
-    { label: "Study Progress", val: "68%", sub: "12/18 lessons complete", color: "bg-[#800020]" },
-    { label: "Ragas Discovered", val: "14", sub: "8 Melakartas, 6 Janyas", color: "bg-[#E68A00]" },
-    { label: "Practice Score", val: "91%", sub: "Avg pitch correctness", color: "bg-[#D4AF37]" },
-  ];
-
   return (
     <div className="space-y-8">
       {/* Overview Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {STATS.map((stat, i) => (
-          <div
-            key={i}
-            className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between"
-          >
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-                {stat.label}
-              </p>
-              <h4 className="text-3xl font-extrabold text-[#1A2228] mt-1">
-                {stat.val}
-              </h4>
-            </div>
-            <div className="mt-4 flex items-center space-x-2">
-              <span className={`w-2 h-2 rounded-full ${stat.color}`} />
-              <span className="text-[10px] text-gray-500 font-medium">{stat.sub}</span>
-            </div>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              Study Goals Progress
+            </p>
+            <h4 className="text-3xl font-extrabold text-[#800020] mt-1">
+              {progressPercent}%
+            </h4>
           </div>
-        ))}
+          <div className="mt-4 flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-[#800020]" />
+            <span className="text-[10px] text-gray-500 font-medium">
+              {completedGoalsCount} of {goals.length} tasks completed
+            </span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              Ragas Discovered
+            </p>
+            <h4 className="text-3xl font-extrabold text-[#1A2228] mt-1">14</h4>
+          </div>
+          <div className="mt-4 flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-[#E68A00]" />
+            <span className="text-[10px] text-gray-500 font-medium">8 Melakartas, 6 Janyas</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              Vocal Pitch Score
+            </p>
+            <h4 className="text-3xl font-extrabold text-emerald-600 mt-1">91%</h4>
+          </div>
+          <div className="mt-4 flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+            <span className="text-[10px] text-gray-500 font-medium">Avg pitch correctness</span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* AI Recommendations (Col Span 2) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex justify-between items-center">
-            <h4 className="font-serif text-lg font-bold text-[#800020]">
+            <h4 className="font-serif text-lg font-bold text-[#800020] flex items-center gap-1.5">
+              <Sparkles className="size-4 text-[#D4AF37]" />
               AI Guru Personal Recommendations
             </h4>
             <span className="text-[10px] bg-[#800020]/5 text-[#800020] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
@@ -108,24 +179,60 @@ export default function StudentDashboardPage() {
         {/* Study Details (Col Span 1) */}
         <div className="space-y-6">
           <PitchVisualizer />
-          {/* Daily Goals */}
+
+          {/* Dynamic Daily Goals */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-            <h4 className="font-serif text-md font-bold text-[#800020]">Daily Goals</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-serif text-md font-bold text-[#800020]">Daily Goals</h4>
+              <button
+                onClick={() => setShowAddGoal(!showAddGoal)}
+                className="text-[11px] text-[#800020] font-bold hover:underline flex items-center gap-1"
+              >
+                <Plus className="size-3" /> Add Task
+              </button>
+            </div>
+
+            {showAddGoal && (
+              <form onSubmit={handleAddGoal} className="flex gap-2">
+                <input
+                  type="text"
+                  value={newGoalText}
+                  onChange={(e) => setNewGoalText(e.target.value)}
+                  placeholder="Enter custom practice task..."
+                  className="flex-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#800020]"
+                />
+                <button
+                  type="submit"
+                  className="bg-[#800020] text-white px-3 py-1.5 rounded-xl text-xs font-bold"
+                >
+                  Save
+                </button>
+              </form>
+            )}
+
             <div className="space-y-3">
-              {[
-                { task: "Practice Mayamalavagowla scales", done: true },
-                { task: "Review 18th Century Composer eras", done: false },
-                { task: "Perform a 5-minute Tanpura hum", done: false },
-              ].map((goal, idx) => (
-                <div key={idx} className="flex items-center space-x-3 text-xs">
-                  <span className={`w-4 h-4 rounded-full flex items-center justify-center border ${
-                    goal.done 
-                      ? "bg-green-100 border-green-300 text-green-700" 
-                      : "bg-white border-gray-300 text-transparent"
-                  }`}>
-                    {goal.done && "✓"}
+              {goals.map((goal) => (
+                <div
+                  key={goal.id}
+                  onClick={() => toggleGoal(goal.id)}
+                  className="flex items-center space-x-3 text-xs cursor-pointer select-none group"
+                >
+                  <span
+                    className={`w-4 h-4 rounded-full flex items-center justify-center border transition-all ${
+                      goal.done
+                        ? "bg-green-100 border-green-300 text-green-700 font-bold"
+                        : "bg-white border-gray-300 text-transparent group-hover:border-[#800020]"
+                    }`}
+                  >
+                    {goal.done && <Check className="size-3" />}
                   </span>
-                  <span className={goal.done ? "text-gray-400 line-through" : "text-[#1A2228] font-medium"}>
+                  <span
+                    className={
+                      goal.done
+                        ? "text-gray-400 line-through"
+                        : "text-[#1A2228] font-medium group-hover:text-[#800020]"
+                    }
+                  >
                     {goal.task}
                   </span>
                 </div>
@@ -133,21 +240,35 @@ export default function StudentDashboardPage() {
             </div>
           </div>
 
-          {/* Bookmarks */}
+          {/* Dynamic Saved Bookmarks */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
-            <h4 className="font-serif text-md font-bold text-[#800020]">Saved Bookmarks</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-serif text-md font-bold text-[#800020] flex items-center gap-1.5">
+                <BookOpen className="size-4 text-[#D4AF37]" />
+                Saved Bookmarks
+              </h4>
+              <Badge variant="outline" className="border-gray-200 text-[10px]">
+                {bookmarks.length} Items
+              </Badge>
+            </div>
+
             <div className="space-y-2.5">
-              {[
-                { title: "Kriti: Vatapi Ganapatim", raga: "Hamsadhwani" },
-                { title: "Composer: Muthuswami Dikshitar", raga: "Carnatic Trinity" },
-                { title: "Raga: Bhairavi (Janya)", raga: "Melakarta #20 parent" },
-              ].map((bk, idx) => (
-                <div key={idx} className="flex justify-between items-center text-xs pb-2 border-b border-gray-50 last:border-0 last:pb-0">
+              {bookmarks.map((bk) => (
+                <div
+                  key={bk.id}
+                  className="flex justify-between items-center text-xs pb-2 border-b border-gray-50 last:border-0 last:pb-0"
+                >
                   <div>
                     <p className="font-extrabold text-[#1A2228]">{bk.title}</p>
                     <p className="text-[9px] text-gray-400">{bk.raga}</p>
                   </div>
-                  <span className="text-[#D4AF37] cursor-pointer hover:scale-110 transition-transform">⭐</span>
+                  <button
+                    onClick={() => removeBookmark(bk.id)}
+                    className="text-gray-300 hover:text-red-600 transition-colors p-1"
+                    title="Remove Bookmark"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
                 </div>
               ))}
             </div>
