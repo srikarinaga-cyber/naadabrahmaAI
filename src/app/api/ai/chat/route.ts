@@ -11,6 +11,7 @@ import {
   buildMusicContext,
   buildSystemPrompt,
   callOpenAI,
+  type SupportedLanguage,
 } from "@/lib/ai/context";
 import type { Instrument } from "@/lib/ai/instruments";
 import { updateStudyStreak } from "@/lib/db/progress";
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     const message = body.message as string;
     const ragaId = body.ragaId as string | undefined;
     const instrument = body.instrument as Instrument | undefined;
-    const language = (body.language as "te" | "en") ?? "en";
+    const language = (body.language as SupportedLanguage) ?? "en";
 
     if (!message?.trim()) {
       return jsonError("Message is required");
