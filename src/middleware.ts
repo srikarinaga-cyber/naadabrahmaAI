@@ -39,13 +39,17 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (isProtected && !user) {
+  // Also allow demo session users through
+  const demoSession = request.cookies.get("nb_demo_session")?.value;
+  const isDemoUser = Boolean(demoSession);
+
+  if (isProtected && !user && !isDemoUser) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if ((pathname === "/login" || pathname === "/signup") && user) {
+  if ((pathname === "/login" || pathname === "/signup") && (user || isDemoUser)) {
     return NextResponse.redirect(new URL("/student", request.url));
   }
 
