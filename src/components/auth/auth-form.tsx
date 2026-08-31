@@ -115,8 +115,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setSuccess(`Accessing ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
 
     // Set demo cookies so Next.js middleware grants route access immediately
-    document.cookie = `naada_demo_role=${targetRole}; path=/; max-age=86400`;
-    document.cookie = `demo_mode=true; path=/; max-age=86400`;
+    document.cookie = `naada_demo_role=${targetRole}; path=/; max-age=86400; SameSite=Lax`;
+    document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
 
     const targetUrl = targetRole === "teacher" ? "/teacher" : "/student";
     window.location.href = targetUrl;
