@@ -80,12 +80,12 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Image: Sangeetha Trinity Artwork Theme */}
+      {/* High Visibility Realistic Sangeetha Trinity Artwork Background Theme */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-25 dark:opacity-20 mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-45 dark:opacity-40"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/40 via-transparent to-background/60" />
 
       <Navbar />
       <main className="mx-auto max-w-5xl px-6 py-16">
@@ -93,7 +93,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <Link
             href="/knowledge-hub"
-            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/80 backdrop-blur px-3.5 py-2 rounded-xl border border-border shadow-xs"
+            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border shadow-xs"
           >
             <ArrowLeft className="size-4" /> Back to 72 Melakartas
           </Link>
@@ -101,7 +101,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-2">
             <Link
               href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/15 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
               title={`Previous Raga: #${prevMelakartaNum} ${prevMelakarta.name}`}
             >
               <ArrowLeft className="size-3.5" /> Previous: #{prevMelakartaNum} {prevMelakarta.name}
@@ -109,7 +109,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
             <Link
               href={`/knowledge-hub/melakarta/${nextMelakartaNum}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/15 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
               title={`Next Raga: #${nextMelakartaNum} ${nextMelakarta.name}`}
             >
               Next: #{nextMelakartaNum} {nextMelakarta.name} <ArrowRight className="size-3.5" />
@@ -118,7 +118,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </div>
 
         {/* Hero Section */}
-        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 p-8 md:p-10 mb-8 space-y-6 shadow-sm">
+        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/30 p-8 md:p-10 mb-8 space-y-6 shadow-md bg-card/85 backdrop-blur-md">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -164,7 +164,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
         {/* Scale Swarasthana Notation Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="glass-panel rounded-2xl border border-swara-gold/15 p-6 bg-card">
+          <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card/85 backdrop-blur-md">
             <h3 className="font-serif text-base font-bold text-kumkum mb-3 flex items-center gap-2">
               <Music className="size-4 text-swara-gold" /> Arohana (Ascending Swaras)
             </h3>
@@ -175,7 +175,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="glass-panel rounded-2xl border border-swara-gold/15 p-6 bg-card">
+          <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card/85 backdrop-blur-md">
             <h3 className="font-serif text-base font-bold text-kumkum mb-3 flex items-center gap-2">
               <Music className="size-4 rotate-180 text-swara-gold" /> Avarohana (High Pitch S&apos; Descending Swaras)
             </h3>
@@ -202,7 +202,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
             {janyasForMelakarta.map((j) => (
               <div
                 key={j.id}
-                className="glass-panel rounded-2xl border border-swara-gold/20 bg-card/90 backdrop-blur-md p-5 space-y-3 hover:shadow-md transition-all"
+                className="glass-panel rounded-2xl border border-swara-gold/25 bg-card/85 backdrop-blur-md p-5 space-y-3 hover:shadow-lg transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -246,7 +246,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </div>
 
         {/* Famous Compositions (Kritis) */}
-        <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card/90 backdrop-blur-md space-y-4 mb-8">
+        <div className="glass-panel rounded-2xl border border-swara-gold/25 p-6 bg-card/85 backdrop-blur-md space-y-4 mb-8">
           <h3 className="font-serif text-lg font-bold text-kumkum flex items-center gap-2">
             <Users className="size-4 text-swara-gold" /> Classical Compositions in {melakarta.name} ({kritisList.length})
           </h3>
@@ -266,10 +266,10 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </div>
 
         {/* Bottom Navigation Buttons: Previous Raga & Next Raga */}
-        <div className="glass-panel rounded-2xl border border-swara-gold/30 p-6 bg-card/90 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="glass-panel rounded-2xl border border-swara-gold/30 p-6 bg-card/85 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/15 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
           >
             <ArrowLeft className="size-4" /> Previous Raga: #{prevMelakartaNum} {prevMelakarta.name}
           </Link>
@@ -283,7 +283,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
           <Link
             href={`/knowledge-hub/melakarta/${nextMelakartaNum}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/15 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
           >
             Next Raga: #{nextMelakartaNum} {nextMelakarta.name} <ArrowRight className="size-4" />
           </Link>
