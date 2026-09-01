@@ -2,12 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sparkles, BookOpen, Music, Users, X, Award, Globe, HeartHandshake } from "lucide-react";
+import { ArrowLeft, Sparkles, BookOpen, Music, X, Award, Globe, HeartHandshake } from "lucide-react";
 
 interface VaggeyakaraFullInfo {
   id: string;
@@ -16,7 +14,6 @@ interface VaggeyakaraFullInfo {
   era: string;
   mudra: string;
   language: string;
-  picture: string;
   summary: string;
   contributions: string[];
   famousKritis: string[];
@@ -32,7 +29,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1767 – 1847 AD (Tiruvaiyaru, Tanjore)",
     mudra: "Tyagaraja",
     language: "Telugu & Sanskrit",
-    picture: "/composers/tyagaraja.png",
     summary: "Revered as the greatest composer in Carnatic music history. One of the Tanjore Trinity who composed thousands of soul-stirring Kritis in praise of Lord Rama.",
     contributions: [
       "Pioneered the 'Sangati' variation technique where a musical line is progressively ornamented.",
@@ -57,7 +53,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1775 – 1835 AD (Tiruvarur, Tanjore)",
     mudra: "Guruguha",
     language: "Sanskrit",
-    picture: "/composers/trinity-bg.png",
     summary: "Master of majestic Sanskrit Kritis and 72 Melakarta Ragas according to Venkatamakhin's system. Known for profound Advaita Vedanta philosophy and slow, majestic Vilambita Kala tempo.",
     contributions: [
       "Composed the legendary 9 Kamalamba Navavarna Kritis and Navagraha Kritis.",
@@ -77,11 +72,10 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
   {
     id: "syama-sastri",
     name: "Syama Sastri",
-    title: "Kamakshi Hard-Core Devotee / Tanjore Trinity Master",
+    title: "Kamakshi Devotee / Tanjore Trinity Master",
     era: "1762 – 1827 AD (Tiruvarur, Tanjore)",
     mudra: "Shyamakrishna",
     language: "Telugu & Sanskrit",
-    picture: "/composers/trinity-bg.png",
     summary: "Senior-most of the Tanjore Trinity, legendary master of intricate rhythm (Tala-Prasthara) and soul-stirring Swarajathis dedicated to Goddess Kamakshi of Kanchipuram.",
     contributions: [
       "Created the architectural form of Swarajathi compositions for vocal & dance concert platforms.",
@@ -104,7 +98,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1484 – 1564 AD (Hampi, Karnataka)",
     mudra: "Purandara Vittala",
     language: "Kannada & Sanskrit",
-    picture: "/composers/trinity-bg.png",
     summary: "Venerated as the Father of Carnatic Music. Systematized the entire Carnatic music pedagogy starting from Sarali Varisai in Mayamalavagowla raga.",
     contributions: [
       "Designed the foundational Carnatic curriculum: Sarali, Jantai, Alankara Varisais, and Pillari Geethams.",
@@ -127,7 +120,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1813 – 1846 AD (Trivandrum, Kerala)",
     mudra: "Padmanabha / Sripadmanabha",
     language: "Sanskrit, Malayalam, Telugu, Hindi, Kannada, Tamil",
-    picture: "/composers/trinity-bg.png",
     summary: "Royal composer king of Travancore who authored iconic Navaratri Kritis, Tillanas, and Ragamalikas blending Carnatic and Hindustani musical traditions.",
     contributions: [
       "Composed the famous 9 Navaratri Kritis sung during the Dasara festival at Trivandrum.",
@@ -149,7 +141,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1408 – 1503 AD (Tirumala / Tallapaka, Andhra Pradesh)",
     mudra: "Venkateswara / Venkata",
     language: "Telugu & Sanskrit",
-    picture: "/composers/trinity-bg.png",
     summary: "The earliest known Indian musician to compose Sankeertanas. Authored 32,000 copper plate songs in praise of Lord Venkateswara at Tirumala.",
     contributions: [
       "Invented the Sankeertana format with Pallavi, Anupallavi, and Charanam verses.",
@@ -172,7 +163,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1620 – 1680 AD (Bhadrachalam, Telangana)",
     mudra: "Ramadasu",
     language: "Telugu",
-    picture: "/composers/trinity-bg.png",
     summary: "Pioneer of Carnatic Kirthanas whose emotional prison songs in Golconda fort directly inspired Saint Tyagaraja.",
     contributions: [
       "Built the famous Bhadrachalam Sri Rama Temple.",
@@ -194,7 +184,6 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
     era: "1890 – 1973 AD (Tamil Nadu)",
     mudra: "Ramadasan",
     language: "Tamil & Sanskrit",
-    picture: "/composers/trinity-bg.png",
     summary: "Revered as 'Tamil Tyagayya'. Composed over 800 classical Tamil Kritis and film classical songs that revitalized Tamil in concert platforms.",
     contributions: [
       "Popularized Tamil lyrics in classical Carnatic concert platforms.",
@@ -240,7 +229,7 @@ export default function ComposersPage() {
             Great Carnatic Music Composers (Vaggeyakaras)
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
-            Click on any composer below to inspect their complete biography, picture, mudras, key musical innovations, and signature kritis.
+            Click on any composer below to inspect their complete biography, mudras, key musical innovations, and signature kritis.
           </p>
         </div>
 
@@ -250,27 +239,21 @@ export default function ComposersPage() {
             <div
               key={c.id}
               onClick={() => setSelectedComposer(c)}
-              className="glass-panel rounded-3xl border border-swara-gold/25 bg-card/95 backdrop-blur-md p-6 flex flex-col justify-between hover:border-kumkum/60 hover:shadow-xl transition-all cursor-pointer group"
+              className="glass-panel rounded-3xl border border-swara-gold/25 bg-card/95 backdrop-blur-md p-6 flex flex-col justify-between hover:border-kumkum/60 hover:shadow-xl transition-all cursor-pointer group space-y-4"
             >
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative size-16 shrink-0 overflow-hidden rounded-2xl border-2 border-swara-gold/40 shadow-md bg-kumkum/10">
-                    <Image
-                      src={c.picture}
-                      alt={c.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <div>
-                    <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1 font-bold">
-                      Mudra: {c.mudra}
-                    </Badge>
-                    <h3 className="font-serif text-xl font-bold text-kumkum group-hover:text-kumkum-light">
-                      {c.name}
-                    </h3>
-                    <p className="text-[11px] text-muted-foreground font-mono">{c.language}</p>
-                  </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] font-bold">
+                    Mudra: {c.mudra}
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground font-mono">{c.era}</span>
+                </div>
+
+                <div>
+                  <h3 className="font-serif text-xl font-bold text-kumkum group-hover:text-kumkum-light">
+                    {c.name}
+                  </h3>
+                  <p className="text-[11px] text-swara-gold font-bold">{c.title}</p>
                 </div>
 
                 <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
@@ -278,17 +261,17 @@ export default function ComposersPage() {
                 </p>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-border/50 text-xs flex items-center justify-between text-foreground">
-                <span className="text-[11px] text-muted-foreground font-mono">{c.era}</span>
+              <div className="pt-3 border-t border-border/50 text-xs flex items-center justify-between text-foreground">
+                <span className="text-[11px] text-muted-foreground font-mono">Lang: {c.language}</span>
                 <span className="text-kumkum font-bold flex items-center gap-1 text-xs">
-                  <Sparkles className="size-3.5 text-swara-gold" /> Inspect Bio & Kritis →
+                  <Sparkles className="size-3.5 text-swara-gold" /> Inspect Complete Bio & Kritis →
                 </span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Detailed Composer Modal */}
+        {/* Detailed Composer Modal (Text Only - Pictures Removed) */}
         {selectedComposer && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border border-swara-gold/40 bg-card p-6 md:p-8 space-y-6 shadow-2xl">
@@ -302,37 +285,31 @@ export default function ComposersPage() {
               </button>
 
               {/* Modal Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5 border-b border-border pb-6">
-                <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border-2 border-swara-gold/50 shadow-md bg-kumkum/10">
-                  <Image
-                    src={selectedComposer.picture}
-                    alt={selectedComposer.name}
-                    fill
-                    className="object-cover"
-                  />
+              <div className="border-b border-border pb-5 space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-kumkum text-white text-xs font-bold">
+                    {selectedComposer.title}
+                  </Badge>
+                  <Badge variant="outline" className="border-swara-gold/40 text-swara-gold text-xs font-bold">
+                    Ankita Mudra: {selectedComposer.mudra}
+                  </Badge>
+                  <Badge variant="outline" className="border-kumkum/20 text-kumkum text-xs font-mono">
+                    {selectedComposer.language}
+                  </Badge>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge className="bg-kumkum text-white text-xs font-bold">
-                      {selectedComposer.title}
-                    </Badge>
-                    <Badge variant="outline" className="border-swara-gold/40 text-swara-gold text-xs font-bold">
-                      Mudra: {selectedComposer.mudra}
-                    </Badge>
-                  </div>
-                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-kumkum">
-                    {selectedComposer.name}
-                  </h2>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    Era: {selectedComposer.era} | Language: {selectedComposer.language}
-                  </p>
-                </div>
+
+                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-kumkum">
+                  {selectedComposer.name}
+                </h2>
+                <p className="text-xs text-muted-foreground font-mono">
+                  Era & Place: {selectedComposer.era}
+                </p>
               </div>
 
               {/* Summary */}
               <div className="space-y-2">
                 <h4 className="font-serif text-sm font-bold text-kumkum flex items-center gap-2">
-                  <BookOpen className="size-4 text-swara-gold" /> Biography & Overview
+                  <BookOpen className="size-4 text-swara-gold" /> Complete Biography & Overview
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {selectedComposer.summary}
