@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, BookOpen, Music, Users, Sparkles, HelpCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, Music, Users, Sparkles, HelpCircle, Binary } from "lucide-react";
 import { getMelakartaByNumber } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
@@ -66,15 +66,18 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </Link>
 
         {/* Hero Section */}
-        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/20 p-8 md:p-10 mb-8">
+        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/20 p-8 md:p-10 mb-8 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
                 <Badge className="bg-kumkum/10 text-kumkum border-none font-bold">
                   Janaka (Melakarta) Raga #{melakarta.number}
                 </Badge>
                 <Badge variant="outline" className="border-swara-gold/30 text-marigold">
                   Chakra: {melakarta.chakra}
+                </Badge>
+                <Badge variant="outline" className="border-kumkum/30 text-kumkum font-mono text-[10px]">
+                  Katapayadi Formula #{melakarta.number}
                 </Badge>
               </div>
               <h1 className="font-serif text-3xl md:text-4xl font-bold text-kumkum mt-1">
@@ -85,9 +88,20 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
               </p>
             </div>
           </div>
+
+          {/* Katapayadi System Explanation Card */}
+          <div className="rounded-2xl border border-swara-gold/30 bg-muted/40 p-4 space-y-2 text-xs">
+            <div className="flex items-center gap-2 font-bold text-kumkum">
+              <Binary className="size-4 text-swara-gold" />
+              <span>Katapayadi System (కటపయాది సూత్రం) Mnemonic Formula:</span>
+            </div>
+            <p className="text-muted-foreground leading-relaxed">
+              In Carnatic music theory, the <strong>Katapayadi System</strong> assigns numerical values (1-9, 0) to Sanskrit consonants. Taking the first two syllables of <em>&quot;{melakarta.name}&quot;</em> and reversing their digit order derives its exact Melakarta Index Number <strong>#{melakarta.number}</strong> in Venkatamakhin&apos;s 72 Melakarta scheme.
+            </p>
+          </div>
         </div>
 
-        {/* Interactive Swarasthana Player with Physical Modeling Veena & Violin Audio */}
+        {/* Interactive Swarasthana Player with Tanpura Droid Jivari Sound & Color Patterns */}
         <div className="mb-8">
           <SwarasthanaPlayer
             ragaName={melakarta.name}
@@ -111,7 +125,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
           <div className="glass-panel rounded-2xl border border-swara-gold/15 p-6 bg-card">
             <h3 className="font-serif text-base font-bold text-kumkum mb-3 flex items-center gap-2">
-              <Music className="size-4 rotate-180 text-swara-gold" /> Avarohana (Descending Swaras)
+              <Music className="size-4 rotate-180 text-swara-gold" /> Avarohana (High Pitch S&apos; Descending Swaras)
             </h3>
             <div className="bg-muted/50 p-4 rounded-xl text-center border border-border/50">
               <span className="font-serif text-xl font-bold tracking-widest text-foreground">
