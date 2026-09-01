@@ -35,8 +35,14 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row">
-      <aside className="w-full md:w-64 border-r border-[#D4AF37]/20 bg-white flex flex-col justify-between p-6">
+    <div className="relative min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row overflow-hidden">
+      {/* Classical Carnatic Trinity Background Theme Overlay for Modules */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.12] dark:opacity-[0.18] mix-blend-multiply"
+        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
+      />
+
+      <aside className="relative z-10 w-full md:w-64 border-r border-[#D4AF37]/20 bg-white/90 backdrop-blur-md flex flex-col justify-between p-6">
         <div className="space-y-8">
           <div className="flex items-center space-x-2">
             <span className="text-xl">🕉️</span>
@@ -61,7 +67,7 @@ export default function DashboardLayout({
                   href={item.href}
                   className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     active
-                      ? "bg-[#800020]/5 text-[#800020] border-l-2 border-[#800020] font-bold"
+                      ? "bg-[#800020]/10 text-[#800020] border-l-2 border-[#800020] font-bold shadow-xs"
                       : "text-[#1A2228]/70 hover:bg-[#FAF6F0] hover:text-[#800020]"
                   }`}
                 >
@@ -96,8 +102,8 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto max-w-5xl mx-auto w-full">
-        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/10">
+      <main className="relative z-10 flex-1 p-6 md:p-10 overflow-y-auto max-w-5xl mx-auto w-full">
+        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/10 bg-white/40 p-4 rounded-2xl backdrop-blur-xs">
           <div>
             <h3 className="font-serif text-2xl font-semibold text-[#800020]">
               Welcome back, Srinivas

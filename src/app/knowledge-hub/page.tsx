@@ -25,8 +25,8 @@ export default async function KnowledgeHubPage() {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Image: Traditional Carnatic Trinity Artwork */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15"
-        style={{ backgroundImage: "url('/images/knowledge-hub-bg.jpg')" }}
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
 
@@ -65,20 +65,27 @@ export default async function KnowledgeHubPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {melakartas.map((m) => (
             <Link
               key={m.number}
               href={`/knowledge-hub/melakarta/${m.number}`}
-              className="group rounded-2xl border border-swara-gold/25 bg-card/90 backdrop-blur-md p-4 hover:border-kumkum/50 hover:shadow-lg transition-all flex flex-col justify-between"
+              className="glass-panel group rounded-2xl border border-swara-gold/20 p-5 transition-all hover:border-kumkum hover:bg-kumkum/5 hover:shadow-md"
             >
-              <div>
-                <p className="text-[10px] font-bold text-kumkum uppercase">#{m.number}</p>
-                <p className="text-sm font-bold mt-1 group-hover:text-kumkum transition-colors line-clamp-2">
-                  {m.name}
-                </p>
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="font-mono text-[10px] text-kumkum border-kumkum/30">
+                  #{m.number}
+                </Badge>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-swara-gold">
+                  Chakra: {m.chakra}
+                </span>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-2 font-medium">Chakra: {m.chakra}</p>
+              <h2 className="font-serif text-xl font-bold text-foreground group-hover:text-kumkum mt-2">
+                {m.name}
+              </h2>
+              <p className="text-xs text-muted-foreground font-mono mt-3 line-clamp-1 border-t border-border/40 pt-2">
+                Arohana: {m.arohana}
+              </p>
             </Link>
           ))}
         </div>
