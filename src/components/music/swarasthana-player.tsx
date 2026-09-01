@@ -51,12 +51,19 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
   const [isPlayingScale, setIsPlayingScale] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
+  // Convert last SA in Arohana to High Pitch Tara Shadja (S')
   const parseArohanaSwaras = (scaleStr: string): string[] => {
     if (!scaleStr) return ["S", "R1", "G3", "M1", "P", "D1", "N3", "S'"];
-    return scaleStr
+    const list = scaleStr
       .split(/\s+/)
       .map((s) => s.trim().toUpperCase())
       .filter(Boolean);
+
+    // Transform last swara in Arohana if "S" or "S1" into High Pitch Tara Shadja "S'" (261.63 Hz)
+    if (list.length > 0 && (list[list.length - 1] === "S" || list[list.length - 1] === "S1")) {
+      list[list.length - 1] = "S'";
+    }
+    return list;
   };
 
   // Convert starting SA in Avarohana to High Pitch Tara Shadja (S')
@@ -341,11 +348,11 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
         </div>
       </div>
 
-      {/* Arohana Colored Swara Buttons */}
+      {/* Arohana Colored Swara Buttons (Last Sa is High Pitch S') */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-kumkum uppercase tracking-wider flex items-center gap-1.5">
-            <Volume2 className="size-3.5 text-swara-gold" /> Arohana (Ascending Colored Swaras):
+            <Volume2 className="size-3.5 text-swara-gold" /> Arohana (High Pitch S&apos; Peak Ascending Swaras):
           </span>
           <Button
             size="sm"
