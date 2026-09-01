@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, BookOpen, Music, Users, Sparkles, HelpCircle, Binary } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Music, Users, Sparkles, Binary } from "lucide-react";
 import { getMelakartaByNumber } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
@@ -54,16 +54,51 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
     (j) => j.melakartaNumber === ragaNumber
   );
 
+  // Compute Next and Previous Melakarta Raga Numbers and Names
+  const prevMelakartaNum = ragaNumber === 1 ? 72 : ragaNumber - 1;
+  const nextMelakartaNum = ragaNumber === 72 ? 1 : ragaNumber + 1;
+
+  const prevMelakarta = MELAKARTA_SEED_DATA.find((m) => m.number === prevMelakartaNum) || { name: `Raga #${prevMelakartaNum}` };
+  const nextMelakarta = MELAKARTA_SEED_DATA.find((m) => m.number === nextMelakartaNum) || { name: `Raga #${nextMelakartaNum}` };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Image: Sangeetha Trinity Artwork Theme */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
+      />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+
       <Navbar />
       <main className="mx-auto max-w-5xl px-6 py-16">
-        <Link
-          href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors"
-        >
-          <ArrowLeft className="size-4" /> Back to Janaka Ragas (72 Melakartas)
-        </Link>
+        {/* Navigation Bar with Previous Raga, Back to List & Next Raga */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <Link
+            href="/knowledge-hub"
+            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/80 backdrop-blur px-3.5 py-2 rounded-xl border border-border"
+          >
+            <ArrowLeft className="size-4" /> Back to 72 Melakartas
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all"
+              title={`Previous Raga: #${prevMelakartaNum} ${prevMelakarta.name}`}
+            >
+              <ArrowLeft className="size-3.5" /> Previous: #{prevMelakartaNum} {prevMelakarta.name}
+            </Link>
+
+            <Link
+              href={`/knowledge-hub/melakarta/${nextMelakartaNum}`}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all"
+              title={`Next Raga: #${nextMelakartaNum} ${nextMelakarta.name}`}
+            >
+              Next: #{nextMelakartaNum} {nextMelakarta.name} <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </div>
 
         {/* Hero Section */}
         <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/20 p-8 md:p-10 mb-8 space-y-6">
@@ -73,7 +108,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
                 <Badge className="bg-kumkum/10 text-kumkum border-none font-bold">
                   Janaka (Melakarta) Raga #{melakarta.number}
                 </Badge>
-                <Badge variant="outline" className="border-swara-gold/30 text-marigold">
+                <Badge variant="outline" className="border-swara-gold/30 text-marigold font-bold">
                   Chakra: {melakarta.chakra}
                 </Badge>
                 <Badge variant="outline" className="border-kumkum/30 text-kumkum font-mono text-[10px]">
@@ -201,7 +236,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </div>
 
         {/* Famous Compositions (Kritis) */}
-        <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card space-y-4">
+        <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card space-y-4 mb-8">
           <h3 className="font-serif text-lg font-bold text-kumkum flex items-center gap-2">
             <Users className="size-4 text-swara-gold" /> Classical Compositions in {melakarta.name}
           </h3>
@@ -225,6 +260,30 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Bottom Navigation Buttons: Previous Raga & Next Raga */}
+        <div className="glass-panel rounded-2xl border border-swara-gold/30 p-6 bg-card flex flex-col sm:flex-row items-center justify-between gap-4">
+          <Link
+            href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
+          >
+            <ArrowLeft className="size-4" /> Previous Raga: #{prevMelakartaNum} {prevMelakarta.name}
+          </Link>
+
+          <Link
+            href="/knowledge-hub"
+            className="text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors"
+          >
+            All 72 Melakartas Catalog
+          </Link>
+
+          <Link
+            href={`/knowledge-hub/melakarta/${nextMelakartaNum}`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
+          >
+            Next Raga: #{nextMelakartaNum} {nextMelakarta.name} <ArrowRight className="size-4" />
+          </Link>
         </div>
       </main>
       <Footer />

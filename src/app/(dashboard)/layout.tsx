@@ -36,11 +36,12 @@ export default function DashboardLayout({
 
   return (
     <div className="relative min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row overflow-hidden">
-      {/* Classical Carnatic Trinity Background Theme Overlay for Modules */}
+      {/* Sangeetha Trinity Artwork Background Theme Overlay for all Portal Modules */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.12] dark:opacity-[0.18] mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.18] dark:opacity-[0.24] mix-blend-multiply"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF6F0]/70 via-[#FAF6F0]/50 to-[#FAF6F0]/90" />
 
       <aside className="relative z-10 w-full md:w-64 border-r border-[#D4AF37]/20 bg-white/90 backdrop-blur-md flex flex-col justify-between p-6">
         <div className="space-y-8">
@@ -103,7 +104,7 @@ export default function DashboardLayout({
       </aside>
 
       <main className="relative z-10 flex-1 p-6 md:p-10 overflow-y-auto max-w-5xl mx-auto w-full">
-        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/10 bg-white/40 p-4 rounded-2xl backdrop-blur-xs">
+        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/10 bg-white/50 p-4 rounded-2xl backdrop-blur-xs shadow-xs">
           <div>
             <h3 className="font-serif text-2xl font-semibold text-[#800020]">
               Welcome back, Srinivas

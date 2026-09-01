@@ -9,7 +9,14 @@ import { TalaMatrixPlayer } from "@/components/music/tala-matrix-player";
 
 export default function TalasPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Image: Sangeetha Trinity Artwork Theme */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
+      />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
@@ -20,14 +27,14 @@ export default function TalasPage() {
         </Link>
 
         <div className="mb-10">
-          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4">
+          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4 font-bold">
             Suladi Sapta Tala System
           </Badge>
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            35 Suladi Sapta Talas Matrix
+            35 Suladi Sapta Talas Matrix & Beat Synthesizer
           </h1>
           <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
-            The foundational 35 rhythmic cycles of Carnatic music formed by combining the 7 Principal Tala Types (Dhruva, Matya, Rupaka, Jhampa, Triputa, Ata, Eka) across the 5 Jathis (Tisra, Chatusra, Khanda, Misra, Sankeerna). Select any Tala to test the interactive metronome pulse.
+            The foundational 35 rhythmic cycles of Carnatic music formed by combining the 7 Principal Tala Types (Dhruva, Matya, Rupaka, Jhampa, Triputa, Ata, Eka) across the 5 Jathis (Tisra, Chatusra, Khanda, Misra, Sankeerna). Select any Tala to play its exact Anga beat sound signature.
           </p>
         </div>
 
