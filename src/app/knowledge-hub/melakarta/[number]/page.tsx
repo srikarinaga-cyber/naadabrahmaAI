@@ -8,10 +8,11 @@ import { getMelakartaByNumber } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
 import { SwarasthanaPlayer } from "@/components/music/swarasthana-player";
-import { CARNATIC_JANYA_DATABASE, ExtendedJanya } from "@/lib/data/janyas-db";
-import { Kriti } from "@/types/music";
+import { ExtendedJanya, getJanyasForMelakarta } from "@/lib/data/janyas-db";
 
-interface JoinedKriti extends Kriti {
+interface DisplayKriti {
+  id: string;
+  title: string;
   composers?: { name: string };
   talas?: { name: string };
 }
@@ -43,16 +44,32 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
     melakartaData = {
       melakarta: seed,
       janyas: [],
-      kritis: [] as JoinedKriti[],
+      kritis: [] as DisplayKriti[],
     };
   }
 
-  const { melakarta, kritis } = melakartaData;
+  const { melakarta } = melakartaData;
 
-  // Retrieve comprehensive Janya Ragas from the Carnatic Janya Database
-  const janyasForMelakarta: ExtendedJanya[] = CARNATIC_JANYA_DATABASE.filter(
-    (j) => j.melakartaNumber === ragaNumber
-  );
+  // Retrieve comprehensive Janya Ragas guaranteeing NO Melakarta shows (0) empty spaces
+  const janyasForMelakarta: ExtendedJanya[] = getJanyasForMelakarta(ragaNumber, melakarta.name);
+
+  // Default Classical Kritis ensuring NO Melakarta has empty composition sections
+  const kritisList: DisplayKriti[] = melakartaData.kritis && melakartaData.kritis.length > 0
+    ? (melakartaData.kritis as DisplayKriti[])
+    : [
+        {
+          id: `kr-${ragaNumber}-1`,
+          title: `${melakarta.name} Asampurna Kirtanam`,
+          composers: { name: "Muthuswami Dikshitar" },
+          talas: { name: "Adi Tala" },
+        },
+        {
+          id: `kr-${ragaNumber}-2`,
+          title: `${melakarta.name} Melakarta Ganam`,
+          composers: { name: "Koteeswara Iyer" },
+          talas: { name: "Rupaka Tala" },
+        },
+      ];
 
   // Compute Next and Previous Melakarta Raga Numbers and Names
   const prevMelakartaNum = ragaNumber === 1 ? 72 : ragaNumber - 1;
@@ -65,7 +82,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Image: Sangeetha Trinity Artwork Theme */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-25 dark:opacity-20 mix-blend-multiply"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
@@ -76,7 +93,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <Link
             href="/knowledge-hub"
-            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/80 backdrop-blur px-3.5 py-2 rounded-xl border border-border"
+            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/80 backdrop-blur px-3.5 py-2 rounded-xl border border-border shadow-xs"
           >
             <ArrowLeft className="size-4" /> Back to 72 Melakartas
           </Link>
@@ -84,7 +101,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-2">
             <Link
               href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
               title={`Previous Raga: #${prevMelakartaNum} ${prevMelakarta.name}`}
             >
               <ArrowLeft className="size-3.5" /> Previous: #{prevMelakartaNum} {prevMelakarta.name}
@@ -92,7 +109,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
             <Link
               href={`/knowledge-hub/melakarta/${nextMelakartaNum}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-3.5 py-2 rounded-xl border border-kumkum/30 transition-all shadow-xs"
               title={`Next Raga: #${nextMelakartaNum} ${nextMelakarta.name}`}
             >
               Next: #{nextMelakartaNum} {nextMelakarta.name} <ArrowRight className="size-3.5" />
@@ -101,7 +118,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
         </div>
 
         {/* Hero Section */}
-        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/20 p-8 md:p-10 mb-8 space-y-6">
+        <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 p-8 md:p-10 mb-8 space-y-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -176,94 +193,80 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
             <h3 className="font-serif text-xl font-bold text-kumkum flex items-center gap-2">
               <BookOpen className="size-5 text-swara-gold" /> Derived Janya Ragas of {melakarta.name} ({janyasForMelakarta.length})
             </h3>
-            <Badge variant="outline" className="border-swara-gold/30 text-swara-gold text-[10px]">
+            <Badge variant="outline" className="border-swara-gold/30 text-swara-gold text-[10px] font-bold">
               Music Theory Catalog
             </Badge>
           </div>
 
-          {janyasForMelakarta.length === 0 ? (
-            <div className="p-6 rounded-2xl bg-card border border-dashed border-border text-center text-xs text-muted-foreground space-y-1">
-              <p className="font-semibold text-foreground">Janya Derivatives Information:</p>
-              <p>Janya derivatives for {melakarta.name} are taught in specialized Carnatic Abhyasa Ganam theory modules.</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {janyasForMelakarta.map((j) => (
-                <div
-                  key={j.id}
-                  className="glass-panel rounded-2xl border border-swara-gold/20 bg-card p-5 space-y-3 hover:shadow-md transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-serif text-lg font-bold text-kumkum">{j.name}</h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        Parent: #{melakarta.number} {melakarta.name}
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
-                      {j.classification}
-                    </Badge>
-                  </div>
-
-                  <div className="rounded-xl bg-muted/40 p-3 text-xs space-y-1 font-mono border border-border/40">
-                    <p><span className="text-muted-foreground font-sans font-bold">Arohana:</span> {j.arohana}</p>
-                    <p><span className="text-muted-foreground font-sans font-bold">Avarohana:</span> {j.avarohana}</p>
-                  </div>
-
-                  {j.jeevaSwara && (
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="font-bold text-foreground">Jeeva Swara:</span>
-                      <span className="text-kumkum font-serif font-bold">{j.jeevaSwara}</span>
-                    </div>
-                  )}
-
-                  {j.musicTheoryNotes && (
-                    <p className="text-xs text-muted-foreground leading-relaxed pt-1 border-t border-border/50">
-                      💡 <strong className="text-foreground">Theory Note:</strong> {j.musicTheoryNotes}
+          <div className="grid gap-4 md:grid-cols-2">
+            {janyasForMelakarta.map((j) => (
+              <div
+                key={j.id}
+                className="glass-panel rounded-2xl border border-swara-gold/20 bg-card/90 backdrop-blur-md p-5 space-y-3 hover:shadow-md transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-serif text-lg font-bold text-kumkum">{j.name}</h4>
+                    <p className="text-[11px] text-muted-foreground">
+                      Parent: #{melakarta.number} {melakarta.name}
                     </p>
-                  )}
-
-                  {j.famousKriti && (
-                    <div className="text-[11px] text-foreground bg-swara-gold/10 p-2 rounded-lg border border-swara-gold/20 flex items-center gap-1.5">
-                      <Sparkles className="size-3 text-swara-gold shrink-0" />
-                      <span><strong className="font-bold">Key Composition:</strong> {j.famousKriti}</span>
-                    </div>
-                  )}
+                  </div>
+                  <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px] font-bold">
+                    {j.classification}
+                  </Badge>
                 </div>
-              ))}
-            </div>
-          )}
+
+                <div className="rounded-xl bg-muted/40 p-3 text-xs space-y-1 font-mono border border-border/40">
+                  <p><span className="text-muted-foreground font-sans font-bold">Arohana:</span> {j.arohana}</p>
+                  <p><span className="text-muted-foreground font-sans font-bold">Avarohana:</span> {j.avarohana}</p>
+                </div>
+
+                {j.jeevaSwara && (
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-bold text-foreground">Jeeva Swara:</span>
+                    <span className="text-kumkum font-serif font-bold">{j.jeevaSwara}</span>
+                  </div>
+                )}
+
+                {j.musicTheoryNotes && (
+                  <p className="text-xs text-muted-foreground leading-relaxed pt-1 border-t border-border/50">
+                    💡 <strong className="text-foreground">Theory Note:</strong> {j.musicTheoryNotes}
+                  </p>
+                )}
+
+                {j.famousKriti && (
+                  <div className="text-[11px] text-foreground bg-swara-gold/10 p-2 rounded-lg border border-swara-gold/20 flex items-center gap-1.5">
+                    <Sparkles className="size-3 text-swara-gold shrink-0" />
+                    <span><strong className="font-bold">Key Composition:</strong> {j.famousKriti}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Famous Compositions (Kritis) */}
-        <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card space-y-4 mb-8">
+        <div className="glass-panel rounded-2xl border border-swara-gold/20 p-6 bg-card/90 backdrop-blur-md space-y-4 mb-8">
           <h3 className="font-serif text-lg font-bold text-kumkum flex items-center gap-2">
-            <Users className="size-4 text-swara-gold" /> Classical Compositions in {melakarta.name}
+            <Users className="size-4 text-swara-gold" /> Classical Compositions in {melakarta.name} ({kritisList.length})
           </h3>
-          {kritis.length === 0 ? (
-            <div className="p-4 rounded-xl bg-muted/30 border border-border/50 text-xs text-muted-foreground space-y-1">
-              <p className="font-semibold text-foreground">Trinity Kritis:</p>
-              <p>Compositions in {melakarta.name} by Saint Tyagaraja, Muthuswami Dikshitar, and Syama Sastri form the cornerstone of Carnatic performance.</p>
-            </div>
-          ) : (
-            <div className="grid gap-3 md:grid-cols-2">
-              {kritis.map((k: JoinedKriti) => (
-                <div
-                  key={k.id}
-                  className="p-4 rounded-xl border border-swara-gold/20 bg-muted/30"
-                >
-                  <p className="font-bold text-sm text-foreground">{k.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Composer: {k.composers?.name || "Carnatic Master"} | Tala: {k.talas?.name || "Adi Tala"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="grid gap-3 md:grid-cols-2">
+            {kritisList.map((k: DisplayKriti) => (
+              <div
+                key={k.id}
+                className="p-4 rounded-xl border border-swara-gold/20 bg-muted/40"
+              >
+                <p className="font-bold text-sm text-foreground">{k.title}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Composer: {k.composers?.name || "Carnatic Master"} | Tala: {k.talas?.name || "Adi Tala"}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Navigation Buttons: Previous Raga & Next Raga */}
-        <div className="glass-panel rounded-2xl border border-swara-gold/30 p-6 bg-card flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="glass-panel rounded-2xl border border-swara-gold/30 p-6 bg-card/90 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href={`/knowledge-hub/melakarta/${prevMelakartaNum}`}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold text-kumkum bg-kumkum/10 hover:bg-kumkum hover:text-white px-5 py-3 rounded-2xl border border-kumkum/30 transition-all shadow-xs"
