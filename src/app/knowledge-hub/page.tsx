@@ -23,17 +23,17 @@ export default async function KnowledgeHubPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Image: Traditional Carnatic Trinity Artwork */}
+      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-[center_top] bg-no-repeat opacity-50 dark:opacity-45"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/30 via-transparent to-background/50" />
 
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <div className="mb-10">
-          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4">
+          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4 font-bold">
             Knowledge Hub
           </Badge>
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
@@ -53,13 +53,13 @@ export default async function KnowledgeHubPage() {
           </Link>
           <Link
             href="/knowledge-hub/composers"
-            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/90 backdrop-blur border border-border text-foreground hover:bg-muted"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/85 backdrop-blur-md border border-border text-foreground hover:bg-muted"
           >
             Vaggeyakaras (Composers)
           </Link>
           <Link
             href="/knowledge-hub/talas"
-            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/90 backdrop-blur border border-border text-foreground hover:bg-muted"
+            className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-card/85 backdrop-blur-md border border-border text-foreground hover:bg-muted"
           >
             35 Suladi Sapta Talas
           </Link>
@@ -70,10 +70,10 @@ export default async function KnowledgeHubPage() {
             <Link
               key={m.number}
               href={`/knowledge-hub/melakarta/${m.number}`}
-              className="glass-panel group rounded-2xl border border-swara-gold/20 p-5 transition-all hover:border-kumkum hover:bg-kumkum/5 hover:shadow-md"
+              className="glass-panel group rounded-2xl border border-swara-gold/25 p-5 transition-all hover:border-kumkum hover:bg-kumkum/10 hover:shadow-lg bg-card/80 backdrop-blur-md"
             >
               <div className="flex items-center justify-between">
-                <Badge variant="outline" className="font-mono text-[10px] text-kumkum border-kumkum/30">
+                <Badge variant="outline" className="font-mono text-[10px] text-kumkum border-kumkum/30 font-bold">
                   #{m.number}
                 </Badge>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-swara-gold">

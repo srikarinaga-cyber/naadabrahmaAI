@@ -10,18 +10,18 @@ import { TalaMatrixPlayer } from "@/components/music/tala-matrix-player";
 export default function TalasPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Image: Sangeetha Trinity Artwork Theme */}
+      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-[center_top] bg-no-repeat opacity-50 dark:opacity-45"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/30 via-transparent to-background/50" />
 
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
           href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors bg-card/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border"
         >
           <ArrowLeft className="size-4" /> Back to Janaka Ragas
         </Link>

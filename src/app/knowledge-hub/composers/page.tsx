@@ -205,18 +205,18 @@ export default function ComposersPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Image: Traditional Carnatic Trinity Artwork */}
+      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-20 dark:opacity-15 mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-[center_top] bg-no-repeat opacity-50 dark:opacity-45"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/80 via-background/60 to-background/95" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/30 via-transparent to-background/50" />
 
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
           href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors bg-card/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border"
         >
           <ArrowLeft className="size-4" /> Back to Janaka Ragas
         </Link>
@@ -239,7 +239,7 @@ export default function ComposersPage() {
             <div
               key={c.id}
               onClick={() => setSelectedComposer(c)}
-              className="glass-panel rounded-3xl border border-swara-gold/25 bg-card/95 backdrop-blur-md p-6 flex flex-col justify-between hover:border-kumkum/60 hover:shadow-xl transition-all cursor-pointer group space-y-4"
+              className="glass-panel rounded-3xl border border-swara-gold/25 bg-card/85 backdrop-blur-md p-6 flex flex-col justify-between hover:border-kumkum/60 hover:shadow-xl transition-all cursor-pointer group space-y-4"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -271,7 +271,7 @@ export default function ComposersPage() {
           ))}
         </div>
 
-        {/* Detailed Composer Modal (Text Only - Pictures Removed) */}
+        {/* Detailed Composer Modal */}
         {selectedComposer && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border border-swara-gold/40 bg-card p-6 md:p-8 space-y-6 shadow-2xl">

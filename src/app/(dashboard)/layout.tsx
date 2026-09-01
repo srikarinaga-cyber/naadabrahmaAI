@@ -36,14 +36,15 @@ export default function DashboardLayout({
 
   return (
     <div className="relative min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row overflow-hidden">
-      {/* High-Visibility Realistic Sangeetha Trinity Artwork Background Theme */}
+      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
       <div
-        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-[0.45] dark:opacity-[0.40]"
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-[center_top] bg-no-repeat opacity-[0.50] dark:opacity-[0.45]"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
-      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF6F0]/40 via-transparent to-[#FAF6F0]/60" />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/50" />
 
-      <aside className="relative z-10 w-full md:w-64 border-r border-[#D4AF37]/30 bg-white/80 backdrop-blur-lg flex flex-col justify-between p-6 shadow-md">
+      {/* Ultra-Translucent Sidebar so the first person on the left is 100% visible */}
+      <aside className="relative z-10 w-full md:w-64 border-r border-[#D4AF37]/25 bg-white/35 backdrop-blur-md flex flex-col justify-between p-6 shadow-xs">
         <div className="space-y-8">
           <div className="flex items-center space-x-2">
             <span className="text-xl">🕉️</span>
@@ -68,8 +69,8 @@ export default function DashboardLayout({
                   href={item.href}
                   className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                     active
-                      ? "bg-[#800020]/15 text-[#800020] border-l-2 border-[#800020] font-bold shadow-xs"
-                      : "text-[#1A2228]/80 hover:bg-[#FAF6F0] hover:text-[#800020]"
+                      ? "bg-[#800020]/20 text-[#800020] border-l-2 border-[#800020] font-bold shadow-xs backdrop-blur-xs"
+                      : "text-[#1A2228]/80 hover:bg-white/40 hover:text-[#800020]"
                   }`}
                 >
                   <span className="text-base">{item.icon}</span>
@@ -83,14 +84,14 @@ export default function DashboardLayout({
           </nav>
         </div>
 
-        <div className="border-t border-[#D4AF37]/15 pt-4 mt-8 flex items-center justify-between">
+        <div className="border-t border-[#D4AF37]/20 pt-4 mt-8 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-[#800020]/10 flex items-center justify-center font-bold text-[#800020] text-xs">
+            <div className="w-8 h-8 rounded-full bg-[#800020]/15 flex items-center justify-center font-bold text-[#800020] text-xs">
               SK
             </div>
             <div>
               <h4 className="text-xs font-bold text-[#1A2228]">Srinivas K.</h4>
-              <p className="text-[9px] text-[#1A2228]/50">Student Profile</p>
+              <p className="text-[9px] text-[#1A2228]/60">Student Profile</p>
             </div>
           </div>
           <Link
@@ -104,17 +105,17 @@ export default function DashboardLayout({
       </aside>
 
       <main className="relative z-10 flex-1 p-6 md:p-10 overflow-y-auto max-w-5xl mx-auto w-full">
-        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/20 bg-white/70 p-4 rounded-2xl backdrop-blur-md shadow-xs">
+        <header className="flex justify-between items-center mb-8 pb-4 border-b border-[#D4AF37]/20 bg-white/50 p-4 rounded-2xl backdrop-blur-md shadow-xs">
           <div>
             <h3 className="font-serif text-2xl font-semibold text-[#800020]">
               Welcome back, Srinivas
             </h3>
-            <p className="text-xs text-[#1A2228]/60 mt-0.5">
+            <p className="text-xs text-[#1A2228]/70 mt-0.5">
               Let&apos;s continue your musical learning journey.
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="bg-[#E68A00]/10 border border-[#E68A00]/25 rounded-lg px-3 py-1.5 flex items-center space-x-2">
+            <div className="bg-[#E68A00]/15 border border-[#E68A00]/30 rounded-lg px-3 py-1.5 flex items-center space-x-2 backdrop-blur-xs">
               <span className="text-sm">🔥</span>
               <div>
                 <p className="text-[10px] uppercase font-bold text-[#E68A00] tracking-wide -mb-0.5">
