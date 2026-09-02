@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Sparkles, Send, Save, Globe, Languages } from "lucide-react";
+import { Sparkles, Send, Save, Globe, Languages, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { INSTRUMENTS, type Instrument } from "@/lib/ai/instruments";
@@ -66,11 +66,18 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
   const [instrument, setInstrument] = useState<Instrument>("vocal");
   const [language, setLanguage] = useState<SupportedLanguage>("en");
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [savedIndex, setSavedIndex] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  
+
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("query");
   const queryTriggered = useRef(false);
+
+  useEffect(() => {
+    const storedName = typeof window !== "undefined" ? localStorage.getItem("naada_user_name") : null;
+    if (storedName) setUserName(storedName);
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -126,16 +133,25 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
     await sendQueryMessage(userMsg);
   }
 
-  async function saveAsNote(msg: Message) {
-    if (!msg.structured) return;
-    await fetch("/api/notes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: msg.structured.raga ? `Notes: ${msg.structured.raga}` : "AI Guru Notes",
-        content: msg.content,
-      }),
-    });
+  async function saveAsNote(msg: Message, msgIdx: number) {
+    if (!msg.content) return;
+    const noteTitle = msg.structured?.raga ? `Notes: ${msg.structured.raga}` : "AI Guru Carnatic Notes";
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: noteTitle,
+          content: msg.content,
+        }),
+      });
+      if (res.ok) {
+        setSavedIndex(msgIdx);
+        setTimeout(() => setSavedIndex(null), 3000);
+      }
+    } catch (e) {
+      console.warn("Save note error:", e);
+    }
   }
 
   const activeSamplePrompts = SAMPLE_PROMPTS[language] || SAMPLE_PROMPTS.en;
@@ -150,7 +166,15 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
           </div>
           <div>
             <p className="font-serif text-base font-bold text-kumkum">Multilingual AI Carnatic Guru</p>
-            <p className="text-xs text-muted-foreground">Ask doubts in Telugu, Tamil, Kannada, Malayalam, Hindi, or English</p>
+            <p className="text-xs text-muted-foreground">
+              {userName ? (
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                  Welcome {userName}! Full access and note saving active.
+                </span>
+              ) : (
+                "Ask doubts in Telugu, Tamil, Kannada, Malayalam, Hindi, or English"
+              )}
+            </p>
           </div>
         </div>
 
@@ -237,13 +261,20 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
                   )}
                 </div>
               )}
-              {msg.role === "assistant" && msg.structured && (
-                <button
-                  onClick={() => saveAsNote(msg)}
-                  className="mt-2 flex items-center gap-1 text-[10px] text-kumkum hover:underline font-bold"
-                >
-                  <Save className="size-3" /> Save to Study Notes
-                </button>
+              {msg.role === "assistant" && (
+                <div className="mt-2.5 pt-2 border-t border-border/50 flex items-center justify-between">
+                  <button
+                    onClick={() => saveAsNote(msg, i)}
+                    className="flex items-center gap-1 text-[11px] text-kumkum hover:underline font-bold"
+                  >
+                    <Save className="size-3.5" /> Save to Study Notes
+                  </button>
+                  {savedIndex === i && (
+                    <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                      <CheckCircle2 className="size-3" /> Saved to Notes!
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           </div>

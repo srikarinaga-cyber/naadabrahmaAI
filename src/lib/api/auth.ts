@@ -1,22 +1,53 @@
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/types/database";
 
 export async function getSessionUser() {
   try {
     const supabase = await createClient();
-    if (!supabase) return null;
+    if (supabase) {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
-    if (error || !user) return null;
-    return user;
+      if (!error && user) {
+        return user;
+      }
+    }
   } catch (err) {
-    console.error("Failed to get session user:", err);
-    return null;
+    console.error("Failed to get Supabase session user:", err);
   }
+
+  // Fallback to demo / cookie session check
+  try {
+    const cookieStore = await cookies();
+    const demoRole = cookieStore.get("naada_demo_role")?.value;
+    const isDemo = cookieStore.get("demo_mode")?.value;
+    const userNameCookie = cookieStore.get("naada_user_name")?.value;
+
+    if (demoRole || isDemo || userNameCookie) {
+      const resolvedName = userNameCookie
+        ? decodeURIComponent(userNameCookie)
+        : demoRole === "teacher"
+        ? "Guru Sangeetha"
+        : "Srinivas K.";
+
+      return {
+        id: "demo-user-session",
+        email: "student@naadabrahma.ai",
+        aud: "authenticated",
+        role: demoRole || "student",
+        user_metadata: { name: resolvedName },
+        app_metadata: { provider: "email" },
+        created_at: new Date().toISOString(),
+      } as unknown as import("@supabase/supabase-js").User;
+    }
+  } catch (e) {
+    console.warn("Cookie session check error:", e);
+  }
+
+  return null;
 }
 
 export async function requireAuth() {

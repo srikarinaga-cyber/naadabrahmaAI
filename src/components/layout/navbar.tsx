@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, Music2 } from "lucide-react";
+import { Menu, Music2, LogOut, UserCheck } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,39 @@ import {
 } from "@/components/ui/sheet";
 
 export function Navbar() {
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedName =
+      typeof window !== "undefined"
+        ? localStorage.getItem("naada_user_name")
+        : null;
+
+    let cookieName: string | null = null;
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|; )naada_user_name=([^;]*)/);
+      if (match) cookieName = decodeURIComponent(match[1]);
+    }
+
+    const name = storedName || cookieName;
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
+
+  function handleLogout() {
+    document.cookie =
+      "naada_demo_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie =
+      "demo_mode=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie =
+      "naada_user_name=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("naada_user_name");
+    }
+    window.location.href = "/login?logout=true";
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-swara-gold/20 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -46,12 +80,40 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <div className="hidden items-center gap-2 sm:flex">
-            <Button variant="ghost" size="sm" className="text-kumkum" render={<Link href="/login" />}>
-              Sign In
-            </Button>
-            <Button size="sm" className="bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
-              Get Started
-            </Button>
+            {userName ? (
+              <>
+                <Link
+                  href="/student"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-kumkum/10 text-kumkum border border-kumkum/20 text-xs font-bold hover:bg-kumkum hover:text-white transition-all shadow-xs"
+                >
+                  <UserCheck className="size-3.5" />
+                  <span>{userName}</span>
+                </Link>
+                <Button
+                  size="sm"
+                  className="bg-kumkum hover:bg-kumkum-light"
+                  render={<Link href="/student" />}
+                >
+                  Student Portal
+                </Button>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 rounded-xl text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors text-xs"
+                  title="Log Out"
+                >
+                  <LogOut className="size-4" />
+                </button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" className="text-kumkum" render={<Link href="/login" />}>
+                  Sign In
+                </Button>
+                <Button size="sm" className="bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           <Sheet>
@@ -85,12 +147,25 @@ export function Navbar() {
                 ))}
               </nav>
               <div className="mt-auto flex flex-col gap-2 p-4">
-                <Button variant="outline" className="w-full" render={<Link href="/login" />}>
-                  Sign In
-                </Button>
-                <Button className="w-full bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
-                  Get Started
-                </Button>
+                {userName ? (
+                  <>
+                    <Button className="w-full bg-kumkum hover:bg-kumkum-light" render={<Link href="/student" />}>
+                      Student Portal ({userName})
+                    </Button>
+                    <Button variant="outline" className="w-full text-red-600 border-red-200" onClick={handleLogout}>
+                      Log Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="w-full" render={<Link href="/login" />}>
+                      Sign In
+                    </Button>
+                    <Button className="w-full bg-kumkum hover:bg-kumkum-light" render={<Link href="/signup" />}>
+                      Get Started
+                    </Button>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>
