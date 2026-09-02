@@ -11,7 +11,6 @@ import {
   RefreshCw,
   Sparkles,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -143,16 +142,21 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
     }
   }
 
-  async function handleGenerateNotes() {
-    if (!topic.trim()) return;
+  async function handleGenerateNotes(overrideTopic?: string) {
+    const targetTopic = (overrideTopic || topic).trim();
+    if (!targetTopic) return;
+
+    setTopic(targetTopic);
+    setActiveTab("generate");
     setGenerating(true);
     setGeneratedNote(null);
     setStatusMessage(null);
+
     try {
       const res = await fetch("/api/syllabus/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: topic.trim() }),
+        body: JSON.stringify({ topic: targetTopic }),
       });
       const json = await res.json();
       if (json.success || json.data?.content) {
@@ -160,12 +164,12 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
         await loadSavedNotes();
       } else {
         setGeneratedNote(
-          `## ${topic} Study Notes\n\n- **Definition**: Primary Carnatic music theory concept.\n- **Swarasthanas**: Ascending and descending swara patterns.\n- **Exam Relevance**: Essential for Carnatic music examination level.`
+          `## ${targetTopic} Study Notes\n\n- **Definition**: Primary Carnatic music theory concept.\n- **Swarasthanas**: Ascending and descending swara patterns.\n- **Exam Relevance**: Essential for Carnatic music examination level.`
         );
       }
     } catch {
       setGeneratedNote(
-        `## ${topic} Study Notes\n\n- **Definition**: Primary Carnatic music theory concept.\n- **Swarasthanas**: Ascending and descending swara patterns.\n- **Exam Relevance**: Essential for Carnatic music examination level.`
+        `## ${targetTopic} Study Notes\n\n- **Definition**: Primary Carnatic music theory concept.\n- **Swarasthanas**: Ascending and descending swara patterns.\n- **Exam Relevance**: Essential for Carnatic music examination level.`
       );
     } finally {
       setGenerating(false);
@@ -257,8 +261,8 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
               {["72 Melakartas Katapayadi System", "Suladi Sapta Talas Matrix", "Tanjore Trinity Compositions", "Mayamalavagowla Swarasthanas"].map((prompt) => (
                 <button
                   key={prompt}
-                  onClick={() => setTopic(prompt)}
-                  className="rounded-lg bg-muted/60 px-2.5 py-1 text-xs hover:bg-[#800020]/10 hover:text-[#800020] transition-colors border border-border/50"
+                  onClick={() => handleGenerateNotes(prompt)}
+                  className="rounded-lg bg-muted/60 px-2.5 py-1 text-xs hover:bg-[#800020]/10 hover:text-[#800020] transition-colors border border-border/50 font-bold"
                 >
                   {prompt}
                 </button>
@@ -272,7 +276,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
                 className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#800020]/20"
               />
               <Button
-                onClick={handleGenerateNotes}
+                onClick={() => handleGenerateNotes()}
                 disabled={generating || !topic.trim()}
                 className="bg-[#800020] hover:bg-[#9e1b32] text-white shrink-0 font-bold"
               >
@@ -287,7 +291,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
           </div>
 
           {generatedNote && (
-            <div className="rounded-2xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-6 shadow-sm">
+            <div className="rounded-2xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-6 shadow-sm animate-in fade-in duration-200">
               <p className="text-xs font-bold uppercase tracking-wider text-[#800020] mb-3 flex items-center gap-1.5">
                 <NotebookPen className="size-4 text-swara-gold" /> Generated AI Study Notes
               </p>
@@ -376,9 +380,9 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
             chunks.map((chunk) => (
               <div
                 key={chunk.id}
-                className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm"
+                className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm space-y-2"
               >
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="text-[10px]">
                     Page {chunk.page_number}
                   </Badge>
@@ -389,17 +393,18 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
                 <p className="text-sm font-semibold text-[#800020]">
                   {chunk.title ?? "Untitled section"}
                 </p>
-                <p className="text-xs text-gray-600 mt-2 leading-relaxed line-clamp-4">
+                <p className="text-xs text-gray-600 leading-relaxed line-clamp-4">
                   {chunk.content}
                 </p>
                 <button
                   onClick={() => {
-                    setTopic(chunk.title ?? chunk.content.slice(0, 60));
-                    setActiveTab("generate");
+                    const selectedTopic = chunk.title ?? chunk.content.slice(0, 60);
+                    handleGenerateNotes(selectedTopic);
                   }}
-                  className="mt-2 text-[10px] font-semibold text-[#800020] hover:underline"
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#800020] hover:bg-[#800020] hover:text-white bg-[#800020]/10 px-3 py-1.5 rounded-xl border border-[#800020]/20 transition-all shadow-xs"
                 >
-                  Generate notes on this topic →
+                  <Sparkles className="size-3.5 text-swara-gold" />
+                  Generate AI Notes on this topic →
                 </button>
               </div>
             ))
