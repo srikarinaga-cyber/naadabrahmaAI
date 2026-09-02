@@ -78,6 +78,12 @@ const COURSE_MAP: Record<string, CourseInfo> = {
   },
 };
 
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2] || "") : null;
+}
+
 export default function StudentDashboardPage() {
   const [selectedCourseKey, setSelectedCourseKey] = useState<string>("Veena");
   const [academicYear, setAcademicYear] = useState<string>("1st Year (Beginner)");
@@ -99,20 +105,30 @@ export default function StudentDashboardPage() {
 
   useEffect(() => {
     try {
+      // 1. Check direct course cookie or local storage
+      const storedCourseCookie = getCookie("naada_student_course");
+      const storedCourseLocal = localStorage.getItem("naada_student_course");
       const storedAllocation = localStorage.getItem("naada_student_allocation");
-      if (storedAllocation) {
-        const parsed = JSON.parse(storedAllocation);
-        if (parsed?.course) {
-          if (COURSE_MAP[parsed.course]) {
-            setSelectedCourseKey(parsed.course);
-          }
+
+      let resolvedCourse = storedCourseCookie || storedCourseLocal;
+
+      if (!resolvedCourse && storedAllocation) {
+        try {
+          const parsed = JSON.parse(storedAllocation);
+          resolvedCourse = parsed?.course;
+        } catch {
+          // fallback
         }
-        if (parsed?.academicYear) {
-          setAcademicYear(parsed.academicYear);
-        }
+      }
+
+      if (resolvedCourse && COURSE_MAP[resolvedCourse]) {
+        setSelectedCourseKey(resolvedCourse);
+      } else {
+        setSelectedCourseKey("Veena");
       }
     } catch (e) {
       console.warn("Could not parse student allocation:", e);
+      setSelectedCourseKey("Veena");
     }
   }, []);
 
@@ -121,6 +137,9 @@ export default function StudentDashboardPage() {
   const handleCourseSwitch = (newCourse: string) => {
     setSelectedCourseKey(newCourse);
     try {
+      localStorage.setItem("naada_student_course", newCourse);
+      document.cookie = `naada_student_course=${encodeURIComponent(newCourse)}; path=/; max-age=86400; SameSite=Lax`;
+      
       const allocation = {
         course: newCourse,
         academicYear,
