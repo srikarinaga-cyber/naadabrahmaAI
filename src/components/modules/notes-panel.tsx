@@ -11,6 +11,8 @@ import {
   RefreshCw,
   Sparkles,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,8 +61,14 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
   const [ingesting, setIngesting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [adminConfigured, setAdminConfigured] = useState(true);
+  
+  // Topic card inline features
+  const [expandedChunkId, setExpandedChunkId] = useState<string | null>(null);
+  const [inlineNotesMap, setInlineNotesMap] = useState<Record<string, string>>({});
+  const [generatingChunkId, setGeneratingChunkId] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<"pdf" | "topics" | "generate" | "saved">(
-    urlTab || initialTab || "generate"
+    urlTab || initialTab || "topics"
   );
 
   useEffect(() => {
@@ -176,10 +184,30 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
     }
   }
 
+  async function handleGenerateInlineNotes(chunk: SyllabusChunk) {
+    const topicTitle = chunk.title ?? `Page ${chunk.page_number} Context`;
+    setGeneratingChunkId(chunk.id);
+    try {
+      const res = await fetch("/api/syllabus/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: topicTitle }),
+      });
+      const json = await res.json();
+      const noteContent = json.data?.content || `## Study Notes: ${topicTitle}\n\n${chunk.content}`;
+      setInlineNotesMap((prev) => ({ ...prev, [chunk.id]: noteContent }));
+      await loadSavedNotes();
+    } catch {
+      setInlineNotesMap((prev) => ({ ...prev, [chunk.id]: `## Study Notes: ${topicTitle}\n\n${chunk.content}` }));
+    } finally {
+      setGeneratingChunkId(null);
+    }
+  }
+
   const tabs = [
+    { id: "topics" as const, label: "Browse Topics", icon: BookOpen },
     { id: "generate" as const, label: "Generate AI Notes", icon: Sparkles },
     { id: "pdf" as const, label: "Syllabus PDFs", icon: FileText },
-    { id: "topics" as const, label: "Browse Topics", icon: BookOpen },
     { id: "saved" as const, label: "My Saved Notes", icon: NotebookPen },
   ];
 
@@ -191,7 +219,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
             AI Notes Generator & Syllabus Library
           </h4>
           <p className="text-xs text-gray-500 mt-1">
-            Generate instant AI study notes, browse ingested topics, and view official PDF syllabus documents.
+            Browse ingested syllabus topics, view official PDF documents, and generate instant AI study notes.
           </p>
         </div>
         <Button
@@ -242,6 +270,89 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
           </button>
         ))}
       </div>
+
+      {/* Topics browser tab (DEFAULT TAB) */}
+      {activeTab === "topics" && (
+        <div className="space-y-4">
+          {!selectedFile?.ingested ? (
+            <p className="text-sm text-gray-500 py-8 text-center">
+              This PDF has not been imported yet. Click &quot;Import PDFs from Supabase&quot; to
+              process it for AI search and note generation.
+            </p>
+          ) : loadingChunks ? (
+            <p className="text-sm text-gray-400 text-center py-8">Loading topics...</p>
+          ) : chunks.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-8">No content chunks found.</p>
+          ) : (
+            chunks.map((chunk) => {
+              const isExpanded = expandedChunkId === chunk.id;
+              const inlineNote = inlineNotesMap[chunk.id];
+              const isGeneratingThis = generatingChunkId === chunk.id;
+
+              return (
+                <div
+                  key={chunk.id}
+                  className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs space-y-3 transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-[#800020]/10 text-[#800020] border-[#800020]/20 font-bold text-[10px]">
+                        Page {chunk.page_number}
+                      </Badge>
+                      {chunk.section && (
+                        <span className="text-[10px] text-muted-foreground font-mono">{chunk.section}</span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setExpandedChunkId(isExpanded ? null : chunk.id)}
+                      className="text-xs text-muted-foreground hover:text-[#800020] font-semibold flex items-center gap-1"
+                    >
+                      {isExpanded ? (
+                        <>Collapse <ChevronUp className="size-3.5" /></>
+                      ) : (
+                        <>Expand Full Text <ChevronDown className="size-3.5" /></>
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-base font-bold text-[#800020]">
+                    {chunk.title ?? `Page ${chunk.page_number} Context`}
+                  </p>
+
+                  <p className={`text-xs text-foreground/80 leading-relaxed ${isExpanded ? "whitespace-pre-wrap" : "line-clamp-3"}`}>
+                    {chunk.content}
+                  </p>
+
+                  <div className="pt-2 flex flex-wrap gap-2 items-center">
+                    <button
+                      onClick={() => handleGenerateInlineNotes(chunk)}
+                      disabled={isGeneratingThis}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#800020] hover:bg-[#800020] hover:text-white bg-[#800020]/10 px-3.5 py-2 rounded-xl border border-[#800020]/20 transition-all shadow-xs disabled:opacity-50"
+                    >
+                      {isGeneratingThis ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="size-3.5 text-swara-gold" />
+                      )}
+                      Generate AI Notes on this topic
+                    </button>
+                  </div>
+
+                  {inlineNote && (
+                    <div className="mt-4 rounded-xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-4 text-xs text-[#1A2228] whitespace-pre-wrap leading-relaxed animate-in fade-in duration-200">
+                      <div className="flex items-center gap-1.5 font-bold text-[#800020] mb-2 border-b border-[#D4AF37]/20 pb-2">
+                        <NotebookPen className="size-4 text-swara-gold" /> Generated Topic Study Notes
+                      </div>
+                      {inlineNote}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
 
       {/* Generate notes tab */}
       {activeTab === "generate" && (
@@ -361,54 +472,6 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
               </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Topics browser tab */}
-      {activeTab === "topics" && (
-        <div className="space-y-3">
-          {!selectedFile?.ingested ? (
-            <p className="text-sm text-gray-500 py-8 text-center">
-              This PDF has not been imported yet. Click &quot;Import PDFs from Supabase&quot; to
-              process it for AI search and note generation.
-            </p>
-          ) : loadingChunks ? (
-            <p className="text-sm text-gray-400 text-center py-8">Loading topics...</p>
-          ) : chunks.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-8">No content chunks found.</p>
-          ) : (
-            chunks.map((chunk) => (
-              <div
-                key={chunk.id}
-                className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm space-y-2"
-              >
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="text-[10px]">
-                    Page {chunk.page_number}
-                  </Badge>
-                  {chunk.section && (
-                    <span className="text-[10px] text-gray-400">{chunk.section}</span>
-                  )}
-                </div>
-                <p className="text-sm font-semibold text-[#800020]">
-                  {chunk.title ?? "Untitled section"}
-                </p>
-                <p className="text-xs text-gray-600 leading-relaxed line-clamp-4">
-                  {chunk.content}
-                </p>
-                <button
-                  onClick={() => {
-                    const selectedTopic = chunk.title ?? chunk.content.slice(0, 60);
-                    handleGenerateNotes(selectedTopic);
-                  }}
-                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-[#800020] hover:bg-[#800020] hover:text-white bg-[#800020]/10 px-3 py-1.5 rounded-xl border border-[#800020]/20 transition-all shadow-xs"
-                >
-                  <Sparkles className="size-3.5 text-swara-gold" />
-                  Generate AI Notes on this topic →
-                </button>
-              </div>
-            ))
-          )}
         </div>
       )}
 
