@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useState } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { Check, Plus, Trash2, Sparkles, BookOpen, Music, Volume2, Tv, ArrowRight } from "lucide-react";
+import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
@@ -92,6 +92,43 @@ export default function StudentDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* ── Allocated Live Google Meet Class Notification for Enrolled Student ── */}
+      <div className="rounded-3xl border border-blue-500/40 bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-900 p-6 text-white shadow-lg space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-red-600 text-white border-none text-[10px] font-bold animate-pulse flex items-center gap-1">
+                <Radio className="size-3" /> LIVE ONLINE CLASS READY
+              </Badge>
+              <Badge variant="outline" className="border-blue-400/40 text-blue-200 text-[10px]">
+                Enrolled Batch Access Only
+              </Badge>
+            </div>
+
+            <h2 className="font-serif text-2xl font-bold flex items-center gap-2">
+              <Video className="size-6 text-blue-400" />
+              Carnatic Vocal Abhyasa Ganam — Live Google Meet
+            </h2>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs text-blue-100/90">
+              <span className="flex items-center gap-1 font-semibold text-emerald-300">
+                <UserCheck className="size-3.5" /> Allocated Teacher: Guru Sangeetha (Vocal)
+              </span>
+              <span>• Topic: Mayamalavagowla Sarali Swaras & Alankaram</span>
+            </div>
+          </div>
+
+          <a
+            href="https://meet.google.com/naada-vocal-sangeetha"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all"
+          >
+            <Video className="size-4" /> Join My Batch Google Meet <ExternalLink className="size-3.5" />
+          </a>
+        </div>
+      </div>
+
       {/* ── Direct Banner Shortcut to Practice Hub ── */}
       <div className="rounded-3xl border border-swara-gold/30 bg-gradient-to-r from-[#800020] via-[#5c0017] to-[#800020] p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">

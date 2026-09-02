@@ -21,12 +21,23 @@ import {
   Copy,
   ExternalLink,
   Radio,
+  UserCheck,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-interface DemoClass {
+export interface TeacherProfile {
   id: string;
+  name: string;
+  subject: string;
+  email: string;
+}
+
+export interface DemoClass {
+  id: string;
+  teacherId: string;
+  teacherName: string;
   name: string;
   level: string;
   studentsCount: number;
@@ -35,8 +46,9 @@ interface DemoClass {
   meetUrl: string;
 }
 
-interface DemoAssignment {
+export interface DemoAssignment {
   id: string;
+  teacherId: string;
   className: string;
   title: string;
   type: string;
@@ -45,8 +57,9 @@ interface DemoAssignment {
   totalCount: number;
 }
 
-interface DemoStudent {
+export interface DemoStudent {
   id: string;
+  teacherId: string;
   name: string;
   class: string;
   pitchAccuracy: number;
@@ -55,39 +68,77 @@ interface DemoStudent {
   status: "Excellent" | "Needs Practice" | "On Track";
 }
 
+const TEACHER_PROFILES: TeacherProfile[] = [
+  { id: "tch-1", name: "Guru Sangeetha", subject: "Carnatic Vocal & Theory", email: "sangeetha@naadabrahma.ai" },
+  { id: "tch-2", name: "Guru Vishwanathan", subject: "Veena & Instrumental Gamaka", email: "vishwanathan@naadabrahma.ai" },
+  { id: "tch-3", name: "Guru Ramanathan", subject: "Mridangam & Solkattu Rhythm", email: "ramanathan@naadabrahma.ai" },
+];
+
 const INITIAL_CLASSES: DemoClass[] = [
+  // Guru Sangeetha (Vocal)
   {
     id: "cls-1",
+    teacherId: "tch-1",
+    teacherName: "Guru Sangeetha",
     name: "Carnatic Vocal Abhyasa Ganam",
     level: "Beginner - Batch A",
     studentsCount: 14,
     schedule: "Mon, Wed • 5:00 PM IST",
     currentTopic: "Mayamalavagowla - Sarali Swaras & Alankaram",
-    meetUrl: "https://meet.google.com/naada-vocal-batch1",
+    meetUrl: "https://meet.google.com/naada-vocal-sangeetha",
   },
   {
     id: "cls-2",
+    teacherId: "tch-1",
+    teacherName: "Guru Sangeetha",
     name: "Geetham & Swarajathi Masterclass",
     level: "Intermediate - Batch B",
     studentsCount: 9,
     schedule: "Tue, Thu • 6:30 PM IST",
     currentTopic: "Kalyani Raga Geetham (Kamalajadhala)",
-    meetUrl: "https://meet.google.com/naada-geetham-batch2",
+    meetUrl: "https://meet.google.com/naada-geetham-sangeetha",
   },
+  // Guru Vishwanathan (Veena)
   {
     id: "cls-3",
-    name: "Varnam & Manodharma Sangeetham",
-    level: "Advanced - Senior Batch",
-    studentsCount: 6,
-    schedule: "Sat, Sun • 10:00 AM IST",
-    currentTopic: "Sankarabharanam Adi Tala Varnam (Saami Ninne)",
-    meetUrl: "https://meet.google.com/naada-varnam-senior",
+    teacherId: "tch-2",
+    teacherName: "Guru Vishwanathan",
+    name: "Veena Foundation & Swarasthana Alignment",
+    level: "Batch V1",
+    studentsCount: 8,
+    schedule: "Fri, Sun • 4:00 PM IST",
+    currentTopic: "Veena Fret Positioning & Suddha Swara Strumming",
+    meetUrl: "https://meet.google.com/naada-veena-vishwanathan",
+  },
+  {
+    id: "cls-4",
+    teacherId: "tch-2",
+    teacherName: "Guru Vishwanathan",
+    name: "Advanced Veena Gamakam & Keerthanam",
+    level: "Senior Batch V2",
+    studentsCount: 5,
+    schedule: "Sat, Sun • 11:00 AM IST",
+    currentTopic: "Kampita & Nokku Gamaka in Hamsadhwani",
+    meetUrl: "https://meet.google.com/naada-veena-mastery",
+  },
+  // Guru Ramanathan (Mridangam)
+  {
+    id: "cls-5",
+    teacherId: "tch-3",
+    teacherName: "Guru Ramanathan",
+    name: "Mridangam Tha-Dhi-Gi-Na-Thom Lessons",
+    level: "Batch M1",
+    studentsCount: 7,
+    schedule: "Tue, Fri • 7:00 PM IST",
+    currentTopic: "Basic Stroke Execution & Chatusra Jathi Beats",
+    meetUrl: "https://meet.google.com/naada-mridangam-ramanathan",
   },
 ];
 
 const INITIAL_ASSIGNMENTS: DemoAssignment[] = [
   {
     id: "asg-1",
+    teacherId: "tch-1",
     className: "Carnatic Vocal Abhyasa Ganam",
     title: "Practice Alankaram 1 to 4 in 3 Speeds (Mayamalavagowla)",
     type: "Pitch & Tala Recording",
@@ -97,6 +148,7 @@ const INITIAL_ASSIGNMENTS: DemoAssignment[] = [
   },
   {
     id: "asg-2",
+    teacherId: "tch-1",
     className: "Geetham & Swarajathi Masterclass",
     title: "Nata Raga Geetham - Notation Reading & Vocal Submission",
     type: "Theory & Vocal Practice",
@@ -106,18 +158,31 @@ const INITIAL_ASSIGNMENTS: DemoAssignment[] = [
   },
   {
     id: "asg-3",
-    className: "Varnam & Manodharma Sangeetham",
-    title: "Kalpanaswaram Exploration in Mohana Raga (2 Cycles)",
-    type: "Creativity & Pitch Analysis",
-    dueDate: "Sep 7, 2026",
-    submittedCount: 4,
-    totalCount: 6,
+    teacherId: "tch-2",
+    className: "Veena Foundation & Swarasthana Alignment",
+    title: "Veena Strumming & Swara Resonance Submission",
+    type: "Instrumental Recording",
+    dueDate: "Sep 6, 2026",
+    submittedCount: 7,
+    totalCount: 8,
+  },
+  {
+    id: "asg-4",
+    teacherId: "tch-3",
+    className: "Mridangam Tha-Dhi-Gi-Na-Thom Lessons",
+    title: "Adi Tala Solkattu Recitation & Left Head Stroke Audio",
+    type: "Rhythm Practice",
+    dueDate: "Sep 8, 2026",
+    submittedCount: 5,
+    totalCount: 7,
   },
 ];
 
 const INITIAL_STUDENTS: DemoStudent[] = [
+  // Guru Sangeetha Students
   {
     id: "std-1",
+    teacherId: "tch-1",
     name: "Aditi Ramachandran",
     class: "Carnatic Vocal Abhyasa Ganam",
     pitchAccuracy: 96,
@@ -127,6 +192,7 @@ const INITIAL_STUDENTS: DemoStudent[] = [
   },
   {
     id: "std-2",
+    teacherId: "tch-1",
     name: "Karthik Venkatesh",
     class: "Geetham & Swarajathi Masterclass",
     pitchAccuracy: 91,
@@ -136,15 +202,7 @@ const INITIAL_STUDENTS: DemoStudent[] = [
   },
   {
     id: "std-3",
-    name: "Sneha Narayanan",
-    class: "Varnam & Manodharma Sangeetham",
-    pitchAccuracy: 98,
-    talaPrecision: 96,
-    streak: 21,
-    status: "Excellent",
-  },
-  {
-    id: "std-4",
+    teacherId: "tch-1",
     name: "Rohan Subramanian",
     class: "Carnatic Vocal Abhyasa Ganam",
     pitchAccuracy: 78,
@@ -152,13 +210,55 @@ const INITIAL_STUDENTS: DemoStudent[] = [
     streak: 3,
     status: "Needs Practice",
   },
+  // Guru Vishwanathan Students
+  {
+    id: "std-4",
+    teacherId: "tch-2",
+    name: "Sneha Narayanan",
+    class: "Veena Foundation & Swarasthana Alignment",
+    pitchAccuracy: 98,
+    talaPrecision: 96,
+    streak: 21,
+    status: "Excellent",
+  },
+  {
+    id: "std-5",
+    teacherId: "tch-2",
+    name: "Ananya Iyer",
+    class: "Advanced Veena Gamakam & Keerthanam",
+    pitchAccuracy: 93,
+    talaPrecision: 90,
+    streak: 15,
+    status: "Excellent",
+  },
+  // Guru Ramanathan Students
+  {
+    id: "std-6",
+    teacherId: "tch-3",
+    name: "Siddharth Rao",
+    class: "Mridangam Tha-Dhi-Gi-Na-Thom Lessons",
+    pitchAccuracy: 89,
+    talaPrecision: 97,
+    streak: 10,
+    status: "On Track",
+  },
 ];
 
 export function TeacherDashboard() {
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string>("tch-1");
   const [activeTab, setActiveTab] = useState<"classes" | "google-meet" | "assignments" | "students" | "ai-copilot">("classes");
+
   const [classes, setClasses] = useState<DemoClass[]>(INITIAL_CLASSES);
   const [assignments, setAssignments] = useState<DemoAssignment[]>(INITIAL_ASSIGNMENTS);
   const [students] = useState<DemoStudent[]>(INITIAL_STUDENTS);
+
+  // Active Selected Teacher
+  const currentTeacher = TEACHER_PROFILES.find((t) => t.id === selectedTeacherId) || TEACHER_PROFILES[0];
+
+  // Isolated Allocated Data for Current Teacher ONLY
+  const teacherClasses = classes.filter((c) => c.teacherId === selectedTeacherId);
+  const teacherAssignments = assignments.filter((a) => a.teacherId === selectedTeacherId);
+  const teacherStudents = students.filter((s) => s.teacherId === selectedTeacherId);
 
   // Student Filter State
   const [studentSearch, setStudentSearch] = useState("");
@@ -177,7 +277,7 @@ export function TeacherDashboard() {
   // New Assignment Form State
   const [showNewAsgModal, setShowNewAsgModal] = useState(false);
   const [newAsgTitle, setNewAsgTitle] = useState("");
-  const [newAsgClass, setNewAsgClass] = useState(INITIAL_CLASSES[0]?.name || "");
+  const [newAsgClass, setNewAsgClass] = useState("");
   const [newAsgDueDate, setNewAsgDueDate] = useState("");
 
   // AI Copilot Generator State
@@ -187,10 +287,10 @@ export function TeacherDashboard() {
   const [copilotLoading, setCopilotLoading] = useState(false);
   const [assignmentAssigned, setAssignmentAssigned] = useState(false);
 
-  // Dynamic Calculated Stats
-  const totalEnrolled = classes.reduce((sum, c) => sum + c.studentsCount, 0);
+  // Dynamic Calculated Stats for Current Teacher ONLY
+  const totalEnrolled = teacherClasses.reduce((sum, c) => sum + c.studentsCount, 0);
   const avgPitch = Math.round(
-    students.reduce((acc, s) => acc + s.pitchAccuracy, 0) / (students.length || 1)
+    teacherStudents.reduce((acc, s) => acc + s.pitchAccuracy, 0) / (teacherStudents.length || 1)
   );
 
   const handleCreateClass = (e: React.FormEvent) => {
@@ -199,12 +299,14 @@ export function TeacherDashboard() {
 
     const created: DemoClass = {
       id: `cls-${Date.now()}`,
+      teacherId: currentTeacher.id,
+      teacherName: currentTeacher.name,
       name: newClassName.trim(),
       level: newClassLevel.trim() || "All Levels",
       studentsCount: 1,
       schedule: newClassSchedule.trim() || "TBD",
       currentTopic: "Introductory Carnatic Foundation",
-      meetUrl: newClassMeetUrl.trim() || `https://meet.google.com/naada-${Date.now().toString().slice(-6)}`,
+      meetUrl: newClassMeetUrl.trim() || `https://meet.google.com/naada-${currentTeacher.id.slice(-3)}-${Date.now().toString().slice(-4)}`,
     };
 
     setClasses([created, ...classes]);
@@ -220,7 +322,7 @@ export function TeacherDashboard() {
   };
 
   const handleCopyMeetLink = (cls: DemoClass) => {
-    const inviteText = `🎶 Naadabrahma AI Carnatic Online Class\nBatch: ${cls.name}\nTopic: ${cls.currentTopic}\nGoogle Meet Link: ${cls.meetUrl}`;
+    const inviteText = `🎶 Naadabrahma AI Carnatic Online Class\nTeacher: ${currentTeacher.name}\nBatch: ${cls.name}\nTopic: ${cls.currentTopic}\nGoogle Meet Link: ${cls.meetUrl}\n(Access restricted to enrolled students in this batch)`;
     navigator.clipboard.writeText(inviteText);
     setCopiedClassId(cls.id);
     setTimeout(() => setCopiedClassId(null), 2500);
@@ -232,9 +334,10 @@ export function TeacherDashboard() {
 
     const created: DemoAssignment = {
       id: `asg-${Date.now()}`,
-      className: newAsgClass || classes[0]?.name || "General Batch",
+      teacherId: currentTeacher.id,
+      className: newAsgClass || teacherClasses[0]?.name || "General Batch",
       title: newAsgTitle.trim(),
-      type: "Vocal & Theory Practice",
+      type: "Vocal & Practice Submission",
       dueDate: newAsgDueDate || "Next Week",
       submittedCount: 0,
       totalCount: 12,
@@ -273,7 +376,7 @@ export function TeacherDashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: `You are a Carnatic Music Guru Assistant helping a teacher create a full, detailed lesson plan and homework assignment for: "${queryToUse}". Provide: 1. Overview & Concept Breakdown 2. Swarasthana & Tala Exercise Steps 3. Practice Homework Tasks for Students. ${langInstruction}`,
+          message: `You are a Carnatic Music Guru Assistant helping ${currentTeacher.name} create a lesson plan and homework assignment for: "${queryToUse}". Provide: 1. Overview & Concept Breakdown 2. Swarasthana & Tala Exercise Steps 3. Practice Homework Tasks for Allocated Students. ${langInstruction}`,
           language: copilotLanguage === "te" ? "te" : "en",
         }),
       });
@@ -283,12 +386,12 @@ export function TeacherDashboard() {
         setCopilotResponse(json.data.answer);
       } else {
         setCopilotResponse(
-          `Detailed Plan for: "${queryToUse}"\n\n1. Concept Overview: Adi Tala (8 Aksharas = 1 Laghu of 4 beats + 2 Dhrutams of 2 beats).\n2. Class Practice Drills:\n  - Sarali Varisai in 3 Speeds with hand gestures (Talam).\n  - Pitch alignment on S-R-G-M-P-D-N-S.\n3. Homework Assignment:\n  - Record 2 cycles of Adi Tala Alankaram.\n  - Submit vocal sample to Teacher Portal.`
+          `Detailed Plan for ${currentTeacher.name}: "${queryToUse}"\n\n1. Concept Overview: Adi Tala (8 Aksharas = 1 Laghu of 4 beats + 2 Dhrutams of 2 beats).\n2. Class Practice Drills:\n  - Sarali Varisai in 3 Speeds with hand gestures (Talam).\n  - Pitch alignment on S-R-G-M-P-D-N-S.\n3. Homework Assignment:\n  - Record 2 cycles of Adi Tala Alankaram.\n  - Submit vocal sample to ${currentTeacher.name}.`
         );
       }
     } catch {
       setCopilotResponse(
-        `Custom Lesson Plan for: "${queryToUse}"\n\n- Part A: Warm-up on Suddha Swaras (10 mins)\n- Part B: Core Tala Execution & Akshara count (15 mins)\n- Part C: Student Performance Evaluation & Feedback (5 mins)`
+        `Custom Lesson Plan for ${currentTeacher.name}: "${queryToUse}"\n\n- Part A: Warm-up on Suddha Swaras (10 mins)\n- Part B: Core Tala Execution & Akshara count (15 mins)\n- Part C: Student Performance Evaluation & Feedback (5 mins)`
       );
     } finally {
       setCopilotLoading(false);
@@ -303,19 +406,20 @@ export function TeacherDashboard() {
 
     const created: DemoAssignment = {
       id: `asg-${Date.now()}`,
-      className: classes[0]?.name || "Carnatic Vocal Batch",
+      teacherId: currentTeacher.id,
+      className: teacherClasses[0]?.name || "Carnatic Batch",
       title: titleSnippet,
       type: "AI Co-Teacher Homework",
       dueDate: "3 Days from Today",
       submittedCount: 0,
-      totalCount: classes[0]?.studentsCount || 10,
+      totalCount: teacherClasses[0]?.studentsCount || 10,
     };
 
     setAssignments([created, ...assignments]);
     setAssignmentAssigned(true);
   };
 
-  const filteredStudents = students.filter((s) => {
+  const filteredStudents = teacherStudents.filter((s) => {
     const matchesSearch =
       s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
       s.class.toLowerCase().includes(studentSearch.toLowerCase());
@@ -326,7 +430,48 @@ export function TeacherDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* ── Top Guru Stats Overview ── */}
+      {/* ── Teacher Profile Allocation Switcher ── */}
+      <div className="rounded-3xl border border-swara-gold/30 bg-card p-5 shadow-sm space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <UserCheck className="size-5 text-kumkum" />
+            <div>
+              <span className="text-xs font-bold text-kumkum uppercase tracking-wider block">
+                Active Guru Portal Account:
+              </span>
+              <h3 className="font-serif text-lg font-bold text-foreground">
+                {currentTeacher.name} ({currentTeacher.subject})
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-muted-foreground">Switch Active Teacher:</span>
+            <select
+              value={selectedTeacherId}
+              onChange={(e) => setSelectedTeacherId(e.target.value)}
+              className="rounded-xl border border-swara-gold/40 bg-background px-3.5 py-1.5 text-xs font-bold text-kumkum focus:outline-none focus:ring-2 focus:ring-kumkum/30 cursor-pointer shadow-xs"
+            >
+              {TEACHER_PROFILES.map((t) => (
+                <option key={t.id} value={t.id}>
+                  👑 {t.name} — {t.subject}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+            <Lock className="mr-1 size-3" /> Isolated Data Allocation Active
+          </Badge>
+          <span>
+            Viewing <strong>{teacherClasses.length} Batches</strong> and <strong>{teacherStudents.length} Allocated Students</strong> assigned exclusively to {currentTeacher.name}.
+          </span>
+        </div>
+      </div>
+
+      {/* ── Top Guru Stats Overview for Selected Teacher ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-panel traditional-glow rounded-2xl border border-swara-gold/20 bg-card p-5 shadow-sm">
           <div className="flex items-center gap-3">
@@ -334,8 +479,8 @@ export function TeacherDashboard() {
               <Users className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Total Enrolled</p>
-              <p className="font-serif text-2xl font-bold text-foreground">{totalEnrolled} Students</p>
+              <p className="text-xs text-muted-foreground font-medium">Allocated Students</p>
+              <p className="font-serif text-2xl font-bold text-foreground">{totalEnrolled} Enrolled</p>
             </div>
           </div>
         </div>
@@ -346,8 +491,8 @@ export function TeacherDashboard() {
               <BookOpen className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Active Batches</p>
-              <p className="font-serif text-2xl font-bold text-foreground">{classes.length} Classes</p>
+              <p className="text-xs text-muted-foreground font-medium">My Batches</p>
+              <p className="font-serif text-2xl font-bold text-foreground">{teacherClasses.length} Classes</p>
             </div>
           </div>
         </div>
@@ -358,7 +503,7 @@ export function TeacherDashboard() {
               <TrendingUp className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Avg Pitch Accuracy</p>
+              <p className="text-xs text-muted-foreground font-medium">Avg Pitch Score</p>
               <p className="font-serif text-2xl font-bold text-emerald-600">{avgPitch}%</p>
             </div>
           </div>
@@ -370,8 +515,8 @@ export function TeacherDashboard() {
               <Video className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Online Classes</p>
-              <p className="font-serif text-2xl font-bold text-blue-600">Google Meet</p>
+              <p className="text-xs text-muted-foreground font-medium">Google Meet Access</p>
+              <p className="font-serif text-2xl font-bold text-blue-600">Private Link</p>
             </div>
           </div>
         </div>
@@ -389,7 +534,7 @@ export function TeacherDashboard() {
             }`}
           >
             <Users className="size-4" />
-            Class Batches ({classes.length})
+            Allocated Batches ({teacherClasses.length})
           </button>
           <button
             onClick={() => setActiveTab("google-meet")}
@@ -400,7 +545,7 @@ export function TeacherDashboard() {
             }`}
           >
             <Video className="size-4" />
-            Google Meet Online Classes 🎥
+            Google Meet Online Class 🎥
           </button>
           <button
             onClick={() => setActiveTab("assignments")}
@@ -411,7 +556,7 @@ export function TeacherDashboard() {
             }`}
           >
             <FileText className="size-4" />
-            Assignments ({assignments.length})
+            Batch Assignments ({teacherAssignments.length})
           </button>
           <button
             onClick={() => setActiveTab("students")}
@@ -422,7 +567,7 @@ export function TeacherDashboard() {
             }`}
           >
             <Award className="size-4" />
-            Student Tracker ({students.length})
+            Allocated Student Tracker ({teacherStudents.length})
           </button>
           <button
             onClick={() => setActiveTab("ai-copilot")}
@@ -441,9 +586,9 @@ export function TeacherDashboard() {
           <Button
             size="sm"
             onClick={() => setShowNewClassModal(true)}
-            className="bg-kumkum hover:bg-kumkum-light text-white text-xs gap-1.5"
+            className="bg-kumkum hover:bg-kumkum-light text-white text-xs gap-1.5 font-bold"
           >
-            <Plus className="size-4" /> Add New Class
+            <Plus className="size-4" /> Add Batch for {currentTeacher.name}
           </Button>
         )}
 
@@ -451,35 +596,35 @@ export function TeacherDashboard() {
           <Button
             size="sm"
             onClick={() => setShowNewAsgModal(true)}
-            className="bg-kumkum hover:bg-kumkum-light text-white text-xs gap-1.5"
+            className="bg-kumkum hover:bg-kumkum-light text-white text-xs gap-1.5 font-bold"
           >
             <Plus className="size-4" /> Create Assignment
           </Button>
         )}
       </div>
 
-      {/* ── TAB 1: CLASSES ── */}
+      {/* ── TAB 1: ALLOCATED CLASSES ── */}
       {activeTab === "classes" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {classes.length === 0 ? (
+          {teacherClasses.length === 0 ? (
             <div className="col-span-3 text-center py-12 bg-card rounded-3xl border border-dashed border-border p-8">
-              <p className="text-sm text-muted-foreground mb-3">No active classes yet.</p>
+              <p className="text-sm text-muted-foreground mb-3">No allocated batches for {currentTeacher.name} yet.</p>
               <Button
                 onClick={() => setShowNewClassModal(true)}
-                className="bg-kumkum text-white text-xs"
+                className="bg-kumkum text-white text-xs font-bold"
               >
-                Create First Batch
+                Create Batch
               </Button>
             </div>
           ) : (
-            classes.map((cls) => (
+            teacherClasses.map((cls) => (
               <div
                 key={cls.id}
                 className="glass-panel traditional-glow rounded-3xl border border-swara-gold/25 bg-card p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
+                    <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px] font-bold">
                       {cls.level}
                     </Badge>
                     <button
@@ -491,7 +636,10 @@ export function TeacherDashboard() {
                     </button>
                   </div>
 
-                  <h3 className="font-serif text-lg font-bold text-kumkum mb-2">{cls.name}</h3>
+                  <h3 className="font-serif text-lg font-bold text-kumkum mb-1">{cls.name}</h3>
+                  <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-3">
+                    Teacher: {cls.teacherName}
+                  </p>
 
                   <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
                     <Calendar className="size-3.5 text-swara-gold" />
@@ -509,10 +657,10 @@ export function TeacherDashboard() {
                   <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 space-y-2 mb-4">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
-                        <Video className="size-3.5" /> Google Meet Class Room
+                        <Video className="size-3.5" /> Batch Google Meet Room
                       </span>
                       <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
-                        <Radio className="size-3 animate-pulse" /> Live
+                        <Radio className="size-3 animate-pulse" /> Private Access
                       </span>
                     </div>
 
@@ -528,7 +676,7 @@ export function TeacherDashboard() {
                       <button
                         onClick={() => handleCopyMeetLink(cls)}
                         className="p-1.5 bg-card hover:bg-muted border border-border text-foreground rounded-lg transition-colors text-xs font-medium"
-                        title="Copy Meet Link"
+                        title="Copy Meet Link for Enrolled Students"
                       >
                         {copiedClassId === cls.id ? (
                           <Check className="size-4 text-emerald-600" />
@@ -542,10 +690,10 @@ export function TeacherDashboard() {
 
                 <div className="flex items-center justify-between pt-3 border-t border-border/60">
                   <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
-                    <Users className="size-3.5 text-kumkum" /> {cls.studentsCount} Enrolled
+                    <Users className="size-3.5 text-kumkum" /> {cls.studentsCount} Enrolled Students
                   </span>
                   <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-                    <CheckCircle2 className="size-3" /> Active Batch
+                    <CheckCircle2 className="size-3" /> Allocated
                   </span>
                 </div>
               </div>
@@ -565,10 +713,10 @@ export function TeacherDashboard() {
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Google Meet Online Class Command Center
+                    Google Meet Live Classroom — {currentTeacher.name}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Host instant live video classes, manage batch meeting links, and invite students to live sessions.
+                    Only students enrolled in {currentTeacher.name}&apos;s batches will receive live notifications and meet link access.
                   </p>
                 </div>
               </div>
@@ -585,61 +733,67 @@ export function TeacherDashboard() {
 
             {/* Class Batches Meet Links List */}
             <div className="space-y-4">
-              <h4 className="font-serif text-base font-bold text-kumkum">Batch Google Meet Meeting Rooms</h4>
+              <h4 className="font-serif text-base font-bold text-kumkum">
+                {currentTeacher.name}&apos;s Allocated Meeting Rooms
+              </h4>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {classes.map((cls) => (
-                  <div
-                    key={cls.id}
-                    className="rounded-2xl border border-blue-500/20 bg-muted/30 p-4 space-y-3 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <Badge variant="outline" className="border-blue-500/30 text-blue-600 text-[10px]">
-                          {cls.level}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground font-semibold">{cls.schedule}</span>
+              {teacherClasses.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No allocated batches for this teacher.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {teacherClasses.map((cls) => (
+                    <div
+                      key={cls.id}
+                      className="rounded-2xl border border-blue-500/20 bg-muted/30 p-4 space-y-3 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <Badge variant="outline" className="border-blue-500/30 text-blue-600 text-[10px] font-bold">
+                            {cls.level}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground font-semibold">{cls.schedule}</span>
+                        </div>
+                        <h5 className="font-bold text-base text-foreground mb-1">{cls.name}</h5>
+                        <p className="text-xs text-muted-foreground">Topic: {cls.currentTopic}</p>
                       </div>
-                      <h5 className="font-bold text-base text-foreground mb-1">{cls.name}</h5>
-                      <p className="text-xs text-muted-foreground">Topic: {cls.currentTopic}</p>
-                    </div>
 
-                    <div className="space-y-2 pt-2 border-t border-border/50">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          readOnly
-                          value={cls.meetUrl}
-                          className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-mono"
-                        />
-                        <button
-                          onClick={() => handleCopyMeetLink(cls)}
-                          className="px-3 py-1.5 bg-card hover:bg-muted border border-border text-xs font-bold text-foreground rounded-xl transition-all flex items-center gap-1"
+                      <div className="space-y-2 pt-2 border-t border-border/50">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            readOnly
+                            value={cls.meetUrl}
+                            className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-mono"
+                          />
+                          <button
+                            onClick={() => handleCopyMeetLink(cls)}
+                            className="px-3 py-1.5 bg-card hover:bg-muted border border-border text-xs font-bold text-foreground rounded-xl transition-all flex items-center gap-1"
+                          >
+                            {copiedClassId === cls.id ? (
+                              <>
+                                <Check className="size-3.5 text-emerald-600" /> Copied!
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="size-3.5" /> Copy Invite
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        <a
+                          href={cls.meetUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl transition-all shadow-xs"
                         >
-                          {copiedClassId === cls.id ? (
-                            <>
-                              <Check className="size-3.5 text-emerald-600" /> Copied!
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="size-3.5" /> Copy Invite
-                            </>
-                          )}
-                        </button>
+                          <Video className="size-4" /> Start Meet Class for Allocated Students →
+                        </a>
                       </div>
-
-                      <a
-                        href={cls.meetUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl transition-all shadow-xs"
-                      >
-                        <Video className="size-4" /> Connect & Start Google Meet Class →
-                      </a>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -648,18 +802,18 @@ export function TeacherDashboard() {
       {/* ── TAB 3: ASSIGNMENTS ── */}
       {activeTab === "assignments" && (
         <div className="space-y-4">
-          {assignments.length === 0 ? (
+          {teacherAssignments.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-3xl border border-dashed border-border p-8">
-              <p className="text-sm text-muted-foreground mb-3">No assignments created yet.</p>
+              <p className="text-sm text-muted-foreground mb-3">No assignments created by {currentTeacher.name} yet.</p>
               <Button
                 onClick={() => setShowNewAsgModal(true)}
-                className="bg-kumkum text-white text-xs"
+                className="bg-kumkum text-white text-xs font-bold"
               >
                 Create Assignment
               </Button>
             </div>
           ) : (
-            assignments.map((asg) => (
+            teacherAssignments.map((asg) => (
               <div
                 key={asg.id}
                 className="glass-panel rounded-2xl border border-swara-gold/20 bg-card p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
@@ -709,13 +863,17 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* ── TAB 4: STUDENTS TRACKER ── */}
+      {/* ── TAB 4: ALLOCATED STUDENTS TRACKER ── */}
       {activeTab === "students" && (
         <div className="glass-panel rounded-3xl border border-swara-gold/20 bg-card overflow-hidden shadow-sm space-y-4">
           <div className="px-6 py-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
-              <h3 className="font-serif text-base font-bold text-kumkum">Class Performance Roster</h3>
-              <p className="text-xs text-muted-foreground">Track student pitch accuracy, tala precision, and streaks.</p>
+              <h3 className="font-serif text-base font-bold text-kumkum">
+                {currentTeacher.name}&apos;s Allocated Student Roster
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Displaying students assigned to {currentTeacher.name}&apos;s batches.
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <select
@@ -746,7 +904,7 @@ export function TeacherDashboard() {
             <table className="w-full text-left text-xs">
               <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold">
                 <tr>
-                  <th className="px-6 py-3">Student Name</th>
+                  <th className="px-6 py-3">Allocated Student Name</th>
                   <th className="px-6 py-3">Enrolled Class</th>
                   <th className="px-6 py-3">Pitch Accuracy</th>
                   <th className="px-6 py-3">Tala Precision</th>
@@ -758,7 +916,7 @@ export function TeacherDashboard() {
                 {filteredStudents.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-8 text-muted-foreground">
-                      No matching students found.
+                      No matching students allocated to {currentTeacher.name}.
                     </td>
                   </tr>
                 ) : (
@@ -801,9 +959,9 @@ export function TeacherDashboard() {
                 <Sparkles className="size-5 text-kumkum" />
               </div>
               <div>
-                <h3 className="font-serif text-lg font-bold text-kumkum">AI Guru Co-Teacher Copilot</h3>
+                <h3 className="font-serif text-lg font-bold text-kumkum">AI Guru Co-Teacher Copilot ({currentTeacher.name})</h3>
                 <p className="text-xs text-muted-foreground">
-                  Generate Carnatic lesson plans, tala exercises, and homework drills in any language.
+                  Generate Carnatic lesson plans, tala exercises, and homework drills for {currentTeacher.name}&apos;s students.
                 </p>
               </div>
             </div>
@@ -865,7 +1023,7 @@ export function TeacherDashboard() {
               <Button
                 onClick={() => handleAskCopilot()}
                 disabled={copilotLoading || !copilotQuery.trim()}
-                className="bg-kumkum hover:bg-kumkum-light text-white shrink-0 gap-1.5"
+                className="bg-kumkum hover:bg-kumkum-light text-white shrink-0 gap-1.5 font-bold"
               >
                 {copilotLoading ? (
                   <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -881,7 +1039,7 @@ export function TeacherDashboard() {
             <div className="rounded-2xl border border-swara-gold/30 bg-kumkum/5 p-5 space-y-4 animate-in fade-in duration-300">
               <div className="flex items-center justify-between border-b border-border/60 pb-3">
                 <Badge variant="outline" className="border-kumkum/20 text-kumkum text-[10px]">
-                  Generated Lesson Plan & Explanation
+                  Generated Lesson Plan for {currentTeacher.name}
                 </Badge>
 
                 <Button
@@ -889,15 +1047,15 @@ export function TeacherDashboard() {
                   variant="outline"
                   onClick={handlePublishCopilotAsAssignment}
                   disabled={assignmentAssigned}
-                  className="border-kumkum/30 text-kumkum hover:bg-kumkum hover:text-white text-xs gap-1.5"
+                  className="border-kumkum/30 text-kumkum hover:bg-kumkum hover:text-white text-xs gap-1.5 font-bold"
                 >
                   {assignmentAssigned ? (
                     <>
-                      <Check className="size-3.5 text-emerald-600" /> Published to Class
+                      <Check className="size-3.5 text-emerald-600" /> Published to Allocated Class
                     </>
                   ) : (
                     <>
-                      <Share2 className="size-3.5" /> Assign to Class Batches
+                      <Share2 className="size-3.5" /> Assign to My Batches
                     </>
                   )}
                 </Button>
@@ -915,7 +1073,9 @@ export function TeacherDashboard() {
       {showNewClassModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-swara-gold/30 bg-card p-6 shadow-xl space-y-5">
-            <h3 className="font-serif text-xl font-bold text-kumkum">Add New Carnatic Class</h3>
+            <h3 className="font-serif text-xl font-bold text-kumkum">
+              Add New Class Batch for {currentTeacher.name}
+            </h3>
 
             <form onSubmit={handleCreateClass} className="space-y-4 text-xs">
               <div>
@@ -984,17 +1144,19 @@ export function TeacherDashboard() {
       {showNewAsgModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-swara-gold/30 bg-card p-6 shadow-xl space-y-5">
-            <h3 className="font-serif text-xl font-bold text-kumkum">Create Class Assignment</h3>
+            <h3 className="font-serif text-xl font-bold text-kumkum">
+              Create Assignment ({currentTeacher.name})
+            </h3>
 
             <form onSubmit={handleCreateAssignment} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold mb-1">Select Batch</label>
+                <label className="block font-semibold mb-1">Select Allocated Batch</label>
                 <select
                   value={newAsgClass}
                   onChange={(e) => setNewAsgClass(e.target.value)}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
                 >
-                  {classes.map((c) => (
+                  {teacherClasses.map((c) => (
                     <option key={c.id} value={c.name}>
                       {c.name} ({c.level})
                     </option>
