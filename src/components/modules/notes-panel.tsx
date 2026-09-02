@@ -13,9 +13,11 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  Languages,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { SupportedLanguage } from "@/lib/ai/context";
 
 interface SyllabusFile {
   name: string;
@@ -45,6 +47,15 @@ interface NotesPanelProps {
   initialTab?: "pdf" | "topics" | "generate" | "saved";
 }
 
+const LANGUAGES: { id: SupportedLanguage; label: string; flag: string }[] = [
+  { id: "en", label: "English", flag: "🇬🇧" },
+  { id: "te", label: "తెలుగు (Telugu)", flag: "🇮🇳" },
+  { id: "hi", label: "हिन्दी (Hindi)", flag: "🇮🇳" },
+  { id: "ta", label: "தமிழ் (Tamil)", flag: "🇮🇳" },
+  { id: "kn", label: "ಕನ್ನಡ (Kannada)", flag: "🇮🇳" },
+  { id: "ml", label: "മലയാളം (Malayalam)", flag: "🇮🇳" },
+];
+
 export function NotesPanel({ initialTab }: NotesPanelProps) {
   const searchParams = useSearchParams();
   const urlTab = searchParams.get("tab") as "pdf" | "topics" | "generate" | "saved" | null;
@@ -55,6 +66,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
   const [topic, setTopic] = useState("");
   const [generatedNote, setGeneratedNote] = useState<string | null>(null);
+  const [language, setLanguage] = useState<SupportedLanguage>("en");
   const [loadingFiles, setLoadingFiles] = useState(true);
   const [loadingChunks, setLoadingChunks] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -164,7 +176,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
       const res = await fetch("/api/syllabus/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: targetTopic, content: overrideContent }),
+        body: JSON.stringify({ topic: targetTopic, content: overrideContent, language }),
       });
       const json = await res.json();
       if (json.success || json.data?.content) {
@@ -194,6 +206,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
         body: JSON.stringify({ 
           topic: topicTitle,
           content: chunk.content,
+          language,
         }),
       });
       const json = await res.json();
@@ -219,10 +232,10 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h4 className="font-serif text-lg font-bold text-[#800020]">
-            AI Notes Generator & Syllabus Library
+            Multilingual AI Notes Generator & Syllabus Library
           </h4>
           <p className="text-xs text-gray-500 mt-1">
-            Browse ingested syllabus topics, view official PDF documents, and generate instant AI study notes.
+            Browse ingested syllabus topics, view official PDF documents, and generate instant AI study notes in your language.
           </p>
         </div>
         <Button
@@ -239,6 +252,26 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
           )}
           Import PDFs from Supabase
         </Button>
+      </div>
+
+      {/* Multilingual Selector Bar */}
+      <div className="flex items-center justify-between gap-3 border border-[#D4AF37]/30 bg-kumkum/5 rounded-2xl px-5 py-3 shadow-xs">
+        <div className="flex items-center gap-2">
+          <Languages className="size-4 text-[#800020]" />
+          <span className="text-xs font-bold text-[#800020]">Select Study Notes Language:</span>
+        </div>
+
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+          className="rounded-xl border border-[#D4AF37]/40 bg-white px-3.5 py-1.5 text-xs font-bold text-[#800020] focus:outline-none focus:ring-2 focus:ring-[#800020]/20 cursor-pointer shadow-xs"
+        >
+          {LANGUAGES.map((lang) => (
+            <option key={lang.id} value={lang.id}>
+              {lang.flag} {lang.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {statusMessage && (
@@ -291,6 +324,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
               const isExpanded = expandedChunkId === chunk.id;
               const inlineNote = inlineNotesMap[chunk.id];
               const isGeneratingThis = generatingChunkId === chunk.id;
+              const selectedLangObj = LANGUAGES.find((l) => l.id === language);
 
               return (
                 <div
@@ -338,14 +372,14 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
                       ) : (
                         <Sparkles className="size-3.5 text-swara-gold" />
                       )}
-                      Generate AI Notes on this topic
+                      Generate AI Notes ({selectedLangObj?.flag} {selectedLangObj?.label})
                     </button>
                   </div>
 
                   {inlineNote && (
                     <div className="mt-4 rounded-xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-4 text-xs text-[#1A2228] whitespace-pre-wrap leading-relaxed animate-in fade-in duration-200">
                       <div className="flex items-center gap-1.5 font-bold text-[#800020] mb-2 border-b border-[#D4AF37]/20 pb-2">
-                        <NotebookPen className="size-4 text-swara-gold" /> Generated Topic Study Notes
+                        <NotebookPen className="size-4 text-swara-gold" /> Generated Study Notes ({selectedLangObj?.flag} {selectedLangObj?.label})
                       </div>
                       {inlineNote}
                     </div>
@@ -364,11 +398,11 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-swara-gold" />
               <h5 className="font-serif text-sm font-bold text-[#800020]">
-                AI Carnatic Study Notes Generator
+                AI Carnatic Study Notes Generator ({LANGUAGES.find((l) => l.id === language)?.label})
               </h5>
             </div>
             <p className="text-xs text-muted-foreground">
-              Enter any Carnatic music topic, raga, tala, or syllabus concept to generate structured exam-ready study notes (RAG-powered).
+              Enter any Carnatic music topic, raga, tala, or syllabus concept to generate structured exam-ready study notes in {LANGUAGES.find((l) => l.id === language)?.label}.
             </p>
             <div className="flex flex-wrap gap-2 text-[11px]">
               <span className="text-muted-foreground font-semibold">Quick Prompts:</span>
@@ -407,7 +441,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
           {generatedNote && (
             <div className="rounded-2xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-6 shadow-sm animate-in fade-in duration-200">
               <p className="text-xs font-bold uppercase tracking-wider text-[#800020] mb-3 flex items-center gap-1.5">
-                <NotebookPen className="size-4 text-swara-gold" /> Generated AI Study Notes
+                <NotebookPen className="size-4 text-swara-gold" /> Generated AI Study Notes ({LANGUAGES.find((l) => l.id === language)?.label})
               </p>
               <div className="prose prose-sm max-w-none text-[#1A2228] whitespace-pre-wrap text-sm leading-relaxed">
                 {generatedNote}

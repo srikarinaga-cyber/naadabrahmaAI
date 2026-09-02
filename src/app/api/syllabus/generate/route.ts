@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const topic = (body.topic as string)?.trim();
     const explicitContent = (body.content as string)?.trim();
+    const language = (body.language as string) || "en";
     const save = body.save !== false;
 
     if (!topic && !explicitContent) {
@@ -57,8 +58,22 @@ export async function POST(request: NextRequest) {
       chunksCount = 1;
     }
 
+    let languageInstruction = "Respond in clear English.";
+    if (language === "te") {
+      languageInstruction = "LANGUAGE REQUIREMENT: Respond fluently in TELUGU script (తెలుగు) with standard Carnatic music terms.";
+    } else if (language === "hi") {
+      languageInstruction = "LANGUAGE REQUIREMENT: Respond fluently in HINDI script (हिन्दी) with standard Carnatic music terms.";
+    } else if (language === "ta") {
+      languageInstruction = "LANGUAGE REQUIREMENT: Respond fluently in TAMIL script (தமிழ்) with standard Carnatic music terms.";
+    } else if (language === "kn") {
+      languageInstruction = "LANGUAGE REQUIREMENT: Respond fluently in KANNADA script (ಕನ್ನಡ) with standard Carnatic music terms.";
+    } else if (language === "ml") {
+      languageInstruction = "LANGUAGE REQUIREMENT: Respond fluently in MALAYALAM script (മലയാളം) with standard Carnatic music terms.";
+    }
+
     const systemPrompt = `You are Naadabrahma AI's Notes Generator for Carnatic music students.
 Generate clear, structured, exam-ready study notes specifically for the requested SYLLABUS TOPIC and EXACT CONTEXT TEXT provided.
+${languageInstruction}
 Do NOT substitute with unrelated topics. Focus 100% on the exact concept, definitions, swaras, talas, or syllabus rules described in the context text.
 Structure the notes into:
 1. Topic Overview & Definitions
