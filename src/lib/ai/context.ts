@@ -213,9 +213,99 @@ export interface AiChatResponse {
   practiceTips?: string[];
 }
 
+function translateSyllabusContext(rawText: string, language: string): string {
+  if (language === "en" || !rawText) return rawText;
+
+  const t = rawText.toLowerCase();
+
+  if (language === "te") {
+    let result = "### పాఠ్యాంశ ముఖ్యాంశాలు (Telugu Explanation):\n";
+    if (t.includes("dwadasa") || t.includes("swaramsthanams") || t.includes("swara")) {
+      result += `- **ద్వాదశ స్వరస్థానములు (12 Swarasthanas):** 1. షడ్జమ (స), 2. శుద్ధ రిషభం (రి1), 3. చతుశ్రుతి రిషభం (రి2), 4. సాధారణ గాంధారం (గ1), 5. అంతర గాంధారం (గ2), 6. శుద్ధ మధ్యమం (మ1), 7. ప్రతి మధ్యమం (మ2), 8. పంచమం (ప), 9. శుద్ధ దైవతం (ద1), 10. చతుశ్రుతి దైవతం (ద2), 11. కైశిక నిషాదం (ని1), 12. కాకలి నిషాదం (ని2).\n`;
+    }
+    if (t.includes("sthayi") || t.includes("sthayis") || t.includes("octave")) {
+      result += `- **పంచ స్థాయిలు (5 Sthayis):** 1. అనుమంద్ర స్థాయి, 2. మంద్ర స్థాయి, 3. మధ్య స్థాయి (సాధారణ గాత్ర స్థాయి), 4. తార స్థాయి (హై పిచ్), 5. అతితార స్థాయి.\n`;
+    }
+    if (t.includes("sangeetham") || t.includes("music") || t.includes("shruti")) {
+      result += `- **సంగీతం & శ్రుతి:** గాత్రం, వాద్యం మరియు నృత్యం కలయిక సంగీతం. ఆధార షడ్జమంతో అనుసంధానమైన శ్రవ్య నాదాన్ని శ్రుతి అంటారు.\n`;
+    }
+    if (t.includes("katapayadi") || t.includes("melakarta")) {
+      result += `- **కటపయాది సూత్రం:** 72 మేళకర్త రాగాలను అక్షర సంకేతాల ద్వారా 12 చక్రాలుగా వర్గీకరించే ప్రాచీన సంగీత నియమం.\n`;
+    }
+    if (t.includes("tala") || t.includes("suladi")) {
+      result += `- **సుళాది సప్త తాళములు:** 7 ప్రధాన తాళములు (ధ్రువ, మత్య, రూపక, ఝంప, త్రిపుట, అట, ఏక) 5 జాతులతో గుణించగా ఏర్పడే 35 తాళాల వ్యవస్థ.\n`;
+    }
+    if (result === "### పాఠ్యాంశ ముఖ్యాంశాలు (Telugu Explanation):\n") {
+      result += `- **సంగీత విశ్లేషణ:** ఆధార షడ్జమంతో శ్రుతి శుద్ధంగా సాధన చేయడం, ఆరోహణ అవరోహణల స్వరస్థానాలను స్పష్టంగా పలకడం ముఖ్యమైన నియమం.`;
+    }
+    return result;
+  }
+
+  if (language === "hi") {
+    let result = "### पाठ्यक्रम मुख्य बिंदु (Hindi Explanation):\n";
+    if (t.includes("dwadasa") || t.includes("swaramsthanams") || t.includes("swara")) {
+      result += `- **द्वादश स्वरस्थान (12 Swarasthanas):** 1. षड्ज (सा), 2. शुद्ध ऋषभ, 3. चतुश्रुति ऋषभ, 4. साधारण गांधार, 5. अंतर गांधार, 6. शुद्ध मध्यम, 7. प्रति मध्यम, 8. पंचम (पा), 9. शुद्ध धैवत, 10. चतुश्रुति धैवत, 11. कैशिक निषाद, 12. काकली निषाद।\n`;
+    }
+    if (t.includes("sthayi") || t.includes("sthayis") || t.includes("octave")) {
+      result += `- **पांच स्थाई (5 Sthayis):** 1. अनु-मंद्र स्थाई, 2. मंद्र स्थाई, 3. मध्य स्थाई, 4. तार स्थाई, 5. अति-तार स्थाई।\n`;
+    }
+    if (t.includes("sangeetham") || t.includes("music") || t.includes("shruti")) {
+      result += `- **संगीत और श्रुति:** गायन, वादन और नृत्य का मेल संगीत है। आधार षड्ज के साथ सुरीली ध्वनि को श्रुति कहते हैं।\n`;
+    }
+    if (result === "### पाठ्यक्रम मुख्य बिंदु (Hindi Explanation):\n") {
+      result += `- **संगीत विश्लेषण:** स्वरस्थानों और ताल व्यवस्था का सुरीला अभ्यास आवश्यक है।`;
+    }
+    return result;
+  }
+
+  if (language === "ta") {
+    let result = "### பாடப்பகுதி முக்கிய குறிப்புகள் (Tamil Explanation):\n";
+    if (t.includes("dwadasa") || t.includes("swaramsthanams") || t.includes("swara")) {
+      result += `- **துவாதச ஸ்வரஸ்தானங்கள் (12 Swarasthanas):** 1. ஷட்ஜம் (ஸ), 2. சுத்த ரிஷபம், 3. சதுஸ்ருதி ரிஷபம், 4. சாதாரண காந்தாரம், 5. அந்தர காந்தாரம், 6. சுத்த மத்யமம், 7. ப்ரதி மத்யமம், 8. பஞ்சமம் (ப), 9. சுத்த தைவதம், 10. சதுஸ்ருதி தைவதம், 11. கைசிகி நிஷாதம், 12. காகலி நிஷாதம்.\n`;
+    }
+    if (t.includes("sthayi") || t.includes("sthayis")) {
+      result += `- **ஐந்து ஸ்தாயிகள் (5 Sthayis):** 1. அனு-மந்த்ர ஸ்தாயி, 2. மந்த்ர ஸ்தாயி, 3. மத்ய ஸ்தாயி, 4. தார ஸ்தாயி, 5. அதி-தார ஸ்தாயி.\n`;
+    }
+    if (result === "### பாடப்பகுதி முக்கிய குறிப்புகள் (Tamil Explanation):\n") {
+      result += `- **இசை விளக்கம்:** ஸ்ருதி சுத்தமாகவும் ராக ஸ்வரஸ்தானங்களை துல்லியமாகவும் பாட வேண்டும்.`;
+    }
+    return result;
+  }
+
+  if (language === "kn") {
+    let result = "### ಪಠ್ಯಕ್ರಮದ ಮುಖ್ಯ ಬಿಂದುಗಳು (Kannada Explanation):\n";
+    if (t.includes("dwadasa") || t.includes("swaramsthanams") || t.includes("swara")) {
+      result += `- **ದ್ವಾದಶ ಸ್ವರಸ್ಥಾನಗಳು (12 Swarasthanas):** 1. ಷಡ್ಜ (ಸ), 2. ಶುದ್ಧ ರಿಷಭ, 3. ಚತುಶ್ರುತಿ ರಿಷಭ, 4. ಸಾಧಾರಣ ಗಾಂಧಾರ, 5. ಅಂತರ ಗಾಂಧಾರ, 6. ಶುದ್ಧ ಮಧ್ಯಮ, 7. ಪ್ರತಿ ಮಧ್ಯಮ, 8. ಪಂಚಮ (ಪ), 9. ಶುದ್ಧ ಧೈವತ, 10. ಚತುಶ್ರುತಿ ಧೈವತ, 11. ಕೈಶಿಕ ನಿಷಾದ, 12. ಕಾಕಲಿ ನಿಷಾದ.\n`;
+    }
+    if (t.includes("sthayi") || t.includes("sthayis")) {
+      result += `- **ಐದು ಸ್ಥಾಯಿಗಳು (5 Sthayis):** 1. ಅನು-ಮಂದ್ರ ಸ್ಥಾಯಿ, 2. ಮಂದ್ರ ಸ್ಥಾಯಿ, 3. ಮಧ್ಯ ಸ್ಥಾಯಿ, 4. ತಾರ ಸ್ಥಾಯಿ, 5. ಅತಿ-ತಾರ ಸ್ಥಾಯಿ.\n`;
+    }
+    if (result === "### ಪಠ್ಯಕ್ರಮದ ಮುಖ್ಯ ಬಿಂದುಗಳು (Kannada Explanation):\n") {
+      result += `- **ಸಂಗೀತ ವಿಶ್ಲೇಷಣೆ:** ಶ್ರುತಿಬದ್ಧವಾಗಿ ಸ್ವರಗಳನ್ನು ಅಭ್ಯಾಸ ಮಾಡುವುದು ಮುಖ್ಯ.`;
+    }
+    return result;
+  }
+
+  if (language === "ml") {
+    let result = "### പാഠഭാഗ പ്രധാന കുറിപ്പുകൾ (Malayalam Explanation):\n";
+    if (t.includes("dwadasa") || t.includes("swaramsthanams") || t.includes("swara")) {
+      result += `- **ദ്വാദശ സ്വരസ്ഥാനങ്ങൾ (12 Swarasthanas):** 1. ഷഡ്ജം (സ), 2. ശുദ്ധ ഋഷഭം, 3. ചതുശ്രുതി ഋഷഭം, 4. സാധാരണ ഗാന്ധാരം, 5. അന്തര ഗാന്ധാരം, 6. ശുദ്ധ മധ്യമം, 7. പ്രതി മധ്യമം, 8. പഞ്ചമം (പ), 9. ശുദ്ധ ധൈവതം, 10. ചതുശ്രുതി ധൈവതം, 11. കൈശിക നിഷാദം, 12. കാകലി നിഷാദം.\n`;
+    }
+    if (t.includes("sthayi") || t.includes("sthayis")) {
+      result += `- **അഞ്ച് സ്ഥായികൾ (5 Sthayis):** 1. അനു-മന്ദ്ര സ്ഥായി, 2. മന്ദ്ര സ്ഥായി, 3. മധ്യ സ്ഥായി, 4. താര സ്ഥായി, 5. അതി-താര സ്ഥായി.\n`;
+    }
+    if (result === "### പാഠഭാഗ പ്രധാന കുറിപ്പുകൾ (Malayalam Explanation):\n") {
+      result += `- **സംഗീത വിശകലനം:** തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`;
+    }
+    return result;
+  }
+
+  return rawText;
+}
+
 export function generateFallbackStudyNotes(userQuestion: string, language: string = "en"): AiChatResponse {
   let cleanTopic = "Carnatic Music Theory";
-  let explicitText = "";
+  let rawExplicitText = "";
 
   if (userQuestion.includes("TOPIC:")) {
     const afterTopic = userQuestion.split("TOPIC:")[1] || "";
@@ -225,15 +315,15 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
   }
 
   if (userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
-    explicitText = userQuestion.split("EXACT SYLLABUS TEXT CONTEXT:")[1]?.trim() || "";
+    rawExplicitText = userQuestion.split("EXACT SYLLABUS TEXT CONTEXT:")[1]?.trim() || "";
   }
 
-  // Strip duplicate prompt labels from explicit text
-  explicitText = explicitText.replace(/^TOPIC:.*$/gm, "").trim();
+  rawExplicitText = rawExplicitText.replace(/^TOPIC:.*$/gm, "").trim();
+  const explicitText = translateSyllabusContext(rawExplicitText, language);
 
   if (language === "te") {
     return {
-      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `### 2. పాఠ్యాంశ వివరములు (Syllabus Text)\n${explicitText}\n\n` : ""}### 3. సాధనా నియమాలు & పరీక్షా ముఖ్యాంశాలు\n- **నాదం & శ్రుతి:** ఆధార షడ్జమంతో శ్రుతిని కలిపి సాధన చేయాలి.\n- **ద్వాదశ స్వరస్థానములు:** స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2 స్థానాలను శ్రద్ధగా గుర్తుంచుకోవాలి.`,
+      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. సాధనా నియమాలు & పరీక్షా ముఖ్యాంశాలు\n- **నాదం & శ్రుతి:** ఆధార షడ్జమంతో శ్రుతిని కలిపి సాధన చేయాలి.\n- **ద్వాదశ స్వరస్థానములు:** స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2 స్థానాలను శ్రద్ధగా గుర్తుంచుకోవాలి.`,
       raga: cleanTopic,
       arohanam: "స రి గ మ ప ద ని స'",
       avarohanam: "స' ని ద ప మ గ రి స",
@@ -242,7 +332,7 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
   if (language === "hi") {
     return {
-      answer: `## कर्नाटक संगीत अध्ययन नोट्स: ${cleanTopic}\n\n### 1. सिद्धांत एवं परिचय\nयह विषय कर्नाटक संगीत पाठ्यक्रम के स्वरस्थानों, राग नियमों और ताल प्रणाली को स्पष्ट करता है।\n\n${explicitText ? `### 2. मुख्य पाठ्यक्रम पाठ्य सामग्री\n${explicitText}\n\n` : ""}### 3. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु\n- तानपुरा श्रुति के साथ अभ्यास करें।\n- 12 स्वरस्थानों और ताल अंगों को समझें।`,
+      answer: `## कर्नाटक संगीत अध्ययन नोट्स: ${cleanTopic}\n\n### 1. सिद्धांत एवं परिचय\nयह विषय कर्नाटक संगीत पाठ्यक्रम के स्वरस्थानों, राग नियमों और ताल प्रणाली को स्पष्ट करता है।\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु\n- तानपुरा श्रुति के साथ अभ्यास करें।\n- 12 स्वरस्थानों और ताल अंगों को समझें।`,
       raga: cleanTopic,
       arohanam: "सा री गा मा पा ढा नी सा'",
       avarohanam: "सा' नी ढा पा मा गा री सा",
@@ -251,21 +341,21 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
   if (language === "ta") {
     return {
-      answer: `## கர்நாடக இசை பாடக் குறிப்புகள்: ${cleanTopic}\n\n### 1. அறிமுகம் மற்றும் விதிகள்\nஇந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள் மற்றும் தாள அமைப்புகளை விளக்குகிறது.\n\n${explicitText ? `### 2. பாடப் பகுதி\n${explicitText}\n\n` : ""}### 3. பயிற்சி முறைகள்\n- ஸ்ருதி சுத்தமாக பாடிப் பழகவும்.`,
+      answer: `## கர்நாடக இசை பாடக் குறிப்புகள்: ${cleanTopic}\n\n### 1. அறிமுகம் மற்றும் விதிகள்\nஇந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள் மற்றும் தாள அமைப்புகளை விளக்குகிறது.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. பயிற்சி முறைகள்\n- ஸ்ருதி சுத்தமாக பாடிப் பழகவும்.`,
       raga: cleanTopic,
     };
   }
 
   if (language === "kn") {
     return {
-      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಅಧ್ಯಯನ ಟಿಪ್ಪಣಿಗಳು: ${cleanTopic}\n\n### 1. ಸಿದ್ಧಾಂತ ಪರಿಚಯ\nಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.\n\n${explicitText ? `### 2. ಮುಖ್ಯ ಪಠ್ಯ ವಿವರಣೆ\n${explicitText}\n\n` : ""}### 3. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ\n- ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
+      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಅಧ್ಯಯನ ಟಿಪ್ಪಣಿಗಳು: ${cleanTopic}\n\n### 1. ಸಿದ್ಧಾಂತ ಪರಿಚಯ\nಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ\n- ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
       raga: cleanTopic,
     };
   }
 
   if (language === "ml") {
     return {
-      answer: `## കർണാടക സംഗീത പഠന കുറിപ്പുകൾ: ${cleanTopic}\n\n### 1. വിഷയാവലോകനം\nഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും താള വിഭജനങ്ങളും വ്യക്തമാക്കുന്നു.\n\n${explicitText ? `### 2. പ്രധാന പഠനഭാഗം\n${explicitText}\n\n` : ""}### 3. പരിശീലന കുറിപ്പുകൾ\n- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
+      answer: `## കർണാടക സംഗീത പഠന കുറിപ്പുകൾ: ${cleanTopic}\n\n### 1. വിഷയാവലോകനം\nഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും താള വിഭജനങ്ങളും വ്യക്തമാക്കുന്നു.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. പരിശീലന കുറിപ്പുകൾ\n- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
       raga: cleanTopic,
     };
   }
