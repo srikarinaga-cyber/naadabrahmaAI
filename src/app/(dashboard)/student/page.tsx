@@ -119,7 +119,7 @@ export default function StudentDashboardPage() {
           </div>
 
           <a
-            href="https://meet.google.com/naada-vocal-sangeetha"
+            href="https://meet.google.com/new"
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all"

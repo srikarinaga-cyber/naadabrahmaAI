@@ -85,7 +85,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 14,
     schedule: "Mon, Wed • 5:00 PM IST",
     currentTopic: "Mayamalavagowla - Sarali Swaras & Alankaram",
-    meetUrl: "https://meet.google.com/naada-vocal-sangeetha",
+    meetUrl: "https://meet.google.com/new",
   },
   {
     id: "cls-2",
@@ -96,7 +96,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 9,
     schedule: "Tue, Thu • 6:30 PM IST",
     currentTopic: "Kalyani Raga Geetham (Kamalajadhala)",
-    meetUrl: "https://meet.google.com/naada-geetham-sangeetha",
+    meetUrl: "https://meet.google.com/new",
   },
   // Guru Vishwanathan (Veena)
   {
@@ -108,7 +108,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 8,
     schedule: "Fri, Sun • 4:00 PM IST",
     currentTopic: "Veena Fret Positioning & Suddha Swara Strumming",
-    meetUrl: "https://meet.google.com/naada-veena-vishwanathan",
+    meetUrl: "https://meet.google.com/new",
   },
   {
     id: "cls-4",
@@ -119,7 +119,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 5,
     schedule: "Sat, Sun • 11:00 AM IST",
     currentTopic: "Kampita & Nokku Gamaka in Hamsadhwani",
-    meetUrl: "https://meet.google.com/naada-veena-mastery",
+    meetUrl: "https://meet.google.com/new",
   },
   // Guru Ramanathan (Mridangam)
   {
@@ -131,7 +131,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 7,
     schedule: "Tue, Fri • 7:00 PM IST",
     currentTopic: "Basic Stroke Execution & Chatusra Jathi Beats",
-    meetUrl: "https://meet.google.com/naada-mridangam-ramanathan",
+    meetUrl: "https://meet.google.com/new",
   },
 ];
 
@@ -306,7 +306,7 @@ export function TeacherDashboard() {
       studentsCount: 1,
       schedule: newClassSchedule.trim() || "TBD",
       currentTopic: "Introductory Carnatic Foundation",
-      meetUrl: newClassMeetUrl.trim() || `https://meet.google.com/naada-${currentTeacher.id.slice(-3)}-${Date.now().toString().slice(-4)}`,
+      meetUrl: newClassMeetUrl.trim() || "https://meet.google.com/new",
     };
 
     setClasses([created, ...classes]);
@@ -516,7 +516,7 @@ export function TeacherDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground font-medium">Google Meet Access</p>
-              <p className="font-serif text-2xl font-bold text-blue-600">Private Link</p>
+              <p className="font-serif text-2xl font-bold text-blue-600">Valid URL</p>
             </div>
           </div>
         </div>
@@ -761,8 +761,11 @@ export function TeacherDashboard() {
                         <div className="flex items-center gap-2">
                           <input
                             type="text"
-                            readOnly
                             value={cls.meetUrl}
+                            onChange={(e) => {
+                              const updatedUrl = e.target.value;
+                              setClasses(classes.map((c) => (c.id === cls.id ? { ...c, meetUrl: updatedUrl } : c)));
+                            }}
                             className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-mono"
                           />
                           <button
@@ -1118,7 +1121,7 @@ export function TeacherDashboard() {
                   type="url"
                   value={newClassMeetUrl}
                   onChange={(e) => setNewClassMeetUrl(e.target.value)}
-                  placeholder="https://meet.google.com/abc-defg-hij"
+                  placeholder="https://meet.google.com/new"
                   className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm font-mono"
                 />
               </div>
