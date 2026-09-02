@@ -214,21 +214,26 @@ export interface AiChatResponse {
 }
 
 export function generateFallbackStudyNotes(userQuestion: string, language: string = "en"): AiChatResponse {
-  let cleanTopic = userQuestion;
+  let cleanTopic = "Carnatic Music Theory";
   let explicitText = "";
 
   if (userQuestion.includes("TOPIC:")) {
-    const topicMatch = userQuestion.match(/TOPIC:\s*([^\n]+)/);
-    if (topicMatch) cleanTopic = topicMatch[1].trim();
+    const afterTopic = userQuestion.split("TOPIC:")[1] || "";
+    cleanTopic = afterTopic.split("\n")[0]?.trim() || "Carnatic Music Theory";
+  } else if (!userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
+    cleanTopic = userQuestion.trim();
   }
+
   if (userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
-    const parts = userQuestion.split("EXACT SYLLABUS TEXT CONTEXT:");
-    if (parts[1]) explicitText = parts[1].trim();
+    explicitText = userQuestion.split("EXACT SYLLABUS TEXT CONTEXT:")[1]?.trim() || "";
   }
+
+  // Strip duplicate prompt labels from explicit text
+  explicitText = explicitText.replace(/^TOPIC:.*$/gm, "").trim();
 
   if (language === "te") {
     return {
-      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `### 2. పాఠ్యాంశ పూర్తి పాఠం (వివరాలు)\n${explicitText}\n\n` : ""}### 3. సాధనా నియమాలు & పరీక్షా ప్రశ్నల విశ్లేషణ\n- శ్రుతిశుద్ధంగా సాధన చేయడం ప్రాథమిక అవసరం.\n- ద్వాదశ స్వరస్థానములు (12 Swarasthanams) మరియు షడ్జ-పంచమ భావమును గుర్తించాలి.`,
+      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `### 2. పాఠ్యాంశ వివరములు (Syllabus Text)\n${explicitText}\n\n` : ""}### 3. సాధనా నియమాలు & పరీక్షా ముఖ్యాంశాలు\n- **నాదం & శ్రుతి:** ఆధార షడ్జమంతో శ్రుతిని కలిపి సాధన చేయాలి.\n- **ద్వాదశ స్వరస్థానములు:** స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2 స్థానాలను శ్రద్ధగా గుర్తుంచుకోవాలి.`,
       raga: cleanTopic,
       arohanam: "స రి గ మ ప ద ని స'",
       avarohanam: "స' ని ద ప మ గ రి స",
@@ -239,6 +244,8 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
     return {
       answer: `## कर्नाटक संगीत अध्ययन नोट्स: ${cleanTopic}\n\n### 1. सिद्धांत एवं परिचय\nयह विषय कर्नाटक संगीत पाठ्यक्रम के स्वरस्थानों, राग नियमों और ताल प्रणाली को स्पष्ट करता है।\n\n${explicitText ? `### 2. मुख्य पाठ्यक्रम पाठ्य सामग्री\n${explicitText}\n\n` : ""}### 3. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु\n- तानपुरा श्रुति के साथ अभ्यास करें।\n- 12 स्वरस्थानों और ताल अंगों को समझें।`,
       raga: cleanTopic,
+      arohanam: "सा री गा मा पा ढा नी सा'",
+      avarohanam: "सा' नी ढा पा मा गा री सा",
     };
   }
 
