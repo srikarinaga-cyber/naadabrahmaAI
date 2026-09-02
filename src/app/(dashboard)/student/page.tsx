@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked } from "lucide-react";
+import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
@@ -87,6 +87,7 @@ function getCookie(name: string): string | null {
 export default function StudentDashboardPage() {
   const [selectedCourseKey, setSelectedCourseKey] = useState<string>("Veena");
   const [academicYear, setAcademicYear] = useState<string>("1st Year (Beginner)");
+  const [publishedMeetUrl, setPublishedMeetUrl] = useState<string | null>(null);
 
   const [goals, setGoals] = useState<Goal[]>([
     { id: "g1", task: "Practice Mayamalavagowla scales in 3 speeds", done: true },
@@ -105,7 +106,6 @@ export default function StudentDashboardPage() {
 
   useEffect(() => {
     try {
-      // 1. Check direct course cookie or local storage
       const storedCourseCookie = getCookie("naada_student_course");
       const storedCourseLocal = localStorage.getItem("naada_student_course");
       const storedAllocation = localStorage.getItem("naada_student_allocation");
@@ -121,10 +121,20 @@ export default function StudentDashboardPage() {
         }
       }
 
-      if (resolvedCourse && COURSE_MAP[resolvedCourse]) {
-        setSelectedCourseKey(resolvedCourse);
-      } else {
-        setSelectedCourseKey("Veena");
+      const courseToUse = resolvedCourse && COURSE_MAP[resolvedCourse] ? resolvedCourse : "Veena";
+      setSelectedCourseKey(courseToUse);
+
+      // Check if teacher has published an official Meet link
+      const storedMeets = localStorage.getItem("naada_published_meets");
+      if (storedMeets) {
+        try {
+          const parsedMeets = JSON.parse(storedMeets);
+          if (parsedMeets[courseToUse]) {
+            setPublishedMeetUrl(parsedMeets[courseToUse]);
+          }
+        } catch {
+          // fallback
+        }
       }
     } catch (e) {
       console.warn("Could not parse student allocation:", e);
@@ -133,6 +143,8 @@ export default function StudentDashboardPage() {
   }, []);
 
   const currentCourseInfo = COURSE_MAP[selectedCourseKey] || COURSE_MAP["Veena"];
+  const activeMeetUrl = publishedMeetUrl || currentCourseInfo.meetUrl;
+  const isTeacherLive = Boolean(publishedMeetUrl);
 
   const handleCourseSwitch = (newCourse: string) => {
     setSelectedCourseKey(newCourse);
@@ -146,6 +158,19 @@ export default function StudentDashboardPage() {
         teacherName: COURSE_MAP[newCourse]?.teacherName,
       };
       localStorage.setItem("naada_student_allocation", JSON.stringify(allocation));
+
+      // Check published Meet link for switched course
+      const storedMeets = localStorage.getItem("naada_published_meets");
+      if (storedMeets) {
+        try {
+          const parsedMeets = JSON.parse(storedMeets);
+          setPublishedMeetUrl(parsedMeets[newCourse] || null);
+        } catch {
+          setPublishedMeetUrl(null);
+        }
+      } else {
+        setPublishedMeetUrl(null);
+      }
     } catch (e) {
       console.warn("Storage update error:", e);
     }
@@ -234,9 +259,15 @@ export default function StudentDashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Badge className="bg-red-600 text-white border-none text-[10px] font-bold animate-pulse flex items-center gap-1">
-                <Radio className="size-3" /> LIVE ONLINE CLASS READY
-              </Badge>
+              {isTeacherLive ? (
+                <Badge className="bg-red-600 text-white border-none text-[10px] font-bold animate-pulse flex items-center gap-1">
+                  <Radio className="size-3" /> OFFICIAL GURU LIVE LINK ACTIVE
+                </Badge>
+              ) : (
+                <Badge className="bg-amber-600/80 text-white border-none text-[10px] font-bold flex items-center gap-1">
+                  <Clock className="size-3" /> WAITING FOR GURU TO BROADCAST LINK
+                </Badge>
+              )}
               <Badge variant="outline" className="border-emerald-400/40 text-emerald-300 text-[10px] font-bold">
                 Assigned Guru Access Active
               </Badge>
@@ -256,12 +287,16 @@ export default function StudentDashboardPage() {
           </div>
 
           <a
-            href={currentCourseInfo.meetUrl}
+            href={activeMeetUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all"
+            className={`shrink-0 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all ${
+              isTeacherLive
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            <Video className="size-4" /> Join My Batch Google Meet <ExternalLink className="size-3.5" />
+            <Video className="size-4" /> {isTeacherLive ? "Join Guru's Official Live Meet →" : "Join My Batch Google Meet"} <ExternalLink className="size-3.5" />
           </a>
         </div>
       </div>

@@ -252,7 +252,10 @@ export function TeacherDashboard() {
   const [assignments, setAssignments] = useState<DemoAssignment[]>(INITIAL_ASSIGNMENTS);
   const [students, setStudents] = useState<DemoStudent[]>(INITIAL_STUDENTS);
 
-  // Load newly enrolled students registered from login/signup form dynamically!
+  // Published Live Links State
+  const [publishedFeedbackClassId, setPublishedFeedbackClassId] = useState<string | null>(null);
+
+  // Load newly enrolled students registered from login form dynamically!
   useEffect(() => {
     try {
       const stored = localStorage.getItem("naada_enrolled_students");
@@ -265,6 +268,15 @@ export function TeacherDashboard() {
             return [...newOnly, ...prev];
           });
         }
+      }
+
+      // Load published Meet links from storage
+      const storedMeets = localStorage.getItem("naada_published_meets");
+      if (storedMeets) {
+        const parsedMeets: Record<string, string> = JSON.parse(storedMeets);
+        setClasses((prev) =>
+          prev.map((cls) => (parsedMeets[cls.id] ? { ...cls, meetUrl: parsedMeets[cls.id] } : cls))
+        );
       }
     } catch (e) {
       console.warn("Failed loading enrolled students:", e);
@@ -312,6 +324,31 @@ export function TeacherDashboard() {
     teacherStudents.reduce((acc, s) => acc + s.pitchAccuracy, 0) / (teacherStudents.length || 1)
   );
 
+  const handlePublishMeetLinkToStudents = (clsId: string, meetUrlToPublish: string) => {
+    try {
+      const storedMeetsStr = localStorage.getItem("naada_published_meets") || "{}";
+      const meetMap = JSON.parse(storedMeetsStr);
+      meetMap[clsId] = meetUrlToPublish;
+      
+      // Also map teacher subject to link
+      if (currentTeacher.subject.includes("Veena")) {
+        meetMap["Veena"] = meetUrlToPublish;
+      } else if (currentTeacher.subject.includes("Vocal")) {
+        meetMap["Carnatic Vocal"] = meetUrlToPublish;
+      } else if (currentTeacher.subject.includes("Mridangam")) {
+        meetMap["Mridangam"] = meetUrlToPublish;
+      }
+
+      localStorage.setItem("naada_published_meets", JSON.stringify(meetMap));
+      document.cookie = `naada_published_meet_${currentTeacher.id}=${encodeURIComponent(meetUrlToPublish)}; path=/; max-age=86400; SameSite=Lax`;
+
+      setPublishedFeedbackClassId(clsId);
+      setTimeout(() => setPublishedFeedbackClassId(null), 3000);
+    } catch (e) {
+      console.warn("Storage update error:", e);
+    }
+  };
+
   const handleCreateClass = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newClassName.trim()) return;
@@ -341,7 +378,7 @@ export function TeacherDashboard() {
   };
 
   const handleCopyMeetLink = (cls: DemoClass) => {
-    const inviteText = `🎶 Naadabrahma AI Carnatic Online Class\nTeacher: ${currentTeacher.name}\nBatch: ${cls.name}\nTopic: ${cls.currentTopic}\nGoogle Meet Link: ${cls.meetUrl}\n(Access restricted to enrolled students in this batch)`;
+    const inviteText = `🎶 Naadabrahma AI Carnatic Online Class\nTeacher: ${currentTeacher.name}\nBatch: ${cls.name}\nTopic: ${cls.currentTopic}\nOfficial Google Meet Link: ${cls.meetUrl}\n(Access restricted to enrolled students in this batch)`;
     navigator.clipboard.writeText(inviteText);
     setCopiedClassId(cls.id);
     setTimeout(() => setCopiedClassId(null), 2500);
@@ -535,7 +572,7 @@ export function TeacherDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground font-medium">Google Meet Access</p>
-              <p className="font-serif text-2xl font-bold text-blue-600">Valid URL</p>
+              <p className="font-serif text-2xl font-bold text-blue-600">Live Publisher</p>
             </div>
           </div>
         </div>
@@ -564,7 +601,7 @@ export function TeacherDashboard() {
             }`}
           >
             <Video className="size-4" />
-            Google Meet Online Class 🎥
+            Publish Official Google Meet Links 🎥
           </button>
           <button
             onClick={() => setActiveTab("assignments")}
@@ -676,10 +713,10 @@ export function TeacherDashboard() {
                   <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 space-y-2 mb-4">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
-                        <Video className="size-3.5" /> Batch Google Meet Room
+                        <Video className="size-3.5" /> Official Google Meet Room
                       </span>
                       <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
-                        <Radio className="size-3 animate-pulse" /> Private Access
+                        <Radio className="size-3 animate-pulse" /> Live Broadcast
                       </span>
                     </div>
 
@@ -732,10 +769,10 @@ export function TeacherDashboard() {
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Google Meet Live Classroom — {currentTeacher.name}
+                    Official Google Meet Link Publisher — {currentTeacher.name}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    Only students enrolled in {currentTeacher.name}&apos;s batches will receive live notifications and meet link access.
+                    Paste your official scheduled Google Meet link below. Once published, your enrolled students will instantly receive your exact live meeting URL!
                   </p>
                 </div>
               </div>
@@ -746,14 +783,14 @@ export function TeacherDashboard() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl transition-all shadow-md shrink-0"
               >
-                <Video className="size-4" /> 🚀 Instant Google Meet Class <ExternalLink className="size-3.5" />
+                <Video className="size-4" /> 🚀 Create New Google Meet <ExternalLink className="size-3.5" />
               </a>
             </div>
 
             {/* Class Batches Meet Links List */}
             <div className="space-y-4">
               <h4 className="font-serif text-base font-bold text-kumkum">
-                {currentTeacher.name}&apos;s Allocated Meeting Rooms
+                {currentTeacher.name}&apos;s Official Batch Meeting Links
               </h4>
 
               {teacherClasses.length === 0 ? (
@@ -777,27 +814,32 @@ export function TeacherDashboard() {
                       </div>
 
                       <div className="space-y-2 pt-2 border-t border-border/50">
+                        <label className="block text-[11px] font-semibold text-muted-foreground">
+                          Paste & Publish Official Google Meet Link for Students:
+                        </label>
+
                         <div className="flex items-center gap-2">
                           <input
-                            type="text"
+                            type="url"
                             value={cls.meetUrl}
                             onChange={(e) => {
                               const updatedUrl = e.target.value;
                               setClasses(classes.map((c) => (c.id === cls.id ? { ...c, meetUrl: updatedUrl } : c)));
                             }}
-                            className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-mono"
+                            placeholder="https://meet.google.com/abc-defg-hij"
+                            className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-xs font-mono"
                           />
                           <button
-                            onClick={() => handleCopyMeetLink(cls)}
-                            className="px-3 py-1.5 bg-card hover:bg-muted border border-border text-xs font-bold text-foreground rounded-xl transition-all flex items-center gap-1"
+                            onClick={() => handlePublishMeetLinkToStudents(cls.id, cls.meetUrl)}
+                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-xs font-extrabold text-white rounded-xl transition-all flex items-center gap-1 shadow-xs shrink-0"
                           >
-                            {copiedClassId === cls.id ? (
+                            {publishedFeedbackClassId === cls.id ? (
                               <>
-                                <Check className="size-3.5 text-emerald-600" /> Copied!
+                                <Check className="size-3.5" /> Published!
                               </>
                             ) : (
                               <>
-                                <Copy className="size-3.5" /> Copy Invite
+                                <Radio className="size-3.5 animate-pulse" /> Publish to Students
                               </>
                             )}
                           </button>
@@ -809,7 +851,7 @@ export function TeacherDashboard() {
                           rel="noopener noreferrer"
                           className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl transition-all shadow-xs"
                         >
-                          <Video className="size-4" /> Start Meet Class for Allocated Students →
+                          <Video className="size-4" /> Launch & Join Live Meet Class →
                         </a>
                       </div>
                     </div>
