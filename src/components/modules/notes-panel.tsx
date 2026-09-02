@@ -150,9 +150,9 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
     }
   }
 
-  async function handleGenerateNotes(overrideTopic?: string) {
+  async function handleGenerateNotes(overrideTopic?: string, overrideContent?: string) {
     const targetTopic = (overrideTopic || topic).trim();
-    if (!targetTopic) return;
+    if (!targetTopic && !overrideContent) return;
 
     setTopic(targetTopic);
     setActiveTab("generate");
@@ -164,7 +164,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
       const res = await fetch("/api/syllabus/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: targetTopic }),
+        body: JSON.stringify({ topic: targetTopic, content: overrideContent }),
       });
       const json = await res.json();
       if (json.success || json.data?.content) {
@@ -191,7 +191,10 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
       const res = await fetch("/api/syllabus/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: topicTitle }),
+        body: JSON.stringify({ 
+          topic: topicTitle,
+          content: chunk.content,
+        }),
       });
       const json = await res.json();
       const noteContent = json.data?.content || `## Study Notes: ${topicTitle}\n\n${chunk.content}`;

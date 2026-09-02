@@ -24,44 +24,54 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const topic = (body.topic as string)?.trim();
+    const explicitContent = (body.content as string)?.trim();
     const save = body.save !== false;
 
-    if (!topic) {
-      return jsonError("topic is required");
+    if (!topic && !explicitContent) {
+      return jsonError("topic or content is required");
     }
 
-    let chunks: SyllabusChunkItem[] = [];
-    try {
-      chunks = await searchSyllabus(topic, 8);
-    } catch (e) {
-      console.warn("Syllabus search warning:", e);
-    }
+    const targetTopic = topic || (explicitContent ? explicitContent.slice(0, 50) + "..." : "Carnatic Music Theory");
 
-    const contextText = chunks.length > 0
-      ? chunks
-          .map(
-            (c) =>
-              `[Page ${c.page_number}] ${c.title ?? c.section ?? "Section"}:\n${c.content}`
-          )
-          .join("\n\n---\n\n")
-      : `Carnatic Music Syllabus Knowledge Base Topic: ${topic}`;
+    let contextText = explicitContent || "";
+    let chunksCount = 0;
+
+    if (!contextText) {
+      let chunks: SyllabusChunkItem[] = [];
+      try {
+        chunks = await searchSyllabus(targetTopic, 8);
+        chunksCount = chunks.length;
+      } catch (e) {
+        console.warn("Syllabus search warning:", e);
+      }
+
+      contextText = chunks.length > 0
+        ? chunks
+            .map(
+              (c) =>
+                `[Page ${c.page_number}] ${c.title ?? c.section ?? "Section"}:\n${c.content}`
+            )
+            .join("\n\n---\n\n")
+        : `Carnatic Music Syllabus Knowledge Base Topic: ${targetTopic}`;
+    } else {
+      chunksCount = 1;
+    }
 
     const systemPrompt = `You are Naadabrahma AI's Notes Generator for Carnatic music students.
-Generate clear, structured, exam-ready study notes for Carnatic music students on the given topic.
-Use markdown headings (##, ###), bullet points, and bold for key terms.
+Generate clear, structured, exam-ready study notes specifically for the requested SYLLABUS TOPIC and EXACT CONTEXT TEXT provided.
+Do NOT substitute with unrelated topics. Focus 100% on the exact concept, definitions, swaras, talas, or syllabus rules described in the context text.
 Structure the notes into:
-1. Overview & Theoretical Definition
-2. Key Swarasthana & Musicological Rules
-3. Practical Application & Exam Highlights
-4. Classical Compositions & Practice Guidance`;
+1. Topic Overview & Definitions
+2. Key Musicological & Theoretical Rules
+3. Practical Application & Exam Highlights`;
 
     const response = await callOpenAI({
       systemPrompt,
-      message: `Generate comprehensive study notes on: ${topic}\n\nContext: ${contextText}`,
+      message: `TOPIC: ${targetTopic}\n\nEXACT SYLLABUS TEXT CONTEXT:\n${contextText}`,
     });
 
     const noteContent = response.answer;
-    const title = `Notes: ${topic}`;
+    const title = `Notes: ${targetTopic}`;
 
     let savedNote = null;
     if (save) {
@@ -87,7 +97,7 @@ Structure the notes into:
     return jsonOk({
       title,
       content: noteContent,
-      sourceChunks: chunks.length,
+      sourceChunks: chunksCount,
       savedNote,
     });
   } catch (error) {
