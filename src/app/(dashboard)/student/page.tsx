@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked, Clock } from "lucide-react";
+import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked, Clock, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
@@ -124,7 +124,6 @@ export default function StudentDashboardPage() {
       const courseToUse = resolvedCourse && COURSE_MAP[resolvedCourse] ? resolvedCourse : "Veena";
       setSelectedCourseKey(courseToUse);
 
-      // Check if teacher has published an official Meet link
       const storedMeets = localStorage.getItem("naada_published_meets");
       if (storedMeets) {
         try {
@@ -159,7 +158,6 @@ export default function StudentDashboardPage() {
       };
       localStorage.setItem("naada_student_allocation", JSON.stringify(allocation));
 
-      // Check published Meet link for switched course
       const storedMeets = localStorage.getItem("naada_published_meets");
       if (storedMeets) {
         try {
@@ -261,11 +259,11 @@ export default function StudentDashboardPage() {
             <div className="flex items-center gap-2">
               {isTeacherLive ? (
                 <Badge className="bg-red-600 text-white border-none text-[10px] font-bold animate-pulse flex items-center gap-1">
-                  <Radio className="size-3" /> OFFICIAL GURU LIVE LINK ACTIVE
+                  <Radio className="size-3" /> GURU IS LIVE NOW
                 </Badge>
               ) : (
                 <Badge className="bg-amber-600/80 text-white border-none text-[10px] font-bold flex items-center gap-1">
-                  <Clock className="size-3" /> WAITING FOR GURU TO BROADCAST LINK
+                  <Clock className="size-3" /> CLASS SCHEDULED READY
                 </Badge>
               )}
               <Badge variant="outline" className="border-emerald-400/40 text-emerald-300 text-[10px] font-bold">
@@ -282,6 +280,9 @@ export default function StudentDashboardPage() {
               <span className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
                 <UserCheck className="size-3.5 text-emerald-400" /> Allocated Guru: {currentCourseInfo.teacherName} ({currentCourseInfo.teacherSubject})
               </span>
+              <span className="flex items-center gap-1 text-amber-300 font-semibold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <ShieldCheck className="size-3" /> Meeting Host: {currentCourseInfo.teacherName} (Joining as Host)
+              </span>
               <span className="text-blue-200">• Topic: {currentCourseInfo.topic}</span>
             </div>
           </div>
@@ -296,7 +297,7 @@ export default function StudentDashboardPage() {
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            <Video className="size-4" /> {isTeacherLive ? "Join Guru's Official Live Meet →" : "Join My Batch Google Meet"} <ExternalLink className="size-3.5" />
+            <Video className="size-4" /> {isTeacherLive ? `Join ${currentCourseInfo.teacherName}'s Live Class →` : `Join ${currentCourseInfo.teacherName}'s Class`} <ExternalLink className="size-3.5" />
           </a>
         </div>
       </div>
