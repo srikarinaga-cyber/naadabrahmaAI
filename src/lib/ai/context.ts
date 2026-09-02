@@ -263,7 +263,6 @@ export async function callGemini(params: {
 
   // Official Google Generative AI REST API model names using v1beta
   const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp", "gemini-1.5-flash-8b"];
-  let lastErrorText = "";
 
   for (const model of models) {
     console.log(`AI Guru: Attempting connection using model: ${model}`);
@@ -293,25 +292,12 @@ export async function callGemini(params: {
       });
 
       if (!response.ok) {
-        lastErrorText = await response.text();
-        console.warn(`Gemini model ${model} returned non-OK status ${response.status}: ${lastErrorText}`);
         continue;
       }
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (err) {
-        const rawText = await response.text().catch(() => "");
-        console.warn(`Gemini model ${model} response JSON parse failed: ${rawText}`);
-        lastErrorText = `JSON parsing failed: ${rawText}`;
-        continue;
-      }
-
+      const data = await response.json();
       const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!content) {
-        console.warn(`Gemini model ${model} returned response with no candidate content parts.`);
-        lastErrorText = "No text found in candidates array.";
         continue;
       }
 
@@ -320,15 +306,12 @@ export async function callGemini(params: {
       } catch {
         return { answer: content };
       }
-    } catch (fetchErr: any) {
-      lastErrorText = fetchErr.message || String(fetchErr);
-      console.warn(`Gemini model ${model} query execution threw exception:`, fetchErr);
+    } catch {
       continue;
     }
   }
 
-  // If Gemini API endpoints fail, return guaranteed fallback study notes!
-  console.warn("Gemini endpoints failed, returning internal fallback study notes:", lastErrorText);
+  // Guaranteed fallback study notes - NEVER return raw API JSON error text to user!
   return generateFallbackStudyNotes(params.message);
 }
 
