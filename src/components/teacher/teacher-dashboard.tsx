@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Users,
   BookOpen,
@@ -250,7 +250,26 @@ export function TeacherDashboard() {
 
   const [classes, setClasses] = useState<DemoClass[]>(INITIAL_CLASSES);
   const [assignments, setAssignments] = useState<DemoAssignment[]>(INITIAL_ASSIGNMENTS);
-  const [students] = useState<DemoStudent[]>(INITIAL_STUDENTS);
+  const [students, setStudents] = useState<DemoStudent[]>(INITIAL_STUDENTS);
+
+  // Load newly enrolled students registered from login/signup form dynamically!
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("naada_enrolled_students");
+      if (stored) {
+        const parsed: DemoStudent[] = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setStudents((prev) => {
+            const existingIds = new Set(prev.map((s) => s.id));
+            const newOnly = parsed.filter((s) => !existingIds.has(s.id));
+            return [...newOnly, ...prev];
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Failed loading enrolled students:", e);
+    }
+  }, []);
 
   // Active Selected Teacher
   const currentTeacher = TEACHER_PROFILES.find((t) => t.id === selectedTeacherId) || TEACHER_PROFILES[0];
@@ -288,7 +307,7 @@ export function TeacherDashboard() {
   const [assignmentAssigned, setAssignmentAssigned] = useState(false);
 
   // Dynamic Calculated Stats for Current Teacher ONLY
-  const totalEnrolled = teacherClasses.reduce((sum, c) => sum + c.studentsCount, 0);
+  const totalEnrolled = teacherClasses.reduce((sum, c) => sum + c.studentsCount, 0) + teacherStudents.length;
   const avgPitch = Math.round(
     teacherStudents.reduce((acc, s) => acc + s.pitchAccuracy, 0) / (teacherStudents.length || 1)
   );
@@ -480,7 +499,7 @@ export function TeacherDashboard() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground font-medium">Allocated Students</p>
-              <p className="font-serif text-2xl font-bold text-foreground">{totalEnrolled} Enrolled</p>
+              <p className="font-serif text-2xl font-bold text-foreground">{teacherStudents.length} Enrolled</p>
             </div>
           </div>
         </div>
@@ -908,7 +927,7 @@ export function TeacherDashboard() {
               <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold">
                 <tr>
                   <th className="px-6 py-3">Allocated Student Name</th>
-                  <th className="px-6 py-3">Enrolled Class</th>
+                  <th className="px-6 py-3">Enrolled Class / Course</th>
                   <th className="px-6 py-3">Pitch Accuracy</th>
                   <th className="px-6 py-3">Tala Precision</th>
                   <th className="px-6 py-3">Practice Streak</th>
@@ -926,7 +945,7 @@ export function TeacherDashboard() {
                   filteredStudents.map((std) => (
                     <tr key={std.id} className="hover:bg-muted/20 transition-colors">
                       <td className="px-6 py-4 font-bold text-foreground">{std.name}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{std.class}</td>
+                      <td className="px-6 py-4 font-medium text-muted-foreground">{std.class}</td>
                       <td className="px-6 py-4 font-semibold text-emerald-600">{std.pitchAccuracy}%</td>
                       <td className="px-6 py-4 font-semibold text-swara-gold">{std.talaPrecision}%</td>
                       <td className="px-6 py-4 font-medium">{std.streak} Days 🔥</td>

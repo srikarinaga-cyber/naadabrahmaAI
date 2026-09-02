@@ -14,15 +14,49 @@ import {
   CheckCircle2,
   GraduationCap,
   Users,
-  ShieldCheck,
   Zap,
+  BookOpen,
+  Calendar,
+  UserCheck,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { signIn as serverSignIn, signUp as serverSignUp } from "@/lib/auth/actions";
+import { signIn as serverSignIn } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 
 interface AuthFormProps {
   mode: "login" | "signup";
+}
+
+export interface CourseAllocation {
+  course: string;
+  teacherId: string;
+  teacherName: string;
+  subject: string;
+}
+
+export function getTeacherForCourse(course: string): CourseAllocation {
+  if (course === "Veena" || course === "Violin") {
+    return {
+      course,
+      teacherId: "tch-2",
+      teacherName: "Guru Vishwanathan",
+      subject: "Veena & Stringed Instruments",
+    };
+  }
+  if (course === "Mridangam" || course === "Flute") {
+    return {
+      course,
+      teacherId: "tch-3",
+      teacherName: "Guru Ramanathan",
+      subject: "Mridangam & Solkattu Percussion",
+    };
+  }
+  return {
+    course: "Carnatic Vocal",
+    teacherId: "tch-1",
+    teacherName: "Guru Sangeetha",
+    subject: "Carnatic Vocal Sangeetham",
+  };
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
@@ -30,12 +64,19 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  
+  // Student Enrollment Fields (Year & Course)
+  const [academicYear, setAcademicYear] = useState("1st Year (Beginner)");
+  const [selectedCourse, setSelectedCourse] = useState("Carnatic Vocal");
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const saveUserName = (explicitName?: string, userEmail?: string) => {
+  const allocatedGuru = getTeacherForCourse(selectedCourse);
+
+  const saveUserNameAndEnrollment = (explicitName?: string, userEmail?: string) => {
     let resolvedName = "Student";
     if (explicitName && explicitName.trim()) {
       resolvedName = explicitName.trim();
@@ -53,6 +94,41 @@ export function AuthForm({ mode }: AuthFormProps) {
     try {
       localStorage.setItem("naada_user_name", resolvedName);
       document.cookie = `naada_user_name=${encodeURIComponent(resolvedName)}; path=/; max-age=86400; SameSite=Lax`;
+
+      if (portal === "student") {
+        const studentRecord = {
+          id: `std-enrolled-${Date.now()}`,
+          name: resolvedName,
+          email: userEmail || "student@naadabrahma.ai",
+          academicYear,
+          course: selectedCourse,
+          teacherId: allocatedGuru.teacherId,
+          teacherName: allocatedGuru.teacherName,
+          class: `${selectedCourse} - ${academicYear}`,
+          pitchAccuracy: 92,
+          talaPrecision: 90,
+          streak: 1,
+          status: "On Track",
+        };
+
+        // Save newly enrolled student to local storage list
+        const existingStored = localStorage.getItem("naada_enrolled_students");
+        let studentsList = [];
+        if (existingStored) {
+          try {
+            studentsList = JSON.parse(existingStored);
+          } catch {
+            studentsList = [];
+          }
+        }
+        studentsList.unshift(studentRecord);
+        localStorage.setItem("naada_enrolled_students", JSON.stringify(studentsList));
+
+        // Save student's active allocation info
+        localStorage.setItem("naada_student_allocation", JSON.stringify(studentRecord));
+        document.cookie = `naada_student_course=${encodeURIComponent(selectedCourse)}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `naada_teacher_id=${encodeURIComponent(allocatedGuru.teacherId)}; path=/; max-age=86400; SameSite=Lax`;
+      }
     } catch (e) {
       console.warn("Storage warning:", e);
     }
@@ -61,12 +137,11 @@ export function AuthForm({ mode }: AuthFormProps) {
   const handleInstantPortalAccess = (targetRole: "student" | "teacher") => {
     setLoading(true);
     setError(null);
-    const demoName = targetRole === "teacher" ? "Guru Sangeetha" : "Srinivas K.";
-    saveUserName(demoName);
+    const demoName = targetRole === "teacher" ? "Guru Sangeetha" : (name.trim() || "Srinivas K.");
+    saveUserNameAndEnrollment(demoName, email || "demo@naadabrahma.ai");
 
-    setSuccess(`Accessing ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
+    setSuccess(`Enrolling into ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"} under ${allocatedGuru.teacherName}...`);
 
-    // Set demo cookies so Next.js middleware grants route access immediately
     document.cookie = `naada_demo_role=${targetRole}; path=/; max-age=86400; SameSite=Lax`;
     document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
 
@@ -80,7 +155,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
     setSuccess(null);
 
-    saveUserName(name, email);
+    saveUserNameAndEnrollment(name, email);
 
     const targetDestination = portal === "teacher" ? "/teacher" : "/student";
 
@@ -111,11 +186,10 @@ export function AuthForm({ mode }: AuthFormProps) {
           }
         }
 
-        // Set session cookies so user is signed in cleanly!
         document.cookie = `naada_demo_role=${portal}; path=/; max-age=86400; SameSite=Lax`;
         document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
 
-        setSuccess(`Login successful! Entering ${portal === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
+        setSuccess(`Enrolled successfully! Redirecting to ${portal === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
         setTimeout(() => {
           window.location.href = targetDestination;
         }, 300);
@@ -125,7 +199,14 @@ export function AuthForm({ mode }: AuthFormProps) {
             email: email.trim(),
             password,
             options: {
-              data: { name: name.trim() || "Student", role: portal },
+              data: {
+                name: name.trim() || "Student",
+                role: portal,
+                course: selectedCourse,
+                academicYear,
+                teacherId: allocatedGuru.teacherId,
+                teacherName: allocatedGuru.teacherName,
+              },
             },
           });
           if (authError) {
@@ -136,12 +217,12 @@ export function AuthForm({ mode }: AuthFormProps) {
         document.cookie = `naada_demo_role=${portal}; path=/; max-age=86400; SameSite=Lax`;
         document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
 
-        setSuccess("Account created successfully! Redirecting to portal...");
+        setSuccess(`Student registered & allocated to ${allocatedGuru.teacherName}! Redirecting...`);
         setTimeout(() => {
           window.location.href = targetDestination;
         }, 300);
       }
-    } catch (err: unknown) {
+    } catch {
       document.cookie = `naada_demo_role=${portal}; path=/; max-age=86400; SameSite=Lax`;
       document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
       window.location.href = targetDestination;
@@ -162,7 +243,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           }`}
         >
           <GraduationCap className="size-4" />
-          Student Portal
+          Student Registration
         </button>
         <button
           type="button"
@@ -178,19 +259,77 @@ export function AuthForm({ mode }: AuthFormProps) {
         </button>
       </div>
 
+      {/* 🎓 Student Course & Year Allocation Selection Box */}
+      {portal === "student" && (
+        <div className="rounded-2xl border border-swara-gold/30 bg-swara-gold/10 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-kumkum uppercase tracking-wider flex items-center gap-1">
+              <BookOpen className="size-3.5" /> Select Course & Academic Year:
+            </span>
+            <span className="text-[10px] bg-kumkum/10 text-kumkum font-bold px-2 py-0.5 rounded-full">
+              Auto Teacher Allocation
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+            <div>
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+                <BookOpen className="size-3 text-swara-gold" /> Carnatic Course / Subject:
+              </label>
+              <select
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                className="w-full rounded-xl border border-swara-gold/40 bg-background px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-kumkum/30 cursor-pointer shadow-xs"
+              >
+                <option value="Carnatic Vocal">🎤 Carnatic Vocal Sangeetham</option>
+                <option value="Veena">🪕 Veena (Stringed Instrument)</option>
+                <option value="Violin">🎻 Violin (Bowed Strings)</option>
+                <option value="Mridangam">🥁 Mridangam (Percussion)</option>
+                <option value="Flute">🪈 Flute (Venu Wind Instrument)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+                <Calendar className="size-3 text-swara-gold" /> Academic Year / Level:
+              </label>
+              <select
+                value={academicYear}
+                onChange={(e) => setAcademicYear(e.target.value)}
+                className="w-full rounded-xl border border-swara-gold/40 bg-background px-3 py-2 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-kumkum/30 cursor-pointer shadow-xs"
+              >
+                <option value="1st Year (Beginner)">1st Year (Beginner - Abhyasa Ganam)</option>
+                <option value="2nd Year (Intermediate)">2nd Year (Intermediate - Geetham & Swarajathi)</option>
+                <option value="3rd Year (Advanced)">3rd Year (Advanced - Varnam Masterclass)</option>
+                <option value="4th Year (Senior Master)">4th Year (Senior - Manodharma & Kritis)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-card/80 border border-emerald-500/30 p-2.5 text-xs flex items-center justify-between">
+            <span className="text-[11px] text-muted-foreground flex items-center gap-1 font-semibold">
+              <UserCheck className="size-3.5 text-emerald-600" /> Allocated Guru Portal:
+            </span>
+            <span className="font-extrabold text-emerald-700 dark:text-emerald-400">
+              {allocatedGuru.teacherName} ({allocatedGuru.subject})
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* ⚡ Instant One-Click Entry Banner */}
-      <div className="rounded-2xl border border-swara-gold/30 bg-swara-gold/10 p-3 text-center space-y-2">
+      <div className="rounded-2xl border border-swara-gold/30 bg-card p-3 text-center space-y-2">
         <p className="text-[11px] font-bold text-kumkum uppercase tracking-wider flex items-center justify-center gap-1">
-          <Zap className="size-3.5 fill-current text-swara-gold" /> Instant 1-Click Portal Access:
+          <Zap className="size-3.5 fill-current text-swara-gold" /> Instant Enroll & Access Portal:
         </p>
         <Button
           type="button"
           onClick={() => handleInstantPortalAccess(portal)}
           disabled={loading}
-          className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs py-2 h-auto rounded-xl shadow-xs gap-1.5"
+          className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs py-2.5 h-auto rounded-xl shadow-xs gap-1.5"
         >
           <Sparkles className="size-3.5 fill-current" />
-          Enter {portal === "teacher" ? "Teacher Portal (Guru)" : "Student Dashboard"} Now
+          Enroll as Student & Enter Dashboard
         </Button>
       </div>
 
@@ -198,7 +337,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         {mode === "signup" && (
           <div>
             <label htmlFor="name" className="block text-xs font-semibold text-muted-foreground mb-1">
-              Full Name
+              Full Student Name
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -210,7 +349,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30 transition-all"
-                placeholder={portal === "teacher" ? "Guru Sangeetha" : "Student Name"}
+                placeholder={portal === "teacher" ? "Guru Sangeetha" : "e.g. Srinivas K."}
               />
             </div>
           </div>
@@ -287,17 +426,17 @@ export function AuthForm({ mode }: AuthFormProps) {
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Entering Portal...
+              Allocating & Entering Portal...
             </span>
           ) : (
             <span className="flex items-center gap-2 font-bold">
               {mode === "login"
                 ? portal === "teacher"
                   ? "Sign In as Guru"
-                  : "Sign In as Student"
+                  : `Enroll in ${selectedCourse} & Sign In`
                 : portal === "teacher"
                 ? "Create Guru Account"
-                : "Create Student Account"}
+                : `Register for ${selectedCourse} (${academicYear})`}
               <ArrowRight className="size-4" />
             </span>
           )}
