@@ -2,10 +2,10 @@
 
 export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck } from "lucide-react";
+import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
 
@@ -26,7 +26,62 @@ interface Bookmark {
   raga: string;
 }
 
+interface CourseInfo {
+  className: string;
+  teacherName: string;
+  teacherSubject: string;
+  topic: string;
+  meetUrl: string;
+  instrumentIcon: string;
+}
+
+const COURSE_MAP: Record<string, CourseInfo> = {
+  "Veena": {
+    className: "Veena Foundation & Swarasthana Alignment",
+    teacherName: "Guru Vishwanathan",
+    teacherSubject: "Veena & Stringed Instruments",
+    topic: "Veena Fret Positioning, Strumming & Kampita Gamaka",
+    meetUrl: "https://meet.google.com/new",
+    instrumentIcon: "🪕",
+  },
+  "Violin": {
+    className: "Violin Bowing & Gamaka Masterclass",
+    teacherName: "Guru Vishwanathan",
+    teacherSubject: "Violin & Bowed Strings",
+    topic: "Vocal Accompaniment Bowing & Swara Pitch Matching",
+    meetUrl: "https://meet.google.com/new",
+    instrumentIcon: "🎻",
+  },
+  "Mridangam": {
+    className: "Mridangam Tha-Dhi-Gi-Na-Thom Lessons",
+    teacherName: "Guru Ramanathan",
+    teacherSubject: "Mridangam & Solkattu Percussion",
+    topic: "Basic Stroke Execution & Chatusra Jathi Beats",
+    meetUrl: "https://meet.google.com/new",
+    instrumentIcon: "🥁",
+  },
+  "Flute": {
+    className: "Carnatic Venu Flute Swara Resonance",
+    teacherName: "Guru Ramanathan",
+    teacherSubject: "Venu Flute & Wind Technique",
+    topic: "Fingering Placement & Breath Control in Mayamalavagowla",
+    meetUrl: "https://meet.google.com/new",
+    instrumentIcon: "🪈",
+  },
+  "Carnatic Vocal": {
+    className: "Carnatic Vocal Abhyasa Ganam",
+    teacherName: "Guru Sangeetha",
+    teacherSubject: "Carnatic Vocal Sangeetham",
+    topic: "Mayamalavagowla Sarali Swaras & Alankaram",
+    meetUrl: "https://meet.google.com/new",
+    instrumentIcon: "🎤",
+  },
+};
+
 export default function StudentDashboardPage() {
+  const [selectedCourseKey, setSelectedCourseKey] = useState<string>("Veena");
+  const [academicYear, setAcademicYear] = useState<string>("1st Year (Beginner)");
+
   const [goals, setGoals] = useState<Goal[]>([
     { id: "g1", task: "Practice Mayamalavagowla scales in 3 speeds", done: true },
     { id: "g2", task: "Review 18th Century Carnatic Trinity eras", done: false },
@@ -41,6 +96,41 @@ export default function StudentDashboardPage() {
     { id: "b2", title: "Composer: Muthuswami Dikshitar", raga: "Carnatic Trinity Era" },
     { id: "b3", title: "Raga: Bhairavi (Janya)", raga: "Parent: Melakarta #20 Natabhairavi" },
   ]);
+
+  useEffect(() => {
+    try {
+      const storedAllocation = localStorage.getItem("naada_student_allocation");
+      if (storedAllocation) {
+        const parsed = JSON.parse(storedAllocation);
+        if (parsed?.course) {
+          if (COURSE_MAP[parsed.course]) {
+            setSelectedCourseKey(parsed.course);
+          }
+        }
+        if (parsed?.academicYear) {
+          setAcademicYear(parsed.academicYear);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not parse student allocation:", e);
+    }
+  }, []);
+
+  const currentCourseInfo = COURSE_MAP[selectedCourseKey] || COURSE_MAP["Veena"];
+
+  const handleCourseSwitch = (newCourse: string) => {
+    setSelectedCourseKey(newCourse);
+    try {
+      const allocation = {
+        course: newCourse,
+        academicYear,
+        teacherName: COURSE_MAP[newCourse]?.teacherName,
+      };
+      localStorage.setItem("naada_student_allocation", JSON.stringify(allocation));
+    } catch (e) {
+      console.warn("Storage update error:", e);
+    }
+  };
 
   const completedGoalsCount = goals.filter((g) => g.done).length;
   const progressPercent = Math.round((completedGoalsCount / (goals.length || 1)) * 100);
@@ -93,36 +183,64 @@ export default function StudentDashboardPage() {
   return (
     <div className="space-y-8">
       {/* ── Allocated Live Google Meet Class Notification for Enrolled Student ── */}
-      <div className="rounded-3xl border border-blue-500/40 bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-900 p-6 text-white shadow-lg space-y-4">
+      <div className="rounded-3xl border border-blue-500/40 bg-gradient-to-r from-blue-950 via-slate-900 to-blue-950 p-6 text-white shadow-xl space-y-5">
+        {/* Course & Teacher Switcher Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-blue-500/30 pb-4 gap-3">
+          <div className="flex items-center gap-2">
+            <BookMarked className="size-4 text-swara-gold" />
+            <span className="text-xs font-semibold text-blue-200">
+              My Enrolled Course & Year:
+            </span>
+            <Badge className="bg-swara-gold/20 text-swara-gold border-swara-gold/40 text-xs font-extrabold">
+              {academicYear}
+            </Badge>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-blue-200">Switch Enrolled Subject:</span>
+            <select
+              value={selectedCourseKey}
+              onChange={(e) => handleCourseSwitch(e.target.value)}
+              className="rounded-xl border border-blue-400/40 bg-blue-900/80 px-3.5 py-1.5 text-xs font-extrabold text-white focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer shadow-xs"
+            >
+              <option value="Veena">🪕 Veena (Guru Vishwanathan)</option>
+              <option value="Violin">🎻 Violin (Guru Vishwanathan)</option>
+              <option value="Mridangam">🥁 Mridangam (Guru Ramanathan)</option>
+              <option value="Flute">🪈 Flute (Guru Ramanathan)</option>
+              <option value="Carnatic Vocal">🎤 Carnatic Vocal (Guru Sangeetha)</option>
+            </select>
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Badge className="bg-red-600 text-white border-none text-[10px] font-bold animate-pulse flex items-center gap-1">
                 <Radio className="size-3" /> LIVE ONLINE CLASS READY
               </Badge>
-              <Badge variant="outline" className="border-blue-400/40 text-blue-200 text-[10px]">
-                Enrolled Batch Access Only
+              <Badge variant="outline" className="border-emerald-400/40 text-emerald-300 text-[10px] font-bold">
+                Assigned Guru Access Active
               </Badge>
             </div>
 
-            <h2 className="font-serif text-2xl font-bold flex items-center gap-2">
-              <Video className="size-6 text-blue-400" />
-              Carnatic Vocal Abhyasa Ganam — Live Google Meet
+            <h2 className="font-serif text-2xl font-bold flex items-center gap-2.5 text-white">
+              <span className="text-2xl">{currentCourseInfo.instrumentIcon}</span>
+              {currentCourseInfo.className} — Live Google Meet
             </h2>
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-blue-100/90">
-              <span className="flex items-center gap-1 font-semibold text-emerald-300">
-                <UserCheck className="size-3.5" /> Allocated Teacher: Guru Sangeetha (Vocal)
+              <span className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                <UserCheck className="size-3.5 text-emerald-400" /> Allocated Guru: {currentCourseInfo.teacherName} ({currentCourseInfo.teacherSubject})
               </span>
-              <span>• Topic: Mayamalavagowla Sarali Swaras & Alankaram</span>
+              <span className="text-blue-200">• Topic: {currentCourseInfo.topic}</span>
             </div>
           </div>
 
           <a
-            href="https://meet.google.com/new"
+            href={currentCourseInfo.meetUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all"
+            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-extrabold text-xs flex items-center gap-2 shadow-xl transition-all"
           >
             <Video className="size-4" /> Join My Batch Google Meet <ExternalLink className="size-3.5" />
           </a>
@@ -189,7 +307,7 @@ export default function StudentDashboardPage() {
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
             <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
-              Vocal Pitch Score
+              Instrument Pitch Score
             </p>
             <h4 className="text-3xl font-extrabold text-emerald-600 mt-1">91%</h4>
           </div>
