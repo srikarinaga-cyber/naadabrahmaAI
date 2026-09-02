@@ -213,55 +213,78 @@ export interface AiChatResponse {
   practiceTips?: string[];
 }
 
-function generateFallbackStudyNotes(userQuestion: string): AiChatResponse {
-  const query = userQuestion.toLowerCase();
-  
-  if (query.includes("katapayadi") || query.includes("72 melakarta")) {
+export function generateFallbackStudyNotes(userQuestion: string, language: string = "en"): AiChatResponse {
+  let cleanTopic = userQuestion;
+  let explicitText = "";
+
+  if (userQuestion.includes("TOPIC:")) {
+    const topicMatch = userQuestion.match(/TOPIC:\s*([^\n]+)/);
+    if (topicMatch) cleanTopic = topicMatch[1].trim();
+  }
+  if (userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
+    const parts = userQuestion.split("EXACT SYLLABUS TEXT CONTEXT:");
+    if (parts[1]) explicitText = parts[1].trim();
+  }
+
+  if (language === "te") {
     return {
-      answer: `## 72 Melakartas Katapayadi System (కటపయాది సూత్రం)\n\n### 1. Theoretical Definition\nThe Katapayadi System is an ancient Sanskrit mnemonic cipher assigned by Venkatamakhin to sequence the 72 Janaka (parent) Melakarta ragas into 12 Chakras (6 ragas per Chakra).\n\n### 2. Numerical Mapping Rules\n- Consonants are mapped to digits 1 to 9, and 0.\n- Taking the first two syllables of a Melakarta name and reversing their numeric order reveals its exact Melakarta Index Number (1-72).\n\n### 3. Example Calculations\n- **Kanakangi (#1):** Ka=1, Na=0 -> Reversed = 01 -> Melakarta #1\n- **Ratnangi (#2):** Ra=2, Ta=0 -> Reversed = 02 -> Melakarta #2\n- **Mayamalavagowla (#15):** Ma=5, Ya=1 -> Reversed = 15 -> Melakarta #15\n- **Dheerasankarabharanam (#29):** Dhee=9, Ra=2 -> Reversed = 29 -> Melakarta #29`,
-      raga: "72 Melakarta Scheme",
-      arohanam: "S R G M P D N S'",
-      avarohanam: "S' N D P M G R S",
-      famousKritis: ["Kanakambari (Muthuswami Dikshitar)", "Vatapi Ganapatim (Hamsadhwani)"],
-      practiceTips: ["Memorize the 12 Chakra names: Indu, Netra, Agni, Veda, Bana, Ritu, Rishi, Vasu, Brahma, Disi, Rudra, Aditya."],
+      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `### 2. పాఠ్యాంశ పూర్తి పాఠం (వివరాలు)\n${explicitText}\n\n` : ""}### 3. సాధనా నియమాలు & పరీక్షా ప్రశ్నల విశ్లేషణ\n- శ్రుతిశుద్ధంగా సాధన చేయడం ప్రాథమిక అవసరం.\n- ద్వాదశ స్వరస్థానములు (12 Swarasthanams) మరియు షడ్జ-పంచమ భావమును గుర్తించాలి.`,
+      raga: cleanTopic,
+      arohanam: "స రి గ మ ప ద ని స'",
+      avarohanam: "స' ని ద ప మ గ రి స",
     };
   }
 
-  if (query.includes("tala") || query.includes("suladi")) {
+  if (language === "hi") {
     return {
-      answer: `## 35 Suladi Sapta Talas Matrix System\n\n### 1. Theoretical Structure\nThe 35 Suladi Sapta Tala system forms the rhythmic backbone of Carnatic music. It is constructed by multiplying the 7 Principal Tala Types across the 5 Jathis (rhythmic varieties).\n\n### 2. The 7 Principal Tala Types\n1. **Dhruva Tala** (Laghu + Dhrutam + Laghu + Laghu)\n2. **Matya Tala** (Laghu + Dhrutam + Laghu)\n3. **Rupaka Tala** (Dhrutam + Laghu)\n4. **Jhampa Tala** (Laghu + Anudhrutam + Dhrutam)\n5. **Triputa Tala** (Laghu + Dhrutam + Dhrutam)\n6. **Ata Tala** (Laghu + Laghu + Dhrutam + Dhrutam)\n7. **Eka Tala** (Laghu)\n\n### 3. The 5 Jathis\n- Tisra (3 beats), Chatusra (4 beats), Khanda (5 beats), Misra (7 beats), Sankeerna (9 beats).`,
-      raga: "Rhythm Matrix",
-      arohanam: "I O O",
-      avarohanam: "O O I",
-      famousKritis: ["35 Suladi Sapta Talas Beat Practice"],
-      practiceTips: ["Count Laghu finger taps steadily followed by Dhrutam wave/clap."],
+      answer: `## कर्नाटक संगीत अध्ययन नोट्स: ${cleanTopic}\n\n### 1. सिद्धांत एवं परिचय\nयह विषय कर्नाटक संगीत पाठ्यक्रम के स्वरस्थानों, राग नियमों और ताल प्रणाली को स्पष्ट करता है।\n\n${explicitText ? `### 2. मुख्य पाठ्यक्रम पाठ्य सामग्री\n${explicitText}\n\n` : ""}### 3. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु\n- तानपुरा श्रुति के साथ अभ्यास करें।\n- 12 स्वरस्थानों और ताल अंगों को समझें।`,
+      raga: cleanTopic,
+    };
+  }
+
+  if (language === "ta") {
+    return {
+      answer: `## கர்நாடக இசை பாடக் குறிப்புகள்: ${cleanTopic}\n\n### 1. அறிமுகம் மற்றும் விதிகள்\nஇந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள் மற்றும் தாள அமைப்புகளை விளக்குகிறது.\n\n${explicitText ? `### 2. பாடப் பகுதி\n${explicitText}\n\n` : ""}### 3. பயிற்சி முறைகள்\n- ஸ்ருதி சுத்தமாக பாடிப் பழகவும்.`,
+      raga: cleanTopic,
+    };
+  }
+
+  if (language === "kn") {
+    return {
+      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಅಧ್ಯಯನ ಟಿಪ್ಪಣಿಗಳು: ${cleanTopic}\n\n### 1. ಸಿದ್ಧಾಂತ ಪರಿಚಯ\nಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.\n\n${explicitText ? `### 2. ಮುಖ್ಯ ಪಠ್ಯ ವಿವರಣೆ\n${explicitText}\n\n` : ""}### 3. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ\n- ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
+      raga: cleanTopic,
+    };
+  }
+
+  if (language === "ml") {
+    return {
+      answer: `## കർണാടക സംഗീത പഠന കുറിപ്പുകൾ: ${cleanTopic}\n\n### 1. വിഷയാവലോകനം\nഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും താള വിഭജനങ്ങളും വ്യക്തമാക്കുന്നു.\n\n${explicitText ? `### 2. പ്രധാന പഠനഭാഗം\n${explicitText}\n\n` : ""}### 3. പരിശീലന കുറിപ്പുകൾ\n- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
+      raga: cleanTopic,
     };
   }
 
   return {
-    answer: `## Carnatic Music Study Notes: ${userQuestion}\n\n### 1. Overview & Musicological Definition\nThis topic covers essential Carnatic music theory principles regarding scale structures, Swarasthana pitch intervals, and classical performance traditions.\n\n### 2. Core Principles\n- **Adhara Shadja (S):** Fundamental tonic pitch reference.\n- **Swarasthanas:** 12 microtonal positions (S, R1-R3, G1-G3, M1-M2, P, D1-D3, N1-N3).\n- **Janaka & Janya Relationship:** Parent Melakarta scales possess all 7 swaras in regular order, while Janya scales derive through omission or zigzag phrasing.\n\n### 3. Classical Compositions & Practice Guidance\n- Practice slowly in Vilambita Kala (slow tempo) with Tanpura Droid drone pitch reference.`,
-    raga: "Carnatic Theory",
+    answer: `## Carnatic Music Study Notes: ${cleanTopic}\n\n### 1. Overview & Theoretical Definition\nThis topic covers essential Carnatic music theory principles regarding scale structures, Swarasthana pitch intervals, and classical performance traditions.\n\n${explicitText ? `### 2. Official Syllabus Text Details\n${explicitText}\n\n` : ""}### 3. Practical Application & Exam Guidance\n- **Adhara Shadja (S):** Fundamental tonic pitch reference.\n- **Swarasthanas:** 12 microtonal positions (S, R1-R3, G1-G3, M1-M2, P, D1-D3, N1-N3).\n- Practice slowly in Vilambita Kala (slow tempo) with Tanpura drone pitch reference.`,
+    raga: cleanTopic,
     arohanam: "S R G M P D N S'",
     avarohanam: "S' N D P M G R S",
-    famousKritis: ["Pancharatna Kritis (Saint Tyagaraja)", "Navavarna Kritis (Muthuswami Dikshitar)"],
-    practiceTips: ["Maintain steady Adhara Shadja tuning during vocal/instrumental practice."],
   };
 }
 
 export async function callGemini(params: {
   systemPrompt: string;
   message: string;
+  language?: string;
 }): Promise<AiChatResponse> {
   const rawApiKey = process.env["GEMINI_API_KEY"];
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
 
   if (!apiKey) {
-    return generateFallbackStudyNotes(params.message);
+    return generateFallbackStudyNotes(params.message, params.language);
   }
 
   const promptText = `${params.systemPrompt}\n\nUser Question: ${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`;
 
-  // Official Google Generative AI REST API model names using v1beta
   const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp", "gemini-1.5-flash-8b"];
 
   for (const model of models) {
@@ -311,13 +334,13 @@ export async function callGemini(params: {
     }
   }
 
-  // Guaranteed fallback study notes - NEVER return raw API JSON error text to user!
-  return generateFallbackStudyNotes(params.message);
+  return generateFallbackStudyNotes(params.message, params.language);
 }
 
 export async function callOpenAI(params: {
   systemPrompt: string;
   message: string;
+  language?: string;
 }): Promise<AiChatResponse> {
   if (process.env["GEMINI_API_KEY"]) {
     return callGemini(params);
@@ -327,7 +350,7 @@ export async function callOpenAI(params: {
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
   
   if (!apiKey) {
-    return generateFallbackStudyNotes(params.message);
+    return generateFallbackStudyNotes(params.message, params.language);
   }
 
   try {
@@ -352,13 +375,13 @@ export async function callOpenAI(params: {
     });
 
     if (!response.ok) {
-      return generateFallbackStudyNotes(params.message);
+      return generateFallbackStudyNotes(params.message, params.language);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
-      return generateFallbackStudyNotes(params.message);
+      return generateFallbackStudyNotes(params.message, params.language);
     }
 
     try {
@@ -367,6 +390,6 @@ export async function callOpenAI(params: {
       return { answer: content };
     }
   } catch (e) {
-    return generateFallbackStudyNotes(params.message);
+    return generateFallbackStudyNotes(params.message, params.language);
   }
 }

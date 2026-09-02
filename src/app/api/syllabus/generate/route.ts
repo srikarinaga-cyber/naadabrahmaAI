@@ -83,6 +83,7 @@ Structure the notes into:
     const response = await callOpenAI({
       systemPrompt,
       message: `TOPIC: ${targetTopic}\n\nEXACT SYLLABUS TEXT CONTEXT:\n${contextText}`,
+      language,
     });
 
     const noteContent = response.answer;
