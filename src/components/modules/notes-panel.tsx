@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   BookOpen,
   Download,
@@ -37,7 +38,14 @@ interface SavedNote {
   createdAt: string;
 }
 
-export function NotesPanel() {
+interface NotesPanelProps {
+  initialTab?: "pdf" | "topics" | "generate" | "saved";
+}
+
+export function NotesPanel({ initialTab }: NotesPanelProps) {
+  const searchParams = useSearchParams();
+  const urlTab = searchParams.get("tab") as "pdf" | "topics" | "generate" | "saved" | null;
+
   const [files, setFiles] = useState<SyllabusFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<SyllabusFile | null>(null);
   const [chunks, setChunks] = useState<SyllabusChunk[]>([]);
@@ -49,7 +57,15 @@ export function NotesPanel() {
   const [generating, setGenerating] = useState(false);
   const [ingesting, setIngesting] = useState(false);
   const [adminConfigured, setAdminConfigured] = useState(true);
-  const [activeTab, setActiveTab] = useState<"pdf" | "topics" | "generate" | "saved">("pdf");
+  const [activeTab, setActiveTab] = useState<"pdf" | "topics" | "generate" | "saved">(
+    urlTab || initialTab || "generate"
+  );
+
+  useEffect(() => {
+    if (urlTab) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
 
   const loadFiles = useCallback(async () => {
     setLoadingFiles(true);
@@ -144,10 +160,10 @@ export function NotesPanel() {
   }
 
   const tabs = [
-    { id: "pdf" as const, label: "Syllabus PDF", icon: FileText },
+    { id: "generate" as const, label: "Generate AI Notes", icon: Sparkles },
+    { id: "pdf" as const, label: "Syllabus PDFs", icon: FileText },
     { id: "topics" as const, label: "Browse Topics", icon: BookOpen },
-    { id: "generate" as const, label: "Generate Notes", icon: Sparkles },
-    { id: "saved" as const, label: "My Notes", icon: NotebookPen },
+    { id: "saved" as const, label: "My Saved Notes", icon: NotebookPen },
   ];
 
   return (
@@ -155,10 +171,10 @@ export function NotesPanel() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h4 className="font-serif text-lg font-bold text-[#800020]">
-            Notes & Syllabus Library
+            AI Notes Generator & Syllabus Library
           </h4>
           <p className="text-xs text-gray-500 mt-1">
-            View official PDF syllabus, browse ingested topics, and generate AI study notes.
+            Generate instant AI study notes, browse ingested topics, and view official PDF syllabus documents.
           </p>
         </div>
         <Button
@@ -185,45 +201,16 @@ export function NotesPanel() {
         </div>
       )}
 
-      {/* File selector */}
-      <div className="flex flex-wrap gap-2">
-        {loadingFiles ? (
-          <p className="text-xs text-gray-400">Loading syllabus files...</p>
-        ) : files.length === 0 ? (
-          <p className="text-xs text-gray-500">
-            No PDF files found in Supabase storage. Upload a PDF to the &quot;syllabus&quot; or
-            &quot;Music&quot; bucket, then click Import PDFs from Supabase.
-          </p>
-        ) : (
-          files.map((file) => (
-            <button
-              key={`${file.bucket}-${file.name}`}
-              onClick={() => setSelectedFile(file)}
-              className={`rounded-lg border px-3 py-2 text-left text-xs transition-all ${
-                selectedFile?.name === file.name
-                  ? "border-[#800020] bg-[#800020]/5 text-[#800020]"
-                  : "border-gray-200 bg-white hover:border-[#D4AF37]/50"
-              }`}
-            >
-              <span className="font-semibold block">{file.name}</span>
-              <span className="text-[10px] text-gray-400">
-                {file.ingested ? `${file.chunkCount} chunks` : "Not imported yet"}
-              </span>
-            </button>
-          ))
-        )}
-      </div>
-
       {/* Tab bar */}
-      <div className="flex flex-wrap gap-1 border-b border-[#D4AF37]/15 pb-2">
+      <div className="flex flex-wrap gap-1 border-b border-[#D4AF37]/20 pb-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
               activeTab === tab.id
-                ? "bg-[#800020]/10 text-[#800020]"
-                : "text-gray-500 hover:bg-gray-50"
+                ? "bg-[#800020] text-white shadow-xs"
+                : "text-gray-600 hover:bg-gray-100 hover:text-[#800020]"
             }`}
           >
             <tab.icon className="size-3.5" />
@@ -232,33 +219,124 @@ export function NotesPanel() {
         ))}
       </div>
 
-      {/* PDF viewer tab */}
-      {activeTab === "pdf" && (
-        <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm">
-          {selectedFile?.signedUrl ? (
-            <>
-              <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-                <p className="text-xs font-semibold text-[#1A2228]">{selectedFile.name}</p>
-                <a
-                  href={selectedFile.signedUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[10px] font-semibold text-[#800020] hover:underline"
+      {/* Generate notes tab */}
+      {activeTab === "generate" && (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-swara-gold/30 bg-card p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="size-4 text-swara-gold" />
+              <h5 className="font-serif text-sm font-bold text-[#800020]">
+                AI Carnatic Study Notes Generator
+              </h5>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Enter any Carnatic music topic, raga, tala, or syllabus concept to generate structured exam-ready study notes (RAG-powered).
+            </p>
+            <div className="flex flex-wrap gap-2 text-[11px]">
+              <span className="text-muted-foreground font-semibold">Quick Prompts:</span>
+              {["72 Melakartas Katapayadi System", "Suladi Sapta Talas Matrix", "Tanjore Trinity Compositions", "Mayamalavagowla Swarasthanas"].map((prompt) => (
+                <button
+                  key={prompt}
+                  onClick={() => setTopic(prompt)}
+                  className="rounded-lg bg-muted/60 px-2.5 py-1 text-xs hover:bg-[#800020]/10 hover:text-[#800020] transition-colors border border-border/50"
                 >
-                  <Download className="size-3" /> Download PDF
-                </a>
-              </div>
-              <iframe
-                src={selectedFile.signedUrl}
-                title={selectedFile.name}
-                className="h-[600px] w-full"
+                  {prompt}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="e.g. Melakarta ragas, Adi Tala, Purandaradasa..."
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#800020]/20"
               />
-            </>
-          ) : (
-            <div className="py-16 text-center text-sm text-gray-400">
-              Select a syllabus PDF above to view it here.
+              <Button
+                onClick={handleGenerateNotes}
+                disabled={generating || !topic.trim()}
+                className="bg-[#800020] hover:bg-[#9e1b32] text-white shrink-0 font-bold"
+              >
+                {generating ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="size-4" />
+                )}
+                Generate
+              </Button>
+            </div>
+          </div>
+
+          {generatedNote && (
+            <div className="rounded-2xl border border-[#D4AF37]/30 bg-[#FAF6F0] p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-wider text-[#800020] mb-3 flex items-center gap-1.5">
+                <NotebookPen className="size-4 text-swara-gold" /> Generated AI Study Notes
+              </p>
+              <div className="prose prose-sm max-w-none text-[#1A2228] whitespace-pre-wrap text-sm leading-relaxed">
+                {generatedNote}
+              </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* PDF viewer tab */}
+      {activeTab === "pdf" && (
+        <div className="space-y-4">
+          {/* File selector */}
+          <div className="flex flex-wrap gap-2">
+            {loadingFiles ? (
+              <p className="text-xs text-gray-400">Loading syllabus files...</p>
+            ) : files.length === 0 ? (
+              <p className="text-xs text-gray-500">
+                No PDF files found in Supabase storage. Upload a PDF to the &quot;syllabus&quot; or
+                &quot;Music&quot; bucket, then click Import PDFs from Supabase.
+              </p>
+            ) : (
+              files.map((file) => (
+                <button
+                  key={`${file.bucket}-${file.name}`}
+                  onClick={() => setSelectedFile(file)}
+                  className={`rounded-lg border px-3 py-2 text-left text-xs transition-all ${
+                    selectedFile?.name === file.name
+                      ? "border-[#800020] bg-[#800020]/5 text-[#800020] font-bold"
+                      : "border-gray-200 bg-white hover:border-[#D4AF37]/50"
+                  }`}
+                >
+                  <span className="font-semibold block">{file.name}</span>
+                  <span className="text-[10px] text-gray-400">
+                    {file.ingested ? `${file.chunkCount} chunks` : "Not imported yet"}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm">
+            {selectedFile?.signedUrl ? (
+              <>
+                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+                  <p className="text-xs font-semibold text-[#1A2228]">{selectedFile.name}</p>
+                  <a
+                    href={selectedFile.signedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[10px] font-semibold text-[#800020] hover:underline"
+                  >
+                    <Download className="size-3" /> Download PDF
+                  </a>
+                </div>
+                <iframe
+                  src={selectedFile.signedUrl}
+                  title={selectedFile.name}
+                  className="h-[600px] w-full"
+                />
+              </>
+            ) : (
+              <div className="py-16 text-center text-sm text-gray-400">
+                Select a syllabus PDF above to view it here.
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -305,46 +383,6 @@ export function NotesPanel() {
                 </button>
               </div>
             ))
-          )}
-        </div>
-      )}
-
-      {/* Generate notes tab */}
-      {activeTab === "generate" && (
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-4">
-            <p className="text-xs text-gray-500">
-              AI generates study notes from your official syllabus PDF content (RAG-powered).
-            </p>
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="e.g. Melakarta ragas, Adi Tala, Purandaradasa..."
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#800020]/20"
-            />
-            <Button
-              onClick={handleGenerateNotes}
-              disabled={generating || !topic.trim()}
-              className="bg-[#800020] hover:bg-[#9e1b32]"
-            >
-              {generating ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" />
-              )}
-              Generate Study Notes
-            </Button>
-          </div>
-
-          {generatedNote && (
-            <div className="rounded-2xl border border-[#D4AF37]/20 bg-[#FAF6F0] p-5">
-              <p className="text-xs font-bold uppercase tracking-wider text-[#800020] mb-3">
-                Generated Notes
-              </p>
-              <div className="prose prose-sm max-w-none text-[#1A2228] whitespace-pre-wrap text-sm leading-relaxed">
-                {generatedNote}
-              </div>
-            </div>
           )}
         </div>
       )}

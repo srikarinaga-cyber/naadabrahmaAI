@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
+import { GitCompare } from "lucide-react";
 import { getMelakartas } from "@/lib/db/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/static";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
@@ -37,10 +38,10 @@ export default async function KnowledgeHubPage() {
             Knowledge Hub
           </Badge>
           <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            72 Janaka Ragas (Melakartas)
+            72 Janaka Ragas (Melakartas) & Tools
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl leading-relaxed">
-            Explore the complete 72 Parent Janaka Ragas system formulation by Venkatamakhin. Click any Melakarta to inspect its Swarasthanas with Veena & Violin audio playback and derived Janya Ragas.
+            Explore the complete 72 Parent Janaka Ragas system formulation by Venkatamakhin. Inspect swarasthanas, audio playback, derived Janya Ragas, or compare ragas side-by-side.
           </p>
         </div>
 
@@ -50,6 +51,13 @@ export default async function KnowledgeHubPage() {
             className="text-xs font-bold px-3.5 py-2 rounded-xl bg-kumkum text-white shadow-sm"
           >
             Janaka Ragas (72 Melakartas)
+          </Link>
+          <Link
+            href="/knowledge-hub/compare"
+            className="text-xs font-bold px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white shadow-sm flex items-center gap-1.5"
+          >
+            <GitCompare className="size-3.5" />
+            Compare Ragas Side-by-Side
           </Link>
           <Link
             href="/knowledge-hub/composers"

@@ -23,15 +23,15 @@ const capabilities = [
   },
   {
     icon: GitCompare,
-    title: "Compare Ragas",
+    title: "Compare Ragas Side-by-Side",
     description: "Side-by-side analysis of Melakarta and Janya ragas with swara differences highlighted.",
-    href: "/knowledge-hub",
+    href: "/knowledge-hub/compare",
   },
   {
     icon: NotebookPen,
     title: "Generate Notes & Quizzes",
     description: "AI-crafted study notes and practice quizzes tailored to your exam level.",
-    href: "/student/exam",
+    href: "/notes?tab=generate",
   },
   {
     icon: Calendar,
@@ -104,21 +104,20 @@ export function AiGuruPreview() {
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2">
-              <Button
-                className="bg-kumkum hover:bg-kumkum-light"
-                render={<Link href="/student/notes" />}
+              <Link
+                href="/notes?tab=generate"
+                className="inline-flex items-center gap-2 bg-kumkum hover:bg-kumkum-light text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm"
               >
                 Generate Study Notes
                 <ArrowRight className="size-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="border-swara-gold/40 text-kumkum hover:bg-kumkum hover:text-white"
-                render={<Link href="/ai-guru" />}
+              </Link>
+              <Link
+                href="/knowledge-hub/compare"
+                className="inline-flex items-center gap-2 border border-swara-gold/40 text-kumkum hover:bg-kumkum hover:text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all shadow-sm"
               >
-                Chat with AI Guru
-                <ArrowRight className="size-4" />
-              </Button>
+                Compare Ragas Side-by-Side
+                <GitCompare className="size-4" />
+              </Link>
             </div>
           </motion.div>
 
