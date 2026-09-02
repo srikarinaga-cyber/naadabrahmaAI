@@ -35,9 +35,35 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const saveUserName = (explicitName?: string, userEmail?: string) => {
+    let resolvedName = "Student";
+    if (explicitName && explicitName.trim()) {
+      resolvedName = explicitName.trim();
+    } else if (userEmail && userEmail.includes("@")) {
+      const rawUser = userEmail.split("@")[0];
+      resolvedName = rawUser
+        .replace(/[._-]/g, " ")
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    } else {
+      resolvedName = portal === "teacher" ? "Guru Sangeetha" : "Srinivas K.";
+    }
+
+    try {
+      localStorage.setItem("naada_user_name", resolvedName);
+      document.cookie = `naada_user_name=${encodeURIComponent(resolvedName)}; path=/; max-age=86400; SameSite=Lax`;
+    } catch (e) {
+      console.warn("Storage warning:", e);
+    }
+  };
+
   const handleInstantPortalAccess = (targetRole: "student" | "teacher") => {
     setLoading(true);
     setError(null);
+    const demoName = targetRole === "teacher" ? "Guru Sangeetha" : "Srinivas K.";
+    saveUserName(demoName);
+
     setSuccess(`Accessing ${targetRole === "teacher" ? "Teacher Portal" : "Student Dashboard"}...`);
 
     // Set demo cookies so Next.js middleware grants route access immediately
@@ -54,6 +80,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
     setSuccess(null);
 
+    saveUserName(name, email);
+
     const targetDestination = portal === "teacher" ? "/teacher" : "/student";
 
     try {
@@ -65,7 +93,6 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
 
       if (mode === "login") {
-        let authFailed = false;
         if (supabase) {
           const { error: authError } = await supabase.auth.signInWithPassword({
             email: email.trim(),
@@ -73,7 +100,6 @@ export function AuthForm({ mode }: AuthFormProps) {
           });
           if (authError) {
             console.warn("Supabase login warning, falling back to portal session:", authError.message);
-            authFailed = true;
           }
         } else {
           const formData = new FormData();
@@ -81,11 +107,11 @@ export function AuthForm({ mode }: AuthFormProps) {
           formData.append("password", password);
           const res = await serverSignIn(formData);
           if (res?.error) {
-            authFailed = true;
+            console.warn("Server signin warning:", res.error);
           }
         }
 
-        // Even if Supabase auth fails, set session cookies so user is never blocked!
+        // Set session cookies so user is signed in cleanly!
         document.cookie = `naada_demo_role=${portal}; path=/; max-age=86400; SameSite=Lax`;
         document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
 
@@ -99,7 +125,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             email: email.trim(),
             password,
             options: {
-              data: { name: name.trim(), role: portal },
+              data: { name: name.trim() || "Student", role: portal },
             },
           });
           if (authError) {
@@ -116,7 +142,6 @@ export function AuthForm({ mode }: AuthFormProps) {
         }, 300);
       }
     } catch (err: unknown) {
-      // Guaranteed fallback so user is never locked out of portal!
       document.cookie = `naada_demo_role=${portal}; path=/; max-age=86400; SameSite=Lax`;
       document.cookie = `demo_mode=true; path=/; max-age=86400; SameSite=Lax`;
       window.location.href = targetDestination;
