@@ -13,12 +13,14 @@ import {
   FileText,
   TrendingUp,
   Search,
-  ChevronRight,
-  ClipboardList,
   Trash2,
   Globe,
   Share2,
   Check,
+  Video,
+  Copy,
+  ExternalLink,
+  Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +32,7 @@ interface DemoClass {
   studentsCount: number;
   schedule: string;
   currentTopic: string;
+  meetUrl: string;
 }
 
 interface DemoAssignment {
@@ -60,6 +63,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 14,
     schedule: "Mon, Wed • 5:00 PM IST",
     currentTopic: "Mayamalavagowla - Sarali Swaras & Alankaram",
+    meetUrl: "https://meet.google.com/naada-vocal-batch1",
   },
   {
     id: "cls-2",
@@ -68,6 +72,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 9,
     schedule: "Tue, Thu • 6:30 PM IST",
     currentTopic: "Kalyani Raga Geetham (Kamalajadhala)",
+    meetUrl: "https://meet.google.com/naada-geetham-batch2",
   },
   {
     id: "cls-3",
@@ -76,6 +81,7 @@ const INITIAL_CLASSES: DemoClass[] = [
     studentsCount: 6,
     schedule: "Sat, Sun • 10:00 AM IST",
     currentTopic: "Sankarabharanam Adi Tala Varnam (Saami Ninne)",
+    meetUrl: "https://meet.google.com/naada-varnam-senior",
   },
 ];
 
@@ -149,7 +155,7 @@ const INITIAL_STUDENTS: DemoStudent[] = [
 ];
 
 export function TeacherDashboard() {
-  const [activeTab, setActiveTab] = useState<"classes" | "assignments" | "students" | "ai-copilot">("classes");
+  const [activeTab, setActiveTab] = useState<"classes" | "google-meet" | "assignments" | "students" | "ai-copilot">("classes");
   const [classes, setClasses] = useState<DemoClass[]>(INITIAL_CLASSES);
   const [assignments, setAssignments] = useState<DemoAssignment[]>(INITIAL_ASSIGNMENTS);
   const [students] = useState<DemoStudent[]>(INITIAL_STUDENTS);
@@ -163,6 +169,10 @@ export function TeacherDashboard() {
   const [newClassName, setNewClassName] = useState("");
   const [newClassLevel, setNewClassLevel] = useState("");
   const [newClassSchedule, setNewClassSchedule] = useState("");
+  const [newClassMeetUrl, setNewClassMeetUrl] = useState("");
+
+  // Copy Feedback State
+  const [copiedClassId, setCopiedClassId] = useState<string | null>(null);
 
   // New Assignment Form State
   const [showNewAsgModal, setShowNewAsgModal] = useState(false);
@@ -194,17 +204,26 @@ export function TeacherDashboard() {
       studentsCount: 1,
       schedule: newClassSchedule.trim() || "TBD",
       currentTopic: "Introductory Carnatic Foundation",
+      meetUrl: newClassMeetUrl.trim() || `https://meet.google.com/naada-${Date.now().toString().slice(-6)}`,
     };
 
     setClasses([created, ...classes]);
     setNewClassName("");
     setNewClassLevel("");
     setNewClassSchedule("");
+    setNewClassMeetUrl("");
     setShowNewClassModal(false);
   };
 
   const handleDeleteClass = (id: string) => {
     setClasses(classes.filter((c) => c.id !== id));
+  };
+
+  const handleCopyMeetLink = (cls: DemoClass) => {
+    const inviteText = `🎶 Naadabrahma AI Carnatic Online Class\nBatch: ${cls.name}\nTopic: ${cls.currentTopic}\nGoogle Meet Link: ${cls.meetUrl}`;
+    navigator.clipboard.writeText(inviteText);
+    setCopiedClassId(cls.id);
+    setTimeout(() => setCopiedClassId(null), 2500);
   };
 
   const handleCreateAssignment = (e: React.FormEvent) => {
@@ -347,12 +366,12 @@ export function TeacherDashboard() {
 
         <div className="glass-panel traditional-glow rounded-2xl border border-swara-gold/20 bg-card p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-marigold/15 text-marigold">
-              <ClipboardList className="size-5" />
+            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+              <Video className="size-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Assignments</p>
-              <p className="font-serif text-2xl font-bold text-foreground">{assignments.length} Active</p>
+              <p className="text-xs text-muted-foreground font-medium">Online Classes</p>
+              <p className="font-serif text-2xl font-bold text-blue-600">Google Meet</p>
             </div>
           </div>
         </div>
@@ -371,6 +390,17 @@ export function TeacherDashboard() {
           >
             <Users className="size-4" />
             Class Batches ({classes.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("google-meet")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "google-meet"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-card text-blue-600 hover:bg-blue-50 border border-blue-200"
+            }`}
+          >
+            <Video className="size-4" />
+            Google Meet Online Classes 🎥
           </button>
           <button
             onClick={() => setActiveTab("assignments")}
@@ -463,20 +493,54 @@ export function TeacherDashboard() {
 
                   <h3 className="font-serif text-lg font-bold text-kumkum mb-2">{cls.name}</h3>
 
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-4">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
                     <Calendar className="size-3.5 text-swara-gold" />
                     {cls.schedule}
                   </p>
 
-                  <div className="rounded-xl bg-muted/50 p-3 text-xs space-y-1 mb-6 border border-border/40">
+                  <div className="rounded-xl bg-muted/50 p-3 text-xs space-y-1 mb-4 border border-border/40">
                     <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                       Current Syllabus Topic:
                     </span>
                     <p className="font-medium text-foreground">{cls.currentTopic}</p>
                   </div>
+
+                  {/* Google Meet Quick Launch Action */}
+                  <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1">
+                        <Video className="size-3.5" /> Google Meet Class Room
+                      </span>
+                      <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-0.5">
+                        <Radio className="size-3 animate-pulse" /> Live
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={cls.meetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white py-1.5 px-3 rounded-lg transition-all shadow-xs"
+                      >
+                        <Video className="size-3.5" /> Start Meet <ExternalLink className="size-3" />
+                      </a>
+                      <button
+                        onClick={() => handleCopyMeetLink(cls)}
+                        className="p-1.5 bg-card hover:bg-muted border border-border text-foreground rounded-lg transition-colors text-xs font-medium"
+                        title="Copy Meet Link"
+                      >
+                        {copiedClassId === cls.id ? (
+                          <Check className="size-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="size-4 text-muted-foreground" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-border/60">
+                <div className="flex items-center justify-between pt-3 border-t border-border/60">
                   <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
                     <Users className="size-3.5 text-kumkum" /> {cls.studentsCount} Enrolled
                   </span>
@@ -490,7 +554,98 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* ── TAB 2: ASSIGNMENTS ── */}
+      {/* ── TAB 2: GOOGLE MEET LIVE CLASSES CENTER ── */}
+      {activeTab === "google-meet" && (
+        <div className="space-y-6">
+          <div className="glass-panel traditional-glow rounded-3xl border border-blue-500/30 bg-card p-6 md:p-8 space-y-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md">
+                  <Video className="size-6" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-xl font-bold text-foreground">
+                    Google Meet Online Class Command Center
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Host instant live video classes, manage batch meeting links, and invite students to live sessions.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="https://meet.google.com/new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl transition-all shadow-md shrink-0"
+              >
+                <Video className="size-4" /> 🚀 Instant Google Meet Class <ExternalLink className="size-3.5" />
+              </a>
+            </div>
+
+            {/* Class Batches Meet Links List */}
+            <div className="space-y-4">
+              <h4 className="font-serif text-base font-bold text-kumkum">Batch Google Meet Meeting Rooms</h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {classes.map((cls) => (
+                  <div
+                    key={cls.id}
+                    className="rounded-2xl border border-blue-500/20 bg-muted/30 p-4 space-y-3 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <Badge variant="outline" className="border-blue-500/30 text-blue-600 text-[10px]">
+                          {cls.level}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground font-semibold">{cls.schedule}</span>
+                      </div>
+                      <h5 className="font-bold text-base text-foreground mb-1">{cls.name}</h5>
+                      <p className="text-xs text-muted-foreground">Topic: {cls.currentTopic}</p>
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t border-border/50">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={cls.meetUrl}
+                          className="flex-1 rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-mono"
+                        />
+                        <button
+                          onClick={() => handleCopyMeetLink(cls)}
+                          className="px-3 py-1.5 bg-card hover:bg-muted border border-border text-xs font-bold text-foreground rounded-xl transition-all flex items-center gap-1"
+                        >
+                          {copiedClassId === cls.id ? (
+                            <>
+                              <Check className="size-3.5 text-emerald-600" /> Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="size-3.5" /> Copy Invite
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <a
+                        href={cls.meetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl transition-all shadow-xs"
+                      >
+                        <Video className="size-4" /> Connect & Start Google Meet Class →
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB 3: ASSIGNMENTS ── */}
       {activeTab === "assignments" && (
         <div className="space-y-4">
           {assignments.length === 0 ? (
@@ -554,7 +709,7 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* ── TAB 3: STUDENTS TRACKER ── */}
+      {/* ── TAB 4: STUDENTS TRACKER ── */}
       {activeTab === "students" && (
         <div className="glass-panel rounded-3xl border border-swara-gold/20 bg-card overflow-hidden shadow-sm space-y-4">
           <div className="px-6 py-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -637,7 +792,7 @@ export function TeacherDashboard() {
         </div>
       )}
 
-      {/* ── TAB 4: DYNAMIC AI GURU CO-TEACHER ASSISTANT ── */}
+      {/* ── TAB 5: DYNAMIC AI GURU CO-TEACHER ASSISTANT ── */}
       {activeTab === "ai-copilot" && (
         <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/30 bg-card p-6 md:p-8 space-y-6 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-3">
@@ -797,16 +952,27 @@ export function TeacherDashboard() {
                 />
               </div>
 
+              <div>
+                <label className="block font-semibold mb-1">Google Meet Room URL (Optional)</label>
+                <input
+                  type="url"
+                  value={newClassMeetUrl}
+                  onChange={(e) => setNewClassMeetUrl(e.target.value)}
+                  placeholder="https://meet.google.com/abc-defg-hij"
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm font-mono"
+                />
+              </div>
+
               <div className="flex items-center justify-end gap-2 pt-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => setShowNewClassModal(false)}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-kumkum hover:bg-kumkum-light text-white">
-                  Create Class
+                <Button type="submit" className="bg-kumkum text-white font-bold">
+                  Create Batch
                 </Button>
               </div>
             </form>
@@ -818,7 +984,7 @@ export function TeacherDashboard() {
       {showNewAsgModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl border border-swara-gold/30 bg-card p-6 shadow-xl space-y-5">
-            <h3 className="font-serif text-xl font-bold text-kumkum">Create Practice Assignment</h3>
+            <h3 className="font-serif text-xl font-bold text-kumkum">Create Class Assignment</h3>
 
             <form onSubmit={handleCreateAssignment} className="space-y-4 text-xs">
               <div>
@@ -826,11 +992,11 @@ export function TeacherDashboard() {
                 <select
                   value={newAsgClass}
                   onChange={(e) => setNewAsgClass(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
                 >
                   {classes.map((c) => (
                     <option key={c.id} value={c.name}>
-                      {c.name}
+                      {c.name} ({c.level})
                     </option>
                   ))}
                 </select>
@@ -843,7 +1009,7 @@ export function TeacherDashboard() {
                   required
                   value={newAsgTitle}
                   onChange={(e) => setNewAsgTitle(e.target.value)}
-                  placeholder="e.g. Shankarabharanam Geetham Speed 1 & 2"
+                  placeholder="e.g. Geetham Vocal Recording in Kalyani"
                   className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm"
                 />
               </div>
@@ -854,7 +1020,7 @@ export function TeacherDashboard() {
                   type="text"
                   value={newAsgDueDate}
                   onChange={(e) => setNewAsgDueDate(e.target.value)}
-                  placeholder="e.g. Next Monday, 6:00 PM"
+                  placeholder="e.g. Next Monday, 8:00 PM"
                   className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm"
                 />
               </div>
@@ -862,13 +1028,13 @@ export function TeacherDashboard() {
               <div className="flex items-center justify-end gap-2 pt-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => setShowNewAsgModal(false)}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-kumkum hover:bg-kumkum-light text-white">
-                  Assign to Students
+                <Button type="submit" className="bg-kumkum text-white font-bold">
+                  Publish Assignment
                 </Button>
               </div>
             </form>
