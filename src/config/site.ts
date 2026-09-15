@@ -23,10 +23,11 @@ export const siteConfig = {
     twitter: "https://twitter.com/naadabrahmaai",
   },
   nav: [
-    { label: "Features", href: "#features" },
-    { label: "Knowledge Hub", href: "/knowledge-hub" },
-    { label: "Notes & PDFs", href: "/notes" },
+    { label: "Student Portal", href: "/student" },
     { label: "AI Guru", href: "/ai-guru" },
-    { label: "Testimonials", href: "#testimonials" },
+    { label: "Knowledge Hub", href: "/knowledge-hub" },
+    { label: "Raga Explorer", href: "/knowledge-hub/explorer" },
+    { label: "Teacher Portal", href: "/teacher" },
+    { label: "Syllabus Notes", href: "/notes" },
   ],
 } as const;

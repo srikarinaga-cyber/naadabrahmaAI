@@ -126,3 +126,94 @@ export async function getDashboardStats(userId: string) {
     bookmarkCount: bookmarksRes.data?.length ?? 0,
   };
 }
+
+export async function getComprehensiveStudentProgress(userId: string) {
+  const supabase = await createClient();
+  if (!supabase) return null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [progressRes, streakRes, quizRes, pathRes, assessmentRes] = await Promise.all([
+    supabase.from("user_progress" as any).select("*").eq("user_id", userId),
+    supabase.from("study_streaks" as any).select("*").eq("user_id", userId).single(),
+    supabase.from("quiz_attempts" as any).select("*").eq("user_id", userId),
+    supabase.from("student_learning_paths" as any).select("*").eq("user_id", userId).single(),
+    supabase.from("music_assessments" as any).select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+  ]);
+
+  const progress = (progressRes.data as any[]) ?? [];
+  const completed = progress.filter((p: any) => p.status === "completed");
+  const ragasCompleted = completed.filter((p: any) => p.entity_type === "raga").length;
+  const ragasExplored = progress.filter((p: any) => p.entity_type === "raga").length;
+
+  // Quiz Stats calculation
+  const quizAttempts = (quizRes.data as any[]) ?? [];
+  const quizCount = quizAttempts.length;
+  const avgQuizScore =
+    quizCount > 0
+      ? Math.round(quizAttempts.reduce((sum: number, q: any) => sum + Number(q.score || 0), 0) / quizCount)
+      : null;
+  const latestQuizScore = quizCount > 0 ? Number(quizAttempts[quizAttempts.length - 1]?.score || 0) : null;
+
+  // Music Assessments calculation (Phase 4 integration readiness)
+  const assessments = (assessmentRes.data as any[]) ?? [];
+  const hasAssessmentData = assessments.length > 0;
+  const avgPitch = hasAssessmentData
+    ? Math.round(assessments.reduce((sum: number, a: any) => sum + Number(a.pitch_accuracy || 0), 0) / assessments.length)
+    : null;
+  const avgRhythm = hasAssessmentData
+    ? Math.round(assessments.reduce((sum: number, a: any) => sum + Number(a.rhythm_score || 0), 0) / assessments.length)
+    : null;
+  const avgSwara = hasAssessmentData
+    ? Math.round(assessments.reduce((sum: number, a: any) => sum + Number(a.swara_accuracy || 0), 0) / assessments.length)
+    : null;
+
+  // Learning Path Data
+  const pathData = pathRes.data as any;
+
+  // Calculate composite study progress
+  let overallPct = 0;
+  if (progress.length > 0) {
+    overallPct = Math.round((completed.length / progress.length) * 100);
+  } else if (quizCount > 0) {
+    overallPct = Math.min(100, Math.round(avgQuizScore || 0));
+  } else if (pathData) {
+    overallPct = 10; // Baseline initialized profile
+  }
+
+  return {
+    overallProgress: overallPct,
+    completedLessons: completed.length,
+    totalLessons: progress.length,
+    ragasExplored,
+    ragasCompleted,
+    streak: streakRes.data ?? { current_streak: 0, longest_streak: 0 },
+    quizStats: {
+      attemptsCount: quizCount,
+      averageScore: avgQuizScore,
+      latestScore: latestQuizScore,
+    },
+    musicPerformance: {
+      hasData: hasAssessmentData,
+      avgPitchAccuracy: avgPitch,
+      avgRhythmScore: avgRhythm,
+      avgSwaraAccuracy: avgSwara,
+      latestOverall: hasAssessmentData ? Number(assessments[0]?.overall_score || 0) : null,
+      latestFeedback: hasAssessmentData ? String(assessments[0]?.ai_feedback || "") : null,
+      assessmentsCount: assessments.length,
+    },
+    learningPath: pathData
+      ? {
+          hasPath: true,
+          currentLevel: pathData.current_level,
+          learningMode: pathData.learning_mode,
+          targetGoal: pathData.target_goal,
+          strengths: pathData.strengths || [],
+          weakAreas: pathData.weak_areas || [],
+          aiRecommendation: pathData.ai_recommendation,
+        }
+      : {
+          hasPath: false,
+        },
+  };
+}
+

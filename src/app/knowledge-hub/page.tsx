@@ -53,6 +53,12 @@ export default async function KnowledgeHubPage() {
             Janaka Ragas (72 Melakartas)
           </Link>
           <Link
+            href="/knowledge-hub/explorer"
+            className="text-xs font-bold px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600 via-[#d4af37] to-amber-700 text-black shadow-md flex items-center gap-1.5 hover:brightness-110 transition"
+          >
+            <span>✨ Raga Relationship Explorer</span>
+          </Link>
+          <Link
             href="/knowledge-hub/compare"
             className="text-xs font-bold px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white shadow-sm flex items-center gap-1.5"
           >

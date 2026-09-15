@@ -8,6 +8,7 @@ import {
 } from "@/lib/api/response";
 import { requireRole } from "@/lib/api/auth";
 import { createClient } from "@/lib/supabase/server";
+import { verifyTeacherStudentAccess } from "@/lib/db/teacher";
 
 export async function GET(request: NextRequest) {
   try {
@@ -44,42 +45,67 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireRole(["teacher", "platform_admin"]);
+    const auth = await requireRole(["teacher", "platform_admin", "academy_admin"]);
     if (!auth) return jsonForbidden();
 
     const body = await request.json();
-    if (!body.classId || !body.title || !body.dueDate) {
-      return jsonError("classId, title, and dueDate are required");
+    const { title, description, dueDate, classId, studentId } = body;
+
+    if (!title || !dueDate || (!classId && !studentId)) {
+      return jsonError("title, dueDate, and either classId or studentId are required");
     }
 
     const supabase = await createClient();
     if (!supabase) return jsonServerError("Database not configured");
 
-    const { data: cls } = await supabase
-      .from("teacher_classes")
+    let resolvedClassId = classId;
+
+    if (studentId) {
+      const isAuthorized = await verifyTeacherStudentAccess(auth.user.id, studentId);
+      if (!isAuthorized) {
+        return jsonForbidden("Unauthorized: You can only assign practice to your enrolled students.");
+      }
+
+      // Find first classId linking teacher to student
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: enrollment } = await (supabase.from("class_enrollments" as any) as any)
+        .select("class_id, teacher_classes!inner(teacher_id)")
+        .eq("student_id", studentId)
+        .eq("teacher_classes.teacher_id", auth.user.id)
+        .maybeSingle();
+
+      resolvedClassId = enrollment?.class_id;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: cls } = await (supabase.from("teacher_classes" as any) as any)
       .select("teacher_id")
-      .eq("id", body.classId)
+      .eq("id", resolvedClassId)
       .single();
 
-    if (!cls || (cls.teacher_id !== auth.user.id && auth.profile.role !== "platform_admin")) {
+    if (!cls && auth.profile.role !== "platform_admin") {
       return jsonForbidden("You can only create assignments for your own classes");
     }
 
-    const { data, error } = await supabase
-      .from("assignments")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from("assignments" as any) as any)
       .insert({
-        class_id: body.classId,
-        title: body.title,
-        description: body.description ?? null,
-        pdf_attachment_url: body.pdfAttachmentUrl ?? null,
-        due_date: body.dueDate,
+        class_id: resolvedClassId,
+        title,
+        description: description ?? null,
+        due_date: dueDate,
       })
       .select()
       .single();
 
-    if (error) return jsonServerError("Failed to create assignment");
+    if (error) {
+      console.error("Error inserting assignment:", error);
+      return jsonServerError("Failed to create assignment");
+    }
+
     return jsonOk(data);
-  } catch {
+  } catch (err) {
+    console.error("Teacher assignment POST error:", err);
     return jsonServerError();
   }
 }

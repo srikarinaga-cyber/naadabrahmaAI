@@ -150,8 +150,14 @@ export function buildSystemPrompt(params: {
   context: MusicContext;
   instrument?: Instrument;
   language?: SupportedLanguage;
+  userLearningPath?: {
+    current_level?: string;
+    learning_mode?: string;
+    target_goal?: string;
+    weak_areas?: string[];
+  };
 }): string {
-  const { context, instrument, language = "en" } = params;
+  const { context, instrument, language = "en", userLearningPath } = params;
 
   let prompt = `You are AI Guru, the premier multilingual Carnatic musicologist and assistant for Naadabrahma AI.
 
@@ -175,6 +181,15 @@ ${JSON.stringify(
   2
 )}
 `;
+
+  if (userLearningPath) {
+    prompt += `\nACTIVE STUDENT PERSONALIZED PATH:
+- Current Level: ${userLearningPath.current_level || "Beginner"}
+- Learning Mode: ${userLearningPath.learning_mode || "Vocal"}
+- Target Goal: ${userLearningPath.target_goal || "Basics"}
+- Focus Areas: ${userLearningPath.weak_areas?.join(", ") || "Shruti alignment, Tala continuity"}
+Tailor your pedagogical guidance and explanations to match this student's level and target goals.\n`;
+  }
 
   if (instrument) {
     prompt += `\nINSTRUMENT CONTEXT: ${instrument}\n${instrumentGuidance(instrument)}\n`;

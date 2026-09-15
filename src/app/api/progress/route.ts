@@ -8,7 +8,7 @@ import {
 import { requireAuth } from "@/lib/api/auth";
 import { createClient } from "@/lib/supabase/server";
 import { mapProgress } from "@/lib/mappers";
-import { getDashboardStats, recordProgress } from "@/lib/db/progress";
+import { getDashboardStats, getComprehensiveStudentProgress, recordProgress } from "@/lib/db/progress";
 
 export async function GET() {
   try {
@@ -24,11 +24,15 @@ export async function GET() {
       .eq("user_id", user.id)
       .order("last_studied_at", { ascending: false });
 
-    const stats = await getDashboardStats(user.id);
+    const [stats, detailedStats] = await Promise.all([
+      getDashboardStats(user.id),
+      getComprehensiveStudentProgress(user.id),
+    ]);
 
     return jsonOk({
       progress: (data ?? []).map(mapProgress),
       stats,
+      detailedStats,
     });
   } catch {
     return jsonServerError();

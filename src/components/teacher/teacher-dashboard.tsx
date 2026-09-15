@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StudentProgressTable } from "@/components/teacher/StudentProgressTable";
 
 export interface TeacherProfile {
   id: string;
@@ -577,6 +578,9 @@ export function TeacherDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── Real Enrolled Student Progress Monitoring (Database Scoped RLS) ── */}
+      <StudentProgressTable />
 
       {/* ── Navigation Tabs ── */}
       <div className="flex flex-wrap items-center justify-between border-b border-border pb-3 gap-3">

@@ -8,6 +8,10 @@ import nextDynamic from "next/dynamic";
 import { Check, Plus, Trash2, Sparkles, BookOpen, ArrowRight, Video, Radio, ExternalLink, UserCheck, BookMarked, Clock, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TanpuraTablaPlayer } from "@/components/music/tanpura-tabla-player";
+import { PersonalizedPathCard } from "@/components/student/PersonalizedPathCard";
+import { ProgressOverview } from "@/components/student/ProgressOverview";
+import { AIAssessmentConsole } from "@/components/music/AIAssessmentConsole";
+import { LearningPath } from "@/lib/ai/learning-path";
 
 const PitchVisualizer = nextDynamic(
   () => import("@/components/music/PitchVisualizer"),
@@ -89,6 +93,24 @@ export default function StudentDashboardPage() {
   const [academicYear, setAcademicYear] = useState<string>("1st Year (Beginner)");
   const [publishedMeetUrl, setPublishedMeetUrl] = useState<string | null>(null);
 
+  const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
+  const [isLoadingPath, setIsLoadingPath] = useState<boolean>(true);
+
+  const fetchLearningPath = async () => {
+    setIsLoadingPath(true);
+    try {
+      const res = await fetch("/api/learning-path");
+      if (res.ok) {
+        const data = await res.json();
+        setLearningPath(data.learningPath || null);
+      }
+    } catch (e) {
+      console.warn("Could not fetch learning path:", e);
+    } finally {
+      setIsLoadingPath(false);
+    }
+  };
+
   const [goals, setGoals] = useState<Goal[]>([
     { id: "g1", task: "Practice Mayamalavagowla scales in 3 speeds", done: true },
     { id: "g2", task: "Review 18th Century Carnatic Trinity eras", done: false },
@@ -105,6 +127,7 @@ export default function StudentDashboardPage() {
   ]);
 
   useEffect(() => {
+    fetchLearningPath();
     try {
       const storedCourseCookie = getCookie("naada_student_course");
       const storedCourseLocal = localStorage.getItem("naada_student_course");
@@ -301,6 +324,19 @@ export default function StudentDashboardPage() {
           </a>
         </div>
       </div>
+
+      {/* ── Student Progress Overview Section (Real Database Metrics) ── */}
+      <ProgressOverview />
+
+      {/* ── AI Personalized Learning Path Section ── */}
+      <PersonalizedPathCard
+        learningPath={learningPath}
+        isLoading={isLoadingPath}
+        onRefresh={fetchLearningPath}
+      />
+
+      {/* ── AI Music Assessment Engine Console ── */}
+      <AIAssessmentConsole />
 
       {/* ── Direct Banner Shortcut to Practice Hub ── */}
       <div className="rounded-3xl border border-swara-gold/30 bg-gradient-to-r from-[#800020] via-[#5c0017] to-[#800020] p-6 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
