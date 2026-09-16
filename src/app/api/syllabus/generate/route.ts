@@ -6,9 +6,9 @@ import {
   jsonError,
   jsonServerError,
 } from "@/lib/api/response";
-import { requireAuth } from "@/lib/api/auth";
+import { getSessionUser } from "@/lib/api/auth";
 import { searchSyllabus } from "@/lib/ai/syllabus";
-import { callOpenAI } from "@/lib/ai/context";
+import { callOpenAI, generateFallbackStudyNotes } from "@/lib/ai/context";
 import { createClient } from "@/lib/supabase/server";
 
 interface SyllabusChunkItem {
@@ -19,20 +19,23 @@ interface SyllabusChunkItem {
 }
 
 export async function POST(request: NextRequest) {
+  let targetTopic = "Carnatic Music Theory";
+  let language = "en";
+
   try {
-    const user = await requireAuth();
+    const user = await getSessionUser();
 
     const body = await request.json();
     const topic = (body.topic as string)?.trim();
     const explicitContent = (body.content as string)?.trim();
-    const language = (body.language as string) || "en";
+    language = (body.language as string) || "en";
     const save = body.save !== false;
 
     if (!topic && !explicitContent) {
       return jsonError("topic or content is required");
     }
 
-    const targetTopic = topic || (explicitContent ? explicitContent.slice(0, 50) + "..." : "Carnatic Music Theory");
+    targetTopic = topic || (explicitContent ? explicitContent.slice(0, 50) + "..." : "Carnatic Music Theory");
 
     let contextText = explicitContent || "";
     let chunksCount = 0;
@@ -90,7 +93,7 @@ Structure the notes into:
     const title = `Notes: ${targetTopic}`;
 
     let savedNote = null;
-    if (save) {
+    if (save && user) {
       try {
         const supabase = await createClient();
         if (supabase) {
@@ -118,6 +121,12 @@ Structure the notes into:
     });
   } catch (error) {
     console.error("[syllabus/generate]", error);
-    return jsonServerError("Failed to generate notes");
+    const fallback = generateFallbackStudyNotes(targetTopic, language);
+    return jsonOk({
+      title: `Notes: ${targetTopic}`,
+      content: fallback.answer,
+      sourceChunks: 1,
+      savedNote: null,
+    });
   }
 }

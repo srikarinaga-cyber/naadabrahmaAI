@@ -383,16 +383,59 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
   };
 }
 
+function parseAiResponse(rawContent: string): AiChatResponse {
+  let cleaned = rawContent.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  }
+
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (typeof parsed === "object" && parsed !== null) {
+      const answer =
+        typeof parsed.answer === "string" && parsed.answer.trim()
+          ? parsed.answer.trim()
+          : typeof parsed.response === "string" && parsed.response.trim()
+          ? parsed.response.trim()
+          : typeof parsed.content === "string" && parsed.content.trim()
+          ? parsed.content.trim()
+          : typeof parsed.text === "string" && parsed.text.trim()
+          ? parsed.text.trim()
+          : typeof parsed.explanation === "string" && parsed.explanation.trim()
+          ? parsed.explanation.trim()
+          : typeof parsed.result === "string" && parsed.result.trim()
+          ? parsed.result.trim()
+          : cleaned;
+
+      return {
+        answer,
+        raga: typeof parsed.raga === "string" ? parsed.raga : undefined,
+        melakartaNumber: typeof parsed.melakartaNumber === "number" ? parsed.melakartaNumber : undefined,
+        arohanam: typeof parsed.arohanam === "string" ? parsed.arohanam : undefined,
+        avarohanam: typeof parsed.avarohanam === "string" ? parsed.avarohanam : undefined,
+        swaras: Array.isArray(parsed.swaras) ? parsed.swaras : undefined,
+        famousKritis: Array.isArray(parsed.famousKritis) ? parsed.famousKritis : undefined,
+        importantPoints: Array.isArray(parsed.importantPoints) ? parsed.importantPoints : undefined,
+        practiceTips: Array.isArray(parsed.practiceTips) ? parsed.practiceTips : undefined,
+      };
+    }
+  } catch {
+    // If raw string is not JSON, return as answer directly
+  }
+
+  return { answer: cleaned };
+}
+
 export async function callGemini(params: {
   systemPrompt: string;
   message: string;
   language?: string;
-}): Promise<AiChatResponse> {
+}): Promise<AiChatResponse | null> {
   const rawApiKey = process.env["GEMINI_API_KEY"];
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
 
   if (!apiKey) {
-    return generateFallbackStudyNotes(params.message, params.language);
+    return null;
   }
 
   const promptText = `${params.systemPrompt}\n\nUser Question: ${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`;
@@ -400,7 +443,6 @@ export async function callGemini(params: {
   const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp", "gemini-1.5-flash-8b"];
 
   for (const model of models) {
-    console.log(`AI Guru: Attempting connection using model: ${model}`);
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
@@ -420,7 +462,6 @@ export async function callGemini(params: {
             },
           ],
           generationConfig: {
-            responseMimeType: "application/json",
             temperature: 0.4,
           },
         }),
@@ -436,17 +477,13 @@ export async function callGemini(params: {
         continue;
       }
 
-      try {
-        return JSON.parse(content) as AiChatResponse;
-      } catch {
-        return { answer: content };
-      }
+      return parseAiResponse(content);
     } catch {
       continue;
     }
   }
 
-  return generateFallbackStudyNotes(params.message, params.language);
+  return null;
 }
 
 export async function callOpenAI(params: {
@@ -454,54 +491,50 @@ export async function callOpenAI(params: {
   message: string;
   language?: string;
 }): Promise<AiChatResponse> {
+  // 1. Try Gemini API first if configured
   if (process.env["GEMINI_API_KEY"]) {
-    return callGemini(params);
+    const geminiRes = await callGemini(params);
+    if (geminiRes) return geminiRes;
   }
 
+  // 2. Try OpenAI API if configured
   const rawApiKey = process.env["OPENAI_API_KEY"];
   const apiKey = rawApiKey ? rawApiKey.trim().replace(/^['"=\s]+|['"\s]+$/g, '') : null;
-  
-  if (!apiKey) {
-    return generateFallbackStudyNotes(params.message, params.language);
-  }
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: params.systemPrompt },
-          {
-            role: "user",
-            content: `${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`,
-          },
-        ],
-        temperature: 0.4,
-        response_format: { type: "json_object" },
-      }),
-    });
-
-    if (!response.ok) {
-      return generateFallbackStudyNotes(params.message, params.language);
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) {
-      return generateFallbackStudyNotes(params.message, params.language);
-    }
-
+  if (apiKey) {
     try {
-      return JSON.parse(content) as AiChatResponse;
-    } catch {
-      return { answer: content };
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: params.systemPrompt },
+            {
+              role: "user",
+              content: `${params.message}\n\nRespond in JSON format: { "answer": "...", "raga": "...", "melakartaNumber": null, "arohanam": "...", "avarohanam": "...", "swaras": [], "famousKritis": [], "importantPoints": [], "practiceTips": [] }. Use only fields relevant to the question.`,
+            },
+          ],
+          temperature: 0.4,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content) {
+          return parseAiResponse(content);
+        }
+      }
+    } catch (e) {
+      console.warn("OpenAI API query error:", e);
     }
-  } catch (e) {
-    return generateFallbackStudyNotes(params.message, params.language);
   }
+
+  // 3. Fallback to Multilingual Embedded Carnatic Knowledge Generator
+  return generateFallbackStudyNotes(params.message, params.language);
 }

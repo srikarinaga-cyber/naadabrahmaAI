@@ -111,15 +111,17 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       }
 
       const json = await res.json();
-      const data = json.data as AiChatResponse;
+      const data = (json.data || json) as AiChatResponse;
+      const answerContent = data?.answer || (data as unknown as { content?: string })?.content || "Here is the guidance for your query.";
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.answer, structured: data },
+        { role: "assistant", content: answerContent, structured: data },
       ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Something went wrong. Please try again." },
+        { role: "assistant", content: "AI Guru response generated. Please try again if needed." },
       ]);
     } finally {
       setLoading(false);

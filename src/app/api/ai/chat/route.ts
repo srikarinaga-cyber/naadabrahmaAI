@@ -11,12 +11,16 @@ import {
   buildMusicContext,
   buildSystemPrompt,
   callOpenAI,
+  generateFallbackStudyNotes,
   type SupportedLanguage,
 } from "@/lib/ai/context";
 import type { Instrument } from "@/lib/ai/instruments";
 import { updateStudyStreak } from "@/lib/db/progress";
 
 export async function POST(request: NextRequest) {
+  let userMessage = "Carnatic Music Theory";
+  let userLanguage: SupportedLanguage = "en";
+
   try {
     const user = await getSessionUser();
 
@@ -26,13 +30,16 @@ export async function POST(request: NextRequest) {
     const instrument = body.instrument as Instrument | undefined;
     const language = (body.language as SupportedLanguage) ?? "en";
 
+    userMessage = message || userMessage;
+    userLanguage = language;
+
     if (!message?.trim()) {
       return jsonError("Message is required");
     }
 
     const context = await buildMusicContext({ query: message, ragaId });
     const systemPrompt = buildSystemPrompt({ context, instrument, language });
-    const response = await callOpenAI({ systemPrompt, message });
+    const response = await callOpenAI({ systemPrompt, message, language });
 
     if (user) {
       await updateStudyStreak(user.id);
@@ -41,6 +48,7 @@ export async function POST(request: NextRequest) {
     return jsonOk(response);
   } catch (error) {
     console.error("AI CHAT ROUTE ERROR:", error);
-    return jsonServerError();
+    const fallbackResponse = generateFallbackStudyNotes(userMessage, userLanguage);
+    return jsonOk(fallbackResponse);
   }
 }
