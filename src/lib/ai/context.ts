@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { instrumentGuidance, type Instrument } from "@/lib/ai/instruments";
 import { searchSyllabus, cleanSearchQuery } from "@/lib/ai/syllabus";
+import { MELAKARTA_SEED_DATA, type MelakartaSeed } from "@/lib/data/melakartas-seed";
 
 export type SupportedLanguage = "en" | "te" | "hi" | "ta" | "kn" | "ml";
 
@@ -346,7 +347,103 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
   const qLower = userQuestion.toLowerCase();
 
-  // 1. Katapayadi Sankhya System Match
+  // 1. Dynamic Match across 72 Melakarta Ragas Catalog (Venkatamakhin system)
+  const matchedMelakarta = MELAKARTA_SEED_DATA.find((m) => {
+    const mName = m.name.toLowerCase();
+    const cleanMName = mName
+      .replace(/^dheera/, "")
+      .replace(/^mecha/, "")
+      .replace(/^hanumat/, "")
+      .replace(/^harikambhoji/, "kambhoji");
+    return (
+      qLower.includes(mName) ||
+      (cleanMName.length >= 4 && qLower.includes(cleanMName))
+    );
+  });
+
+function toTeluguNotation(str: string): string {
+  if (!str) return str;
+  return str
+    .replace(/S'/g, "స'")
+    .replace(/S/g, "స")
+    .replace(/R1/g, "రి1")
+    .replace(/R2/g, "రి2")
+    .replace(/R3/g, "రి3")
+    .replace(/R/g, "రి")
+    .replace(/G1/g, "గా1")
+    .replace(/G2/g, "గా2")
+    .replace(/G3/g, "గా3")
+    .replace(/G/g, "గా")
+    .replace(/M1/g, "మా1")
+    .replace(/M2/g, "మా2")
+    .replace(/M/g, "మా")
+    .replace(/P/g, "పా")
+    .replace(/D1/g, "దా1")
+    .replace(/D2/g, "దా2")
+    .replace(/D3/g, "దా3")
+    .replace(/D/g, "దా")
+    .replace(/N1/g, "నీ1")
+    .replace(/N2/g, "నీ2")
+    .replace(/N3/g, "నీ3")
+    .replace(/N/g, "నీ");
+}
+
+  if (matchedMelakarta && !qLower.includes("vs") && !qLower.includes("difference") && !qLower.includes("వ్యత్యాసం")) {
+    const teArohana = toTeluguNotation(matchedMelakarta.arohana);
+    const teAvarohana = toTeluguNotation(matchedMelakarta.avarohana);
+
+    if (language === "te") {
+      return {
+        answer: `## ${matchedMelakarta.name} రాగము సిద్ధాంత విశ్లేషణ (${matchedMelakarta.number}వ మేళకర్త)
+
+### 1. రాగ వర్గీకరణ & చక్రం
+- **మేళకర్త సంఖ్య:** ${matchedMelakarta.number}వ మేళకర్త రాగం (${matchedMelakarta.chakra} చక్రం).
+- **స్వర శ్రేణి:** సంపూర్ణ రాగం (ఆరోహణ మరియు అవరోహణలలో ఏడు స్వరాలు నిండి ఉంటాయి).
+- **సంగీత వివరణ:** ${matchedMelakarta.description}
+
+### 2. ఆరోహణ & అవరోహణ
+- **ఆరోహణ:** ${teArohana}
+- **అవరోహణ:** ${teAvarohana}
+
+### 3. ప్రసిద్ధ జన్య రాగాలు & అంశాలు
+${matchedMelakarta.metadata?.popular_janyas?.length ? `- **ప్రసిద్ధ జన్య రాగాలు:** ${matchedMelakarta.metadata.popular_janyas.join(", ")}\n` : ""}${matchedMelakarta.metadata?.western_equivalent ? `- **పాశ్చాత్య సంగీత సమాన స్కేల్:** ${matchedMelakarta.metadata.western_equivalent}\n` : ""}
+
+### 4. సాధనా మార్గదర్శకత్వం
+- తంబూరా శ్రుతి సహాయంతో విళంబ కాలంలో (మెల్లగా) ప్రశాంతంగా స్వరస్థానాల స్థిరత్వాన్ని సాధన చేయండి.`,
+        raga: matchedMelakarta.name,
+        melakartaNumber: matchedMelakarta.number,
+        arohanam: teArohana,
+        avarohanam: teAvarohana,
+        famousKritis: matchedMelakarta.metadata?.popular_janyas,
+      };
+    }
+
+    return {
+      answer: `## ${matchedMelakarta.name} Raga Profile (${matchedMelakarta.number}th Melakarta Parent Scale)
+
+### 1. Classification & Musicological Context
+- **Melakarta Index:** ${matchedMelakarta.number}th Melakarta Raga (${matchedMelakarta.chakra} Chakra).
+- **Scale Structure:** Sampurna Raga (7 notes ascending & 7 notes descending).
+- **Description:** ${matchedMelakarta.description}
+
+### 2. Scale Structure (Arohana & Avarohana)
+- **Arohana:** ${matchedMelakarta.arohana}
+- **Avarohana:** ${matchedMelakarta.avarohana}
+
+### 3. Derived Janya Ragas & Equivalents
+${matchedMelakarta.metadata?.popular_janyas?.length ? `- **Popular Janya Ragas:** ${matchedMelakarta.metadata.popular_janyas.join(", ")}\n` : ""}${matchedMelakarta.metadata?.western_equivalent ? `- **Western Music Equivalent:** ${matchedMelakarta.metadata.western_equivalent}\n` : ""}
+
+### 4. Pedagogical Recommendations
+- Sustain each swarasthana against the Tanpura drone to internalize microtonal pitch stability.`,
+      raga: matchedMelakarta.name,
+      melakartaNumber: matchedMelakarta.number,
+      arohanam: matchedMelakarta.arohana,
+      avarohanam: matchedMelakarta.avarohana,
+      famousKritis: matchedMelakarta.metadata?.popular_janyas,
+    };
+  }
+
+  // 2. Katapayadi Sankhya System Match
   const isKatapayadi = qLower.includes("katapayadi") || qLower.includes("కటపయాది") || qLower.includes("कटपयादि");
   if (isKatapayadi) {
     if (language === "te") {
