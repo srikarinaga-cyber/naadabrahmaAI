@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { INSTRUMENTS, type Instrument } from "@/lib/ai/instruments";
 import type { AiChatResponse, SupportedLanguage } from "@/lib/ai/context";
+import { CarnaticMusicLogo } from "@/components/ui/music-logo";
 
 interface Message {
   role: "user" | "assistant";
@@ -170,8 +171,8 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border bg-kumkum/5 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-kumkum/15">
-            <Sparkles className="size-5 text-kumkum" />
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#800020] to-[#D4AF37] p-1 shadow-md">
+            <CarnaticMusicLogo className="size-7" />
           </div>
           <div>
             <p className="font-serif text-base font-bold text-kumkum">Multilingual AI Carnatic Guru</p>
@@ -246,7 +247,7 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       <div className="h-96 overflow-y-auto space-y-4 p-6">
         {messages.length === 0 && (
           <div className="text-center py-12 space-y-2">
-            <Globe className="size-10 text-kumkum/40 mx-auto" />
+            <CarnaticMusicLogo className="size-14 mx-auto mb-2" />
             <p className="text-sm font-semibold text-foreground">
               Welcome to Naadabrahma Multilingual AI Guru!
             </p>

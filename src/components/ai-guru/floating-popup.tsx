@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, MessageSquare, X, Send, Languages, Globe, Minimize2, CheckCircle2 } from "lucide-react";
+import { Sparkles, X, Send, Languages, Globe, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { INSTRUMENTS, type Instrument } from "@/lib/ai/instruments";
 import type { AiChatResponse, SupportedLanguage } from "@/lib/ai/context";
+import { CarnaticMusicLogo } from "@/components/ui/music-logo";
 
 interface Message {
   role: "user" | "assistant";
@@ -14,24 +15,113 @@ interface Message {
 }
 
 const LANGUAGES: { id: SupportedLanguage; label: string; flag: string }[] = [
-  { id: "te", label: "తెలుగు (Telugu)", flag: "🇮🇳" },
   { id: "en", label: "English", flag: "🇬🇧" },
+  { id: "te", label: "తెలుగు (Telugu)", flag: "🇮🇳" },
   { id: "hi", label: "हिन्दी (Hindi)", flag: "🇮🇳" },
   { id: "ta", label: "தமிழ் (Tamil)", flag: "🇮🇳" },
   { id: "kn", label: "ಕನ್ನಡ (Kannada)", flag: "🇮🇳" },
   { id: "ml", label: "മലയാളം (Malayalam)", flag: "🇮🇳" },
 ];
 
+const UI_STRINGS: Record<
+  SupportedLanguage,
+  {
+    headerSub: string;
+    instrumentLabel: string;
+    welcomeTitle: string;
+    welcomeDesc: string;
+    arohanamLabel: string;
+    avarohanamLabel: string;
+    loadingText: string;
+    placeholder: string;
+    launcherBadge: string;
+    sampleHeader: string;
+  }
+> = {
+  en: {
+    headerSub: "24/7 AI Carnatic Assistant with Trinity Blessings",
+    instrumentLabel: "Instrument:",
+    welcomeTitle: "Welcome to Naadabrahma AI Guru!",
+    welcomeDesc: "Ask any Carnatic music question in English, Telugu, Hindi, Tamil, Kannada, or Malayalam.",
+    arohanamLabel: "Arohana:",
+    avarohanamLabel: "Avarohana:",
+    loadingText: "AI Guru is analyzing...",
+    placeholder: "Ask about ragas, talas, theory in your language...",
+    launcherBadge: "Ask AI Guru!",
+    sampleHeader: "Sample Prompts:",
+  },
+  te: {
+    headerSub: "సంగీత త్రిమూర్తుల ఆశీస్సులతో 24/7 AI సహాయకం",
+    instrumentLabel: "వాద్యం:",
+    welcomeTitle: "నాదబ్రహ్మ AI గురు చాట్‌బాట్‌కి స్వాగతం!",
+    welcomeDesc: "ఏదైనా కర్ణాటక సంగీత సందేహాన్ని తెలుగు (తెలుగు లిపిలో), ఇంగ్లీష్, హిందీ, తమిళం, కన్నడ, మలయాళంలో అడగండి.",
+    arohanamLabel: "ఆరోహణ:",
+    avarohanamLabel: "అవరోహణ:",
+    loadingText: "AI గురు విశ్లేషిస్తున్నారు...",
+    placeholder: "రాగాలు, తాళాలు, సిద్ధాంతం గురించి అడగండి...",
+    launcherBadge: "అడిగి తెలుసుకోండి!",
+    sampleHeader: "ఉదాహరణ ప్రశ్నలు:",
+  },
+  hi: {
+    headerSub: "संगीत त्रिमूर्ति आशीर्वाद से 24/7 एआई सहायक",
+    instrumentLabel: "वाद्य:",
+    welcomeTitle: "नादब्रह्म AI गुरु चैटबॉट में आपका स्वागत है!",
+    welcomeDesc: "कर्नाटक संगीत का कोई भी प्रश्न हिंदी, अंग्रेजी, तेलुगु या अन्य भाषाओं में पूछें।",
+    arohanamLabel: "आरोहण:",
+    avarohanamLabel: "अवरोहण:",
+    loadingText: "AI गुरु विश्लेषण कर रहे हैं...",
+    placeholder: "राग, ताल, सिद्धांत के बारे में पूछें...",
+    launcherBadge: "AI गुरु से पूछें!",
+    sampleHeader: "उदाहरण प्रश्न:",
+  },
+  ta: {
+    headerSub: "சங்கீத திரிமூர்த்திகளின் ஆசியுடன் 24/7 AI உதவியாளர்",
+    instrumentLabel: "வாத்தியம்:",
+    welcomeTitle: "நாதபிரம்மா AI குருவுக்கு நல்வரவு!",
+    welcomeDesc: "கர்நாடக இசை சந்தேகங்களை தமிழ், ஆங்கிலம் அல்லது பிற மொழிகளில் கேட்கவும்.",
+    arohanamLabel: "ஆரோஹணம்:",
+    avarohanamLabel: "அவரோஹணம்:",
+    loadingText: "AI குரு ஆராய்கிறார்...",
+    placeholder: "ராகங்கள், தாளங்கள் பற்றி கேட்கவும்...",
+    launcherBadge: "AI குருவிடம் கேட்கவும்!",
+    sampleHeader: "மாதிரி கேள்விகள்:",
+  },
+  kn: {
+    headerSub: "ಸಂಗೀತ ತ್ರಿಮೂರ್ತಿಗಳ ಆಶೀರ್ವಾದದೊಂದಿಗೆ 24/7 AI ಸಹಾಯಕ",
+    instrumentLabel: "ವಾದ್ಯ:",
+    welcomeTitle: "ನಾದಬ್ರಹ್ಮ AI ಗುರು ಚಾಟ್‌ಬಾಟ್‌ಗೆ ಸ್ವಾಗತ!",
+    welcomeDesc: "ಕರ್ನಾಟಕ ಸಂಗೀತದ ಯಾವುದೇ ಪ್ರಶ್ನೆಯನ್ನು ಕನ್ನಡ, ಇಂಗ್ಲಿಷ್ ಅಥವಾ ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಕೇಳಿ.",
+    arohanamLabel: "ಆರೋಹಣ:",
+    avarohanamLabel: "ಅವರೋಹಣ:",
+    loadingText: "AI ಗುರು ವಿಶ್ಲೇಷಿಸುತ್ತಿದ್ದಾರೆ...",
+    placeholder: "ರಾಗಗಳು, ತಾಳಗಳ ಬಗ್ಗೆ ಕೇಳಿ...",
+    launcherBadge: "AI ಗುರುಗಳನ್ನು ಕೇಳಿ!",
+    sampleHeader: "ಉದಾಹರಣೆ ಪ್ರಶ್ನೆಗಳು:",
+  },
+  ml: {
+    headerSub: "സംഗീത ത്രിമൂർത്തികളുടെ അനുഗ്രഹത്തോടെ 24/7 AI സഹായി",
+    instrumentLabel: "വാദ്യം:",
+    welcomeTitle: "നാദബ്രഹ്മ AI ഗുരു ഹാർദ്ദവമായി സ്വാഗതം ചെയ്യുന്നു!",
+    welcomeDesc: "കർണ്ണാടക സംഗീത സംശയങ്ങൾ മലയാളം, ഇംഗ്ലീഷ് അല്ലെങ്കിൽ മറ്റ് ഭാഷകളിൽ ചോദിക്കൂ.",
+    arohanamLabel: "ആരോഹണം:",
+    avarohanamLabel: "അവരോഹണം:",
+    loadingText: "AI ഗുരു വിശകലനം ചെയ്യുന്നു...",
+    placeholder: "രാഗങ്ങൾ, താളങ്ങൾ ചോദിക്കൂ...",
+    launcherBadge: "AI ഗുരുവിനോട് ചോദിക്കൂ!",
+    sampleHeader: "മാതൃകാ ചോദ്യങ്ങൾ:",
+  },
+};
+
 const SAMPLE_PROMPTS: Record<SupportedLanguage, string[]> = {
-  te: [
-    "కళ్యాణి రాగం గురించి వివరించండి.",
-    "శంకరాభరణం మరియు కళ్యాణి రాగాల వ్యత్యాసం ఏమిటి?",
-    "35 సుళాది సప్త తాళాలు ఏవి?",
-  ],
   en: [
     "About kalyani raagam",
     "What is the difference between Mohanam and Hamsadhwani?",
     "What are the 35 Suladi Sapta Talas?",
+  ],
+  te: [
+    "కళ్యాణి రాగం గురించి వివరించండి.",
+    "శంకరాభరణం మరియు కళ్యాణి రాగాల వ్యత్యాసం ఏమిటి?",
+    "35 సుళాది సప్త తాళాలు ఏవి?",
   ],
   hi: [
     "कल्याणी राग का परिचय दें।",
@@ -60,7 +150,7 @@ export function FloatingAiGuruPopup() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [instrument, setInstrument] = useState<Instrument>("vocal");
-  const [language, setLanguage] = useState<SupportedLanguage>("te");
+  const [language, setLanguage] = useState<SupportedLanguage>("en");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -89,7 +179,7 @@ export function FloatingAiGuruPopup() {
       const answerContent =
         data?.answer ||
         (data as unknown as { content?: string })?.content ||
-        "హియర్ ఈజ్ ది గైడెన్స్ ఫోర్ యువర్ క్వెరీ.";
+        "Here is the guidance for your query.";
 
       setMessages((prev) => [
         ...prev,
@@ -100,7 +190,7 @@ export function FloatingAiGuruPopup() {
         ...prev,
         {
           role: "assistant",
-          content: "AI గురు సమాధానం సిద్ధమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.",
+          content: "AI Guru response generated. Please try again if needed.",
         },
       ]);
     } finally {
@@ -115,7 +205,8 @@ export function FloatingAiGuruPopup() {
     await sendQueryMessage(userMsg);
   }
 
-  const activeSamplePrompts = SAMPLE_PROMPTS[language] || SAMPLE_PROMPTS.te;
+  const activeUi = UI_STRINGS[language] || UI_STRINGS.en;
+  const activeSamplePrompts = SAMPLE_PROMPTS[language] || SAMPLE_PROMPTS.en;
 
   return (
     <>
@@ -123,24 +214,25 @@ export function FloatingAiGuruPopup() {
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
         {!isOpen && (
           <div className="hidden md:flex items-center gap-2 rounded-2xl border border-swara-gold/40 bg-card/90 px-4 py-2 text-xs font-semibold shadow-xl backdrop-blur-md animate-bounce">
-            <span className="text-kumkum font-serif">🕉️ AI Guru</span>
-            <span className="text-muted-foreground">అడిగి తెలుసుకోండి!</span>
+            <CarnaticMusicLogo className="size-5" />
+            <span className="font-serif font-bold text-[#800020]">AI Guru</span>
+            <span className="text-muted-foreground">{activeUi.launcherBadge}</span>
           </div>
         )}
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#800020] via-[#A00028] to-[#D4AF37] text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/30"
+          className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#800020] via-[#A00028] to-[#D4AF37] text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/40"
           aria-label="Open AI Guru Chat"
         >
           {isOpen ? (
             <X className="size-6 text-white" />
           ) : (
             <div className="relative flex items-center justify-center">
-              <Sparkles className="size-6 text-yellow-200 animate-pulse" />
-              <span className="absolute -top-1 -right-1 flex size-3">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-yellow-400 opacity-75"></span>
-                <span className="relative inline-flex size-3 rounded-full bg-yellow-500"></span>
+              <CarnaticMusicLogo className="size-8" />
+              <span className="absolute -top-1.5 -right-1.5 flex size-3.5">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-300 opacity-75"></span>
+                <span className="relative inline-flex size-3.5 rounded-full bg-amber-400 border border-amber-600"></span>
               </span>
             </div>
           )}
@@ -157,11 +249,11 @@ export function FloatingAiGuruPopup() {
           />
           <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-background/30 via-background/10 to-background/50" />
 
-          {/* Modal Header */}
-          <div className="relative z-10 flex items-center justify-between border-b border-swara-gold/30 bg-[#800020]/90 px-5 py-3.5 text-white shadow-md">
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-                <Sparkles className="size-5 text-yellow-300" />
+          {/* Modal Header with Carnatic Music Logo */}
+          <div className="relative z-10 flex items-center justify-between border-b border-swara-gold/30 bg-[#800020]/95 px-5 py-3.5 text-white shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#D4AF37] to-[#800020] p-1 shadow-md border border-amber-300/40 shrink-0">
+                <CarnaticMusicLogo className="size-7" />
               </div>
               <div>
                 <h3 className="font-serif text-sm font-bold tracking-wide text-amber-100 flex items-center gap-1.5">
@@ -170,8 +262,8 @@ export function FloatingAiGuruPopup() {
                     Online
                   </Badge>
                 </h3>
-                <p className="text-[10px] text-amber-200/80">
-                  సం సంగీత త్రిమూర్తుల ఆశీస్సులతో 24/7 AI సహాయకం
+                <p className="text-[10px] text-amber-200/90 leading-tight">
+                  {activeUi.headerSub}
                 </p>
               </div>
             </div>
@@ -180,12 +272,14 @@ export function FloatingAiGuruPopup() {
               <button
                 onClick={() => setIsOpen(false)}
                 className="flex size-8 items-center justify-center rounded-lg hover:bg-white/15 text-white transition-colors"
+                title="Minimize"
               >
                 <Minimize2 className="size-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="flex size-8 items-center justify-center rounded-lg hover:bg-white/15 text-white transition-colors"
+                title="Close"
               >
                 <X className="size-4" />
               </button>
@@ -210,7 +304,9 @@ export function FloatingAiGuruPopup() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold text-muted-foreground">వాద్యం:</span>
+              <span className="text-[11px] font-semibold text-muted-foreground">
+                {activeUi.instrumentLabel}
+              </span>
               <select
                 value={instrument}
                 onChange={(e) => setInstrument(e.target.value as Instrument)}
@@ -227,6 +323,9 @@ export function FloatingAiGuruPopup() {
 
           {/* Sample Prompts Bar */}
           <div className="relative z-10 px-4 py-2 bg-muted/20 border-b border-border/40 flex flex-wrap gap-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground self-center">
+              {activeUi.sampleHeader}
+            </span>
             {activeSamplePrompts.map((promptText, idx) => (
               <button
                 key={idx}
@@ -241,13 +340,13 @@ export function FloatingAiGuruPopup() {
           {/* Messages Body */}
           <div className="relative z-10 flex-1 overflow-y-auto p-4 space-y-3.5">
             {messages.length === 0 && (
-              <div className="text-center py-8 space-y-2 bg-card/60 backdrop-blur-sm rounded-2xl border border-swara-gold/20 p-4 my-2">
-                <Globe className="size-8 text-[#800020]/60 mx-auto" />
+              <div className="text-center py-6 space-y-2 bg-card/60 backdrop-blur-sm rounded-2xl border border-swara-gold/20 p-4 my-2">
+                <CarnaticMusicLogo className="size-12 mx-auto mb-1" />
                 <h4 className="text-xs font-bold text-foreground">
-                  నాదబ్రహ్మ AI గురు చాట్‌బాట్‌కి స్వాగతం!
+                  {activeUi.welcomeTitle}
                 </h4>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  ఏదైనా కర్ణాటక సంగీత సందేహాన్ని <strong className="text-[#800020]">తెలుగు (తెలుగు లిపిలో), ఇంగ్లీష్, హిందీ, తమిళం, కన్నడ, మలయాళంలో</strong> టైప్ చేసి అడగండి.
+                  {activeUi.welcomeDesc}
                 </p>
               </div>
             )}
@@ -273,11 +372,11 @@ export function FloatingAiGuruPopup() {
                   {msg.structured?.arohanam && (
                     <div className="mt-2.5 pt-2 border-t border-swara-gold/30 text-[11px] font-mono bg-muted/40 p-2 rounded-xl">
                       <p className="text-emerald-700 dark:text-emerald-400 font-bold">
-                        ఆరోహణ: {msg.structured.arohanam}
+                        {activeUi.arohanamLabel} {msg.structured.arohanam}
                       </p>
                       {msg.structured.avarohanam && (
                         <p className="text-emerald-700 dark:text-emerald-400 font-bold">
-                          అవరోహణ: {msg.structured.avarohanam}
+                          {activeUi.avarohanamLabel} {msg.structured.avarohanam}
                         </p>
                       )}
                     </div>
@@ -289,7 +388,7 @@ export function FloatingAiGuruPopup() {
             {loading && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card/80 p-2.5 rounded-xl border border-swara-gold/20 w-fit">
                 <Sparkles className="size-4 text-[#800020] animate-spin" />
-                <span>AI గురు విశ్లేషిస్తున్నారు...</span>
+                <span>{activeUi.loadingText}</span>
               </div>
             )}
 
@@ -303,7 +402,7 @@ export function FloatingAiGuruPopup() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="రాగాలు, తాళాలు, సిద్ధాంతం గురించి అడగండి..."
+              placeholder={activeUi.placeholder}
               className="flex-1 rounded-xl border border-swara-gold/40 bg-card px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#800020]"
             />
             <Button

@@ -527,6 +527,25 @@ To derive the Melakarta number, take the digits corresponding to the first two s
         raga: "Sarali Varisalu",
       };
     }
+    return {
+      answer: `## Sarali Varisalu & Abhyasa Ganam (Foundational Carnatic Exercises)
+
+### 1. Pedagogical Foundation
+Structured by the Pitamaha of Carnatic Music, **Sri Purandara Dasa**, these foundational exercises are set in **Mayamalavagowla (15th Melakarta)** to develop pitch precision and steady rhythm.
+
+### 2. Progressive Learning Stages
+1. **Sarali Varisalu:** Single swara exercises for pitch alignment and octave familiarity.
+2. **Janta Varisalu:** Doubled swara exercises (e.g. SS RR GG MM) to build vocal force and clarity.
+3. **Dhatu Varisalu:** Zigzag swara sequences (e.g. SG RM GP) to refine gamaka control.
+4. **Alankarams:** Exercises across 7 main Talas and 5 Jatis for rhythmic mastery.
+5. **Geethams:** Simple melodic compositions with lyrics.
+
+### 3. Practice Speeds (Tristhayi Speeds)
+- **1st Speed (Prathama Kala):** 1 note per beat count.
+- **2nd Speed (Dwitiya Kala):** 2 notes per beat count.
+- **3rd Speed (Tritiya Kala):** 4 notes per beat count.`,
+      raga: "Sarali Varisalu",
+    };
   }
 
   // 3. Tyagaraja Pancharatna Kritis Match
@@ -554,6 +573,26 @@ To derive the Melakarta number, take the digits corresponding to the first two s
         famousKritis: ["జగదానందకారక (నాట)", "దుడుకుగల (గౌళ)", "కనకనరుచిరా (వరాళి)", "సమయానికి మరువవే (ఆరభి)", "ఎంతరో మహానుభావులు (శ్రీ రాగం)"],
       };
     }
+    return {
+      answer: `## Sri Tyagaraja Swami's Ghanaraga Pancharatna Kritis
+
+### 1. Overview & Significance
+Composed by Saint Tyagaraja in the 5 major Ghanaragas (Nata, Gaula, Varali, Arabhi, Sri), these 5 compositions represent the pinnacle of Carnatic devotion and scholarly craftsmanship. All are composed in **Adi Tala**.
+
+### 2. The 5 Pancharatna Compositions
+1. **Jagadanandakaraka** - Nata Raga (Adi Tala)
+   - Sanskrit lyrics enumerating 108 names of Lord Rama.
+2. **Dudukugala Nannedora** - Gaula Raga (Adi Tala)
+   - A poignant song of self-introspection and devotion.
+3. **Kanakana Ruchira** - Varali Raga (Adi Tala)
+   - Celebrates the divine beauty of Lord Rama.
+4. **Samayaniki Maruvave** - Arabhi Raga (Adi Tala)
+   - Expresses gratitude for timely divine grace.
+5. **Endaro Mahanubhavulu** - Sri Raga (Adi Tala)
+   - A universal salutation to all great souls and musicians.`,
+      raga: "Pancharatna Kritis",
+      famousKritis: ["Jagadanandakaraka (Nata)", "Dudukugala (Gaula)", "Kanakana Ruchira (Varali)", "Samayaniki Maruvave (Arabhi)", "Endaro Mahanubhavulu (Sri Raga)"],
+    };
   }
 
   // 4. Shankarabharanam vs Kalyani Query Match
@@ -691,6 +730,22 @@ To derive the Melakarta number, take the digits corresponding to the first two s
         avarohanam: "స' నీ3 దా1 పా మా1 గా3 రి1 స",
       };
     }
+    return {
+      answer: `## Mayamalavagowla Raga Theoretical Profile (15th Melakarta)
+
+### 1. Scale & Swarasthana Structure
+- **Arohana:** S R1 G3 M1 P D1 N3 S'
+- **Avarohana:** S' N3 D1 P M1 G3 R1 S
+- **Swaras:** Shuddha Rishabha (R1), Antara Gandhara (G3), Shuddha Madhyama (M1), Panchama (P), Shuddha Dhaivata (D1), Kakali Nishada (N3).
+
+### 2. Musicological Significance
+- Selected by **Sri Purandara Dasa** (Pitamaha of Carnatic Music) as the primary learning raga for beginner exercises (Sarali, Janta, Alankarams, Geethams).
+- Features symmetrical semitone intervals (R1-G3 and D1-N3), ideal for training vocal pitch accuracy and shruti alignment.`,
+      raga: "Mayamalavagowla",
+      melakartaNumber: 15,
+      arohanam: "S R1 G3 M1 P D1 N3 S'",
+      avarohanam: "S' N3 D1 P M1 G3 R1 S",
+    };
   }
 
   // 7. 35 Suladi Sapta Talas / Tala Matrix Match
@@ -832,6 +887,25 @@ Multiplying the 7 principal Talas by the 5 Laghu Jatis yields the complete 35 Su
         raga: "Carnatic Composers",
       };
     }
+    return {
+      answer: `## The Musical Trinity & Pitamaha of Carnatic Music
+
+### 1. Sri Tyagaraja Swami (1767–1847)
+- **Languages:** Telugu & Sanskrit. **Mudra:** *Tyagaraja*.
+- **Legacy:** Master of the 5 Ghanaraga Pancharatna Kritis (*Jagadanandakaraka*, *Dudukugala*, *Kanakana Ruchira*, *Samayaniki Maruvave*, *Endaro Mahanubhavulu*).
+
+### 2. Sri Muthuswami Dikshitar (1775–1835)
+- **Language:** Sanskrit. **Mudra:** *Guruguha*.
+- **Legacy:** Renowned for majestic slow-tempo (Vilambita Kala) compositions, Raga Mudra integration, and Kamalamba Navavarna Kritis.
+
+### 3. Sri Syama Sastri (1762–1827)
+- **Languages:** Telugu & Sanskrit. **Mudra:** *Syamakrishna*.
+- **Legacy:** Master of intricate rhythmic patterns (Misra Chapu, Anandabhairavi, Swarajatis).
+
+### 4. Sri Purandara Dasa (1484–1564)
+- **Pitamaha of Carnatic Music:** Systematized the Carnatic music curriculum starting with Sarali, Janta, Alankarams, and Geethams in Mayamalavagowla.`,
+      raga: "Carnatic Composers",
+    };
   }
 
   // 10. Deep Clean Dynamic Question Resolution
