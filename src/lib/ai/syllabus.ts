@@ -55,20 +55,26 @@ export async function getEmbedding(text: string): Promise<number[] | null> {
 }
 
 const STOP_WORDS = new Set([
-  "gurinchi", "cheppu", "cheppava", "enti", "yenti", "lo", "kosam",
-  "tell", "me", "about", "what", "is", "the", "of", "in", "explain", "who", "was", "write", "info", "a", "an", "and", "to", "for", "on", "with", "at", "by", "from"
+  "gurinchi", "cheppu", "cheppava", "enti", "yenti", "lo", "kosam", "mariyu", "vyathyasam", "vyatyasam", "emiti", "yemiti",
+  "tell", "me", "about", "what", "is", "the", "of", "in", "explain", "who", "was", "write", "info", "a", "an", "and", "to", "for", "on", "with", "at", "by", "from", "difference", "between",
+  "మరియు", "వ్యత్యాసం", "వ్యత్యాసాలు", "ఏమిటి", "ఏమిటి?", "గురించి", "చెప్పు", "వివరణ", "రాగాల", "మధ్య", "లేదా", "ఉన్న", "ఏమి",
+  "अंतर", "क्या", "है", "और", "बताएं", "बारे", "में", "अंतर",
+  "வித்தியாசம்", "என்ன", "மற்றும்", "விளக்குக",
+  "ವ್ಯತ್ಯಾಸ", "ಏನು", "ಮತ್ತು", "ವಿವರಿಸಿ",
+  "വ്യത്യാസം", "എന്ത്", "മറ്റു", "വിശദമാക്കുക"
 ]);
 
 export function cleanSearchQuery(query: string): string {
-  let cleaned = query.toLowerCase();
+  let cleaned = query.toLowerCase().trim();
   
   // Replace common Telugu variations to match textbook English terms
   cleaned = cleaned.replace(/purandaradasu/g, "purandara dasa");
   cleaned = cleaned.replace(/ragam/g, "raga");
   cleaned = cleaned.replace(/talam/g, "tala");
 
+  // Keep alphanumeric & Indic unicode characters (Telugu, Hindi, Tamil, Kannada, Malayalam)
   const words = cleaned
-    .replace(/[^\w\s]/g, " ")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .trim()
     .split(/\s+/)
     .filter(w => w && !STOP_WORDS.has(w));
@@ -77,7 +83,7 @@ export function cleanSearchQuery(query: string): string {
     return query.trim();
   }
 
-  return words.slice(0, 3).join(" ");
+  return words.slice(0, 4).join(" ");
 }
 
 /**

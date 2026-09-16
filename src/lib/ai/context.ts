@@ -336,9 +336,180 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
   rawExplicitText = rawExplicitText.replace(/^TOPIC:.*$/gm, "").trim();
   const explicitText = translateSyllabusContext(rawExplicitText, language);
 
+  const qLower = userQuestion.toLowerCase();
+
+  // 1. Shankarabharanam vs Kalyani Query Match
+  const isShankaraKalyani =
+    (qLower.includes("shankara") || qLower.includes("శంకరాభరణం") || qLower.includes("शंकराभरणम") || qLower.includes("சங்கராபரணம்") || qLower.includes("ಶಂಕರ ಅಭರಣಂ")) &&
+    (qLower.includes("kalyani") || qLower.includes("కళ్యాణి") || qLower.includes("कल्याणी") || qLower.includes("கல்யாணி") || qLower.includes("കല്യാണി"));
+
+  if (isShankaraKalyani) {
+    if (language === "te") {
+      return {
+        answer: `## శంకరాభరణం మరియు కళ్యాణి రాగాల వ్యత్యాస విశ్లేషణ
+
+### 1. ప్రధాన వ్యత్యాసం (Key Difference)
+- **ధీరశంకరాభరణం (29వ మేళకర్త):** ఇది **శుద్ధ మధ్యమ (మ1)** రాగం. 
+- **మేచకళ్యాణి (65వ మేళకర్త):** ఇది **ప్రతి మధ్యమ (మ2)** రాగం.
+- శంకరాభరణం రాగంలోని శుద్ధ మధ్యమాన్ని (మ1) ప్రతి మధ్యమంగా (మ2) మార్చితే నేరుగా కళ్యాణి రాగం ఏర్పడుతుంది ($29 + 36 = 65$వ మేళకర్త).
+
+### 2. ఆరోహణ & అవరోహణ పోలిక
+- **ధీరశంకరాభరణం (29వ మేళకర్త):**
+  - **ఆరోహణ:** స రి2 గా3 మా1 పా దా2 నీ3 స'
+  - **అవరోహణ:** స' నీ3 దా2 పా మా1 గా3 రి2 స
+  - **స్వరస్థానాలు:** చతుశ్రుతి రిషభం (రి2), అంతర గాంధారం (గా3), **శుద్ధ మధ్యమం (మ1)**, పంచమం (పా), చతుశ్రుతి దైవతం (దా2), కాకలి నిషాదం (నీ3).
+
+- **మేచకళ్యాణి (65వ మేళకర్త):**
+  - **ఆరోహణ:** స రి2 గా3 మా2 పా దా2 నీ3 స'
+  - **అవరోహణ:** స' నీ3 దా2 పా మా2 గా3 రి2 స
+  - **స్వరస్థానాలు:** చతుశ్రుతి రిషభం (రి2), అంతర గాంధారం (గా3), **ప్రతి మధ్యమం (మ2)**, పంచమం (పా), చతుశ్రుతి దైవతం (దా2), కాకలి నిషాదం (నీ3).
+
+### 3. ప్రసిద్ధ కృతులు & గమక ప్రయోగాలు
+- **శంకరాభరణం:** *అక్షయలింగ విభో* (ముత్తుస్వామి దీక్షితులు), *ఏదిన ముచ్చట* (త్యాగరాజు), *సరోజదళ నేత్రి* (శ్యామశాస్త్రి).
+- **కళ్యాణి:** *వాసుదేవయని* (త్యాగరాజు), *హిమాద్రి సుతే* (శ్యామశాస్త్రి), *ఎంతరో మహానుభావులు* తరహా గంభీర రాగ విస్తరణ.`,
+        raga: "Shankarabharanam vs Kalyani",
+        melakartaNumber: 29,
+        arohanam: "స రి2 గా3 మా1 పా దా2 నీ3 స' (శంకరాభరణం) | స రి2 గా3 మా2 పా దా2 నీ3 స' (కళ్యాణి)",
+        avarohanam: "స' నీ3 దా2 పా మా1 గా3 రి2 స (శంకరాభరణం) | స' నీ3 దా2 పా మా2 గా3 రి2 స (కళ్యాణి)",
+        famousKritis: ["అక్షయలింగ విభో (శంకరాభరణం)", "వాసుదేవయని (కళ్యాణి)"],
+        practiceTips: ["మధ్యమ స్వర వ్యత్యాసాన్ని (మ1 vs మ2) శ్రుతిపెట్టి శ్రద్ధగా వినండి.", "మంద్ర స్థాయి నుండి తార స్థాయి వరకు శంకరాభరణం ప్రశాంతంగా, కళ్యాణి ప్రాంజలంగా పలకాలి."],
+      };
+    }
+
+    if (language === "hi") {
+      return {
+        answer: `## शंकराभरणम एवं कल्याणी राग की तुलना एवं अंतर
+
+### 1. मुख्य अंतर (Key Difference)
+- **धीरशंकराभरणम (29वां मेलकर्ता):** यह **शुद्ध मध्यम (म1)** राग है।
+- **मेचकल्याणी (65वां मेलकर्ता):** यह **प्रति मध्यम (म2)** राग है।
+- शंकराभरणम में मध्यम (म1) को तीव्र मध्यम (म2) करने पर कल्याणी राग बनता है ($29 + 36 = 65$वां मेलकर्ता)।
+
+### 2. आरोहण एवं अवरोहण
+- **धीरशंकराभरणम (29):**
+  - **आरोहण:** सा री2 गा3 मा1 पा ढा2 नी3 सा'
+  - **अवरोहण:** सा' नी3 ढा2 पा मा1 गा3 री2 सा
+- **मेचकल्याणी (65):**
+  - **आरोहण:** सा री2 गा3 मा2 पा ढा2 नी3 सा'
+  - **अवरोहण:** सा' नी3 ढा2 पा मा2 गा3 री2 सा`,
+        raga: "Shankarabharanam vs Kalyani",
+        melakartaNumber: 29,
+        arohanam: "S R2 G3 M1 P D2 N3 S' | S R2 G3 M2 P D2 N3 S'",
+        avarohanam: "S' N3 D2 P M1 G3 R2 S | S' N3 D2 P M2 G3 R2 S",
+      };
+    }
+
+    return {
+      answer: `## Shankarabharanam vs Kalyani Detailed Raga Comparison
+
+### 1. Key Musicological Difference
+- **Dheerasankarabharanam (29th Melakarta):** Uses **Shuddha Madhyamam (M1)**.
+- **Mechakkalyani (65th Melakarta):** Uses **Prati Madhyamam (M2)**.
+- Replacing M1 with M2 in Shankarabharanam directly yields Kalyani ($29 + 36 = 65\text{th Melakarta}$).
+
+### 2. Scale Structure & Swarasthana Breakdown
+- **Dheerasankarabharanam (29th Parent Scale):**
+  - **Arohana:** S R2 G3 M1 P D2 N3 S'
+  - **Avarohana:** S' N3 D2 P M1 G3 R2 S
+  - **Swaras:** Chatsruti Rishabha (R2), Antara Gandhara (G3), **Shuddha Madhyama (M1)**, Panchama (P), Chatsruti Dhaivata (D2), Kakali Nishada (N3).
+
+- **Mechakkalyani (65th Parent Scale):**
+  - **Arohana:** S R2 G3 M2 P D2 N3 S'
+  - **Avarohana:** S' N3 D2 P M2 G3 R2 S
+  - **Swaras:** Chatsruti Rishabha (R2), Antara Gandhara (G3), **Prati Madhyama (M2)**, Panchama (P), Chatsruti Dhaivata (D2), Kakali Nishada (N3).
+
+### 3. Famous Classical Compositions
+- **Shankarabharanam:** *Akshayalinga Vibho* (Muthuswami Dikshitar), *Eduta Nilchite* (Tyagaraja).
+- **Kalyani:** *Vasudevayani* (Tyagaraja), *Himadrisute* (Syama Sastri).`,
+      raga: "Shankarabharanam vs Kalyani",
+      melakartaNumber: 29,
+      arohanam: "S R2 G3 M1 P D2 N3 S' (Shankarabharanam) | S R2 G3 M2 P D2 N3 S' (Kalyani)",
+      avarohanam: "S' N3 D2 P M1 G3 R2 S (Shankarabharanam) | S' N3 D2 P M2 G3 R2 S (Kalyani)",
+      famousKritis: ["Akshayalinga Vibho (Shankarabharanam)", "Vasudevayani (Kalyani)"],
+      practiceTips: ["Sustain M1 and M2 against the Tanpura drone to internalize the microtonal difference."],
+    };
+  }
+
+  // 2. Mohanam vs Hamsadhwani Query Match
+  const isMohanamHamsadhwani =
+    (qLower.includes("mohanam") || qLower.includes("మోహనం") || qLower.includes("मोहनम")) &&
+    (qLower.includes("hamsadhwani") || qLower.includes("హంసధ్వని") || qLower.includes("हंसध्वनि"));
+
+  if (isMohanamHamsadhwani) {
+    if (language === "te") {
+      return {
+        answer: `## మోహనం మరియు హంసధ్వని రాగాల పోలిక & వ్యత్యాసం
+
+### 1. ప్రధాన వ్యత్యాసం (Key Difference)
+- **మోహనం:** ఔడవ రాగం (5 స్వరాలు: స రి2 గా3 పా దా2 స'). **మధ్యమం (మ) మరియు నిషాదం (ని) వర్జ్యం**.
+- **హంసధ్వని:** ఔడవ రాగం (5 స్వరాలు: స రి2 గా3 పా నీ3 స'). **మధ్యమం (మ) మరియు దైవతం (ద) వర్జ్యం**.
+- మోహనంలో **దైవతం (దా2)** ఉంటుంది, హంసధ్వనిలో దైవతానికి బదులుగా **కాకలి నిషాదం (నీ3)** ఉంటుంది.
+
+### 2. ఆరోహణ & అవరోహణ
+- **మోహనం (28వ మేళకర్త హరికాంభోజి జన్యం):**
+  - **ఆరోహణ:** స రి2 గా3 పా దా2 స'
+  - **అవరోహణ:** స' దా2 పా గా3 రి2 స
+- **హంసధ్వని (29వ మేళకర్త ధీరశంకరాభరణం జన్యం):**
+  - **ఆరోహణ:** స రి2 గా3 పా నీ3 స'
+  - **అవరోహణ:** స' నీ3 పా గా3 రి2 స`,
+        raga: "Mohanam vs Hamsadhwani",
+        arohanam: "స రి2 గా3 పా దా2 స' (మోహనం) | స రి2 గా3 పా నీ3 స' (హంసధ్వని)",
+        avarohanam: "స' దా2 పా గా3 రి2 స (మోహనం) | స' నీ3 పా గా3 రి2 స (హంసధ్వని)",
+      };
+    }
+
+    return {
+      answer: `## Mohanam vs Hamsadhwani Raga Comparison
+
+### 1. Key Difference
+- **Mohanam:** Audava scale (5 notes: S R2 G3 P D2 S'). Omits M and N. Derived from Harikambhoji (28th).
+- **Hamsadhwani:** Audava scale (5 notes: S R2 G3 P N3 S'). Omits M and D. Derived from Shankarabharanam (29th).
+- Mohanam features **Dhaivata (D2)**, whereas Hamsadhwani replaces Dhaivata with **Kakali Nishada (N3)**.
+
+### 2. Scales
+- **Mohanam:** S R2 G3 P D2 S' | S' D2 P G3 R2 S
+- **Hamsadhwani:** S R2 G3 P N3 S' | S' N3 P G3 R2 S`,
+      raga: "Mohanam vs Hamsadhwani",
+      arohanam: "S R2 G3 P D2 S' (Mohanam) | S R2 G3 P N3 S' (Hamsadhwani)",
+      avarohanam: "S' D2 P G3 R2 S (Mohanam) | S' N3 P G3 R2 S (Hamsadhwani)",
+    };
+  }
+
+  // 3. Mayamalavagowla Query Match
+  const isMayamalavagowla = qLower.includes("mayamala") || qLower.includes("మాయామాలవ") || qLower.includes("मायामालव");
+  if (isMayamalavagowla) {
+    if (language === "te") {
+      return {
+        answer: `## మాయామాలవగౌళ రాగం సిద్ధాంత వివరణ (15వ మేళకర్త)
+
+### 1. రాగ స్వరూపం & స్వరస్థానాలు
+- **ఆరోహణ:** స రి1 గా3 మా1 పా దా1 నీ3 స'
+- **అవరోహణ:** స' నీ3 దా1 పా మా1 గా3 రి1 స
+- **స్వరస్థానాలు:** శుద్ధ రిషభం (రి1), అంతర గాంధారం (గా3), శుద్ధ మధ్యమం (మ1), పంచమం (పా), శుద్ధ దైవతం (ద1), కాకలి నిషాదం (నీ3).
+
+### 2. ప్రాముఖ్యత
+- కర్ణాటక సంగీత పితామహులైన **శ్రీ పురందరదాసు** ప్రాథమిక సంగీత సాధన (సరళి వరుసలు, జంట వరుసలు, అలంకారాలు, గీతాలు) కోసం ఈ రాగాన్ని ఎంపిక చేశారు.
+- రి1-గా3 మరియు ద1-నీ3 స్వరాల మధ్య సమానమైన అర్ధస్వర వ్యత్యాసం ఉండటం వలన ప్రారంభ సాధకులకు శ్రుతి శుద్ధత సులభమవుతుంది.`,
+        raga: "Mayamalavagowla",
+        melakartaNumber: 15,
+        arohanam: "స రి1 గా3 మా1 పా దా1 నీ3 స'",
+        avarohanam: "స' నీ3 దా1 పా మా1 గా3 రి1 స",
+      };
+    }
+  }
+
+  // 4. Default Topic Formatting based on language
   if (language === "te") {
     return {
-      answer: `## కర్ణాటక సంగీత పాఠ్యాంశ నోట్స్: ${cleanTopic}\n\n### 1. సిద్ధాంత వివరణ & ముఖ్యాంశాలు\nఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని ప్రధాన నియమాలు, స్వరస్థానాల వర్గీకరణ మరియు తాళ అంగాల అమరికను వివరిస్తుంది.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. సాధనా నియమాలు & పరీక్షా ముఖ్యాంశాలు\n- **నాదం & శ్రుతి:** ఆధార షడ్జమంతో శ్రుతిని కలిపి సాధన చేయాలి.\n- **ద్వాదశ స్వరస్థానములు:** స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2 స్థానాలను శ్రద్ధగా గుర్తుంచుకోవాలి.`,
+      answer: `## కర్ణాటక సంగీత సిద్ధాంత విశ్లేషణ: ${cleanTopic}
+
+### 1. అంశ వివరణ & సంగీతశాస్త్ర ప్రాముఖ్యత
+ఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని మేళకర్త రాగ వ్యవస్థ, స్వరస్థాన వర్గీకరణ, మరియు తాళ అంగాల నియమాలను వివరిస్తుంది.
+
+${explicitText ? `${explicitText}\n\n` : ""}### 2. ప్రధాన స్వరస్థాన నియమాలు & సాధనా మార్గదర్శకత్వం
+- **ఆధార షడ్జమం (స):** స్థిరమైన శ్రుతి సాధనకు మూలాధారం.
+- **ద్వాదశ స్వరస్థానములు:** 12 ప్రధాన స్వరస్థానాల స్థానాలను (స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2) తంబూరా శ్రుతితో సాధన చేయాలి.
+- విళంబ కాలంలో (మెల్లని లయ) స్వరస్థానాల స్పష్టత కోసం నిత్య సాధన అవసరం.`,
       raga: cleanTopic,
       arohanam: "స రి గ మ ప ద ని స'",
       avarohanam: "స' ని ద ప మ గ రి స",
@@ -347,7 +518,14 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
   if (language === "hi") {
     return {
-      answer: `## कर्नाटक संगीत अध्ययन नोट्स: ${cleanTopic}\n\n### 1. सिद्धांत एवं परिचय\nयह विषय कर्नाटक संगीत पाठ्यक्रम के स्वरस्थानों, राग नियमों और ताल प्रणाली को स्पष्ट करता है।\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु\n- तानपुरा श्रुति के साथ अभ्यास करें।\n- 12 स्वरस्थानों और ताल अंगों को समझें।`,
+      answer: `## कर्नाटक संगीत सिद्धांत विश्लेषण: ${cleanTopic}
+
+### 1. विषय परिचय एवं महत्व
+यह विषय कर्नाटक संगीत पाठ्यक्रम के राग नियमों, स्वरस्थानों और ताल प्रणाली को स्पष्ट करता है।
+
+${explicitText ? `${explicitText}\n\n` : ""}### 2. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु
+- आधार षड्ज (सा) के साथ तानपुरा श्रुति में निरंतर अभ्यास करें।
+- 12 स्वरस्थानों एवं 72 मेलकर्ता राग संरचना को समझें।`,
       raga: cleanTopic,
       arohanam: "सा री गा मा पा ढा नी सा'",
       avarohanam: "सा' नी ढा पा मा गा री सा",
@@ -356,27 +534,53 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
   if (language === "ta") {
     return {
-      answer: `## கர்நாடக இசை பாடக் குறிப்புகள்: ${cleanTopic}\n\n### 1. அறிமுகம் மற்றும் விதிகள்\nஇந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள் மற்றும் தாள அமைப்புகளை விளக்குகிறது.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. பயிற்சி முறைகள்\n- ஸ்ருதி சுத்தமாக பாடிப் பழகவும்.`,
+      answer: `## கர்நாடக இசை கோட்பாடு விளக்கம்: ${cleanTopic}
+
+### 1. தலைப்பு விளக்கம்
+இந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள், ராக அமைப்புகள் மற்றும் தாள விதிகளை விளக்குகிறது.
+
+${explicitText ? `${explicitText}\n\n` : ""}### 2. பயிற்சி முறைகள்
+- தம்பூரு ஸ்ருதியுடன் தினமும் ஸ்வரஸ்தானங்களை பயிற்சி செய்யவும்.`,
       raga: cleanTopic,
     };
   }
 
   if (language === "kn") {
     return {
-      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಅಧ್ಯಯನ ಟಿಪ್ಪಣಿಗಳು: ${cleanTopic}\n\n### 1. ಸಿದ್ಧಾಂತ ಪರಿಚಯ\nಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ\n- ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
+      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಸಿದ್ಧಾಂತ ವಿಶ್ಲೇಷಣೆ: ${cleanTopic}
+
+### 1. ವಿಷಯ ಪರಿಚಯ
+ಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು, ರಾಗ ಲಕ್ಷಣಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.
+
+${explicitText ? `${explicitText}\n\n` : ""}### 2. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ
+- ತಂಬೂರಿ ಶ್ರುತಿಯೊಂದಿಗೆ ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
       raga: cleanTopic,
     };
   }
 
   if (language === "ml") {
     return {
-      answer: `## കർണാടക സംഗീത പഠന കുറിപ്പുകൾ: ${cleanTopic}\n\n### 1. വിഷയാവലോകനം\nഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും താള വിഭജനങ്ങളും വ്യക്തമാക്കുന്നു.\n\n${explicitText ? `${explicitText}\n\n` : ""}### 2. പരിശീലന കുറിപ്പുകൾ\n- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
+      answer: `## കർണാടക സംഗീത സിദ്ധാന്ത വിശകലനം: ${cleanTopic}
+
+### 1. വിഷയാവലോകനം
+ഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും രാഗ ലക്ഷണങ്ങളും വ്യക്തമാക്കുന്നു.
+
+${explicitText ? `${explicitText}\n\n` : ""}### 2. പരിശീലന കുറിപ്പുകൾ
+- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
       raga: cleanTopic,
     };
   }
 
   return {
-    answer: `## Carnatic Music Study Notes: ${cleanTopic}\n\n### 1. Overview & Theoretical Definition\nThis topic covers essential Carnatic music theory principles regarding scale structures, Swarasthana pitch intervals, and classical performance traditions.\n\n${explicitText ? `### 2. Official Syllabus Text Details\n${explicitText}\n\n` : ""}### 3. Practical Application & Exam Guidance\n- **Adhara Shadja (S):** Fundamental tonic pitch reference.\n- **Swarasthanas:** 12 microtonal positions (S, R1-R3, G1-G3, M1-M2, P, D1-D3, N1-N3).\n- Practice slowly in Vilambita Kala (slow tempo) with Tanpura drone pitch reference.`,
+    answer: `## Carnatic Music Theory Analysis: ${cleanTopic}
+
+### 1. Overview & Theoretical Definition
+This topic covers essential Carnatic music theory principles regarding scale structures, Swarasthana pitch intervals, and classical performance traditions.
+
+${explicitText ? `### 2. Official Syllabus Text Details\n${explicitText}\n\n` : ""}### 3. Practical Application & Exam Guidance
+- **Adhara Shadja (S):** Fundamental tonic pitch reference.
+- **Swarasthanas:** 12 microtonal positions (S, R1-R3, G1-G3, M1-M2, P, D1-D3, N1-N3).
+- Practice slowly in Vilambita Kala (slow tempo) with Tanpura drone pitch reference.`,
     raga: cleanTopic,
     arohanam: "S R G M P D N S'",
     avarohanam: "S' N D P M G R S",
