@@ -498,92 +498,193 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
     }
   }
 
-  // 4. Default Topic Formatting based on language
+  // 4. 35 Suladi Sapta Talas / Tala Matrix Match
+  const isTalaMatrixQuery =
+    qLower.includes("35") ||
+    qLower.includes("sapta") ||
+    qLower.includes("suladi") ||
+    qLower.includes("tala") ||
+    qLower.includes("talas") ||
+    qLower.includes("తాళం") ||
+    qLower.includes("తాళాలు") ||
+    qLower.includes("ताल");
+
+  if (isTalaMatrixQuery) {
+    if (language === "te") {
+      return {
+        answer: `## 35 సుళాది సప్త తాళములు - సంపూర్ణ తాళ వ్యవస్థ
+
+### 1. 7 ప్రధాన తాళాలు (సప్త తాళములు) & అంగాలు
+1. **ధ్రువ తాళం:** 1 లఘువు + 1 దృతం + 2 లఘువులు ($I + O + I + I$)
+2. **మత్య తాళం:** 1 లఘువు + 1 దృతం + 1 లఘువు ($I + O + I$)
+3. **రూపక తాళం:** 1 దృతం + 1 లఘువు ($O + I$)
+4. **ఝంప తాళం:** 1 లఘువు + 1 అనుదృతం + 1 దృతం ($I + U + O$)
+5. **త్రిపుట తాళం:** 1 లఘువు + 2 దృతములు ($I + O + O$)
+6. **అట తాళం:** 2 లఘువులు + 2 దృతములు ($I + I + O + O$)
+7. **ఏక తాళం:** 1 లఘువు ($I$)
+
+### 2. 5 లఘు జాతులు (5 Jatis)
+లఘువు యొక్క అక్షరకాల సంఖ్య ఆధారంగా 5 జాతులు ఉంటాయి:
+- **తిస్ర జాతి:** 3 అక్షరకాలు
+- **చతుస్ర జాతి:** 4 అక్షరకాలు
+- **ఖండ జాతి:** 5 అక్షరకాలు
+- **మిశ్ర జాతి:** 7 అక్షరకాలు
+- **సంకీర్ణ జాతి:** 9 అక్షరకాలు
+
+### 3. 35 తాళాల సమగ్ర గుణక శ్రేణి ($7 \times 5 = 35$)
+ఏడు సప్త తాళాలను 5 జాతులతో గుణించగా 35 తాళాలు ఏర్పడతాయి.
+- ఉదాహరణ: **ఆది తాళం** = చతుస్ర జాతి త్రిపుట తాళం ($4 + 2 + 2 = 8$ అక్షరకాలు).
+- **రూపక తాళం (చతుస్ర):** $2 + 4 = 6$ అక్షరకాలు.
+- **మిశ్ర చాపు తాళం:** 7 అక్షరకాల లయ ($3 + 4$ దెబ్బల నడక).`,
+        raga: "35 Suladi Sapta Talas",
+      };
+    }
+
+    return {
+      answer: `## The 35 Suladi Sapta Talas Matrix
+
+### 1. The 7 Principal Talas (Sapta Talas) & Anga Structures
+1. **Dhruva Tala:** 1 Laghu + 1 Dhrutam + 2 Laghus ($I + O + I + I$)
+2. **Mathya Tala:** 1 Laghu + 1 Dhrutam + 1 Laghu ($I + O + I$)
+3. **Rupaka Tala:** 1 Dhrutam + 1 Laghu ($O + I$)
+4. **Jhampa Tala:** 1 Laghu + 1 Anudhrutam + 1 Dhrutam ($I + U + O$)
+5. **Triputa Tala:** 1 Laghu + 2 Dhrutams ($I + O + O$)
+6. **Ata Tala:** 2 Laghus + 2 Dhrutams ($I + I + O + O$)
+7. **Eka Tala:** 1 Laghu ($I$)
+
+### 2. The 5 Laghu Jatis (Beat Varieties)
+The duration of the Laghu varies across 5 Jatis:
+- **Tisra Jati:** 3 counts per Laghu
+- **Chatusra Jati:** 4 counts per Laghu
+- **Khanda Jati:** 5 counts per Laghu
+- **Misra Jati:** 7 counts per Laghu
+- **Sankeerna Jati:** 9 counts per Laghu
+
+### 3. The 35 Talas Matrix ($7 \text{ Talas} \times 5 \text{ Jatis} = 35 \text{ Talas}$)
+Multiplying the 7 principal Talas by the 5 Laghu Jatis yields the complete 35 Suladi Sapta Tala system.
+- **Adi Tala:** Chatusra Jati Triputa Tala ($4 + 2 + 2 = 8$ counts).
+- **Rupaka Tala (Chatusra):** Dhrutam $2$ + Laghu $4 = 6$ counts.
+- **Jhampa Tala (Misra):** Laghu $7$ + Anudhrutam $1$ + Dhrutam $2 = 10$ counts.`,
+      raga: "35 Suladi Sapta Talas",
+    };
+  }
+
+  // 5. Hindolam Raga Query Match
+  if (qLower.includes("hindolam") || qLower.includes("హిందోళం") || qLower.includes("हिंदोलम")) {
+    if (language === "te") {
+      return {
+        answer: `## హిందోళం రాగం సిద్ధాంత విశ్లేషణ
+
+### 1. రాగ స్వరూపం & జన్యం
+- **జన్య రాగం:** 20వ మేళకర్త నాటభైరవి జన్యం (ఔడవ - ఔడవ రాగం).
+- **వర్జ్య స్వరాలు:** రిషభం (రి) మరియు పంచమం (ప) వర్జ్యం.
+- **ఆరోహణ:** స గా2 మా1 దా1 నీ2 స'
+- **అవరోహణ:** స' నీ2 దా1 మా1 గా2 స
+- **స్వరస్థానాలు:** సాధారణ గాంధారం (గా2), శుద్ధ మధ్యమం (మా1), శుద్ధ దైవతం (దా1), కైశిక నిషాదం (నీ2).
+
+### 2. ప్రసిద్ధ కృతులు
+- *సామజ వర గమనా* (శ్రీ త్యాగరాజ స్వామి)
+- *పద్మనాభ పాహి* (స్వాతి తిరునాళ్)
+- *గోవర్ధన గిరిధర* (నారాయణ తీర్థులు)`,
+        raga: "Hindolam",
+        arohanam: "స గా2 మా1 దా1 నీ2 స'",
+        avarohanam: "స' నీ2 దా1 మా1 గా2 స",
+        famousKritis: ["సామజ వర గమనా", "పద్మనాభ పాహి", "గోవర్ధన గిరిధర"],
+      };
+    }
+    return {
+      answer: `## Hindolam Raga Theoretical Profile
+
+### 1. Scale & Swarasthana Structure
+- **Parent Scale:** Janya of 20th Melakarta Natabhairavi (Audava-Audava scale).
+- **Omitted Notes:** Rishabha (R) & Panchama (P) are omitted.
+- **Arohana:** S G2 M1 D1 N2 S'
+- **Avarohana:** S' N2 D1 M1 G2 S
+- **Swaras:** Sadharana Gandhara (G2), Shuddha Madhyama (M1), Shuddha Dhaivata (D1), Kaisiki Nishada (N2).
+
+### 2. Iconic Compositions
+- *Samaja Varagamana* (Tyagaraja)
+- *Padmanabha Pahi* (Swathi Thirunal)
+- *Goverdhana Giridhara* (Narayana Teertha)`,
+      raga: "Hindolam",
+      arohanam: "S G2 M1 D1 N2 S'",
+      avarohanam: "S' N2 D1 M1 G2 S",
+      famousKritis: ["Samaja Varagamana", "Padmanabha Pahi"],
+    };
+  }
+
+  // 6. Carnatic Trinity & Purandaradasa Query Match
+  const isComposerQuery = qLower.includes("tyagaraja") || qLower.includes("dikshitar") || qLower.includes("syama") || qLower.includes("purandara") || qLower.includes("త్యాగరాజ") || qLower.includes("దీక్షితులు") || qLower.includes("శ్యామశాస్త్రి") || qLower.includes("పురందరదాసు");
+  if (isComposerQuery) {
+    if (language === "te") {
+      return {
+        answer: `## కర్ణాటక సంగీత త్రిమూర్తులు & పితామహులు
+
+### 1. శ్రీ త్యాగరాజ స్వామి (1767–1847)
+- **భాషలు:** తెలుగు, సంస్కృతం. **ముద్ర:** *త్యాగరాజు*.
+- **విశిష్టత:** ఘనరాగ పంచరత్న కృతులు (*జగదానందకారక*, *దుడుకుగల*, *కనకనరుచిరా*, *సమయానికిమరవని*, *ఎంతరో మహానుభావులు*).
+
+### 2. శ్రీ ముత్తుస్వామి దీక్షితులు (1775–1835)
+- **భాష:** సంస్కృతం. **ముద్ర:** *గురుగుహ*.
+- **విశిష్టత:** విళంబ కాల ప్రయోగాలు, రాగముద్ర చేరిక, కమలాంబ నవవర్ణ కృతులు.
+
+### 3. శ్రీ శ్యామశాస్త్రి (1762–1827)
+- **భాషలు:** తెలుగు, సంస్కృతం. **ముద్ర:** *శ్యామకృష్ణ*.
+- **విశిష్టత:** సంక్లిష్టమైన తాళ ప్రయోగాలు (మిశ్ర చాపు, ఆనందభైరవి).
+
+### 4. శ్రీ పురందరదాసు (1484–1564)
+- **కర్ణాటక సంగీత పితామహులు:** మాయామాలవగౌళ రాగంలో సరళి, జంట, అలంకారములు మరియు గీతముల వరుసల రూపశిల్పి.`,
+        raga: "Carnatic Composers",
+      };
+    }
+  }
+
+  // 7. Dynamic Question-Specific Resolution (No Fake Scales attached to Non-Raga questions)
+  const questionTopic = cleanTopic && cleanTopic !== "Carnatic Music Theory" ? cleanTopic : userQuestion.trim();
+
   if (language === "te") {
     return {
-      answer: `## కర్ణాటక సంగీత సిద్ధాంత విశ్లేషణ: ${cleanTopic}
+      answer: `## కర్ణాటక సంగీత విశ్లేషణ: ${questionTopic}
 
-### 1. అంశ వివరణ & సంగీతశాస్త్ర ప్రాముఖ్యత
-ఈ అంశం కర్ణాటక సంగీత సిద్ధాంతంలోని మేళకర్త రాగ వ్యవస్థ, స్వరస్థాన వర్గీకరణ, మరియు తాళ అంగాల నియమాలను వివరిస్తుంది.
+### 1. ప్రశ్నాంశ వివరణ
+మీరు అడిగిన **"${questionTopic}"** అనే అంశం కర్ణాటక సంగీత సిద్ధాంతానికి మరియు గాత్ర/వాద్య సాధనకు అత్యంత కీలకమైనది.
 
-${explicitText ? `${explicitText}\n\n` : ""}### 2. ప్రధాన స్వరస్థాన నియమాలు & సాధనా మార్గదర్శకత్వం
-- **ఆధార షడ్జమం (స):** స్థిరమైన శ్రుతి సాధనకు మూలాధారం.
-- **ద్వాదశ స్వరస్థానములు:** 12 ప్రధాన స్వరస్థానాల స్థానాలను (స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2) తంబూరా శ్రుతితో సాధన చేయాలి.
-- విళంబ కాలంలో (మెల్లని లయ) స్వరస్థానాల స్పష్టత కోసం నిత్య సాధన అవసరం.`,
-      raga: cleanTopic,
-      arohanam: "స రి గ మ ప ద ని స'",
-      avarohanam: "స' ని ద ప మ గ రి స",
+### 2. ముఖ్యమైన సంగీత నియమాలు & స్వరస్థానాలు
+- **శ్రుతి శుద్ధత:** ఆధార షడ్జమంతో (స) శ్రుతి కలిపి సాధన చేయడం ప్రాథమిక నియమం.
+- **స్వర వ్యవస్థ:** ద్వాదశ స్వరస్థానాలు (స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2) మరియు 72 మేళకర్త రాగ నియమాలు ఈ అంశంలో ప్రాధాన్యం వహిస్తాయి.
+
+${explicitText ? `### 3. పాఠ్యాంశ వివరాలు\n${explicitText}\n\n` : ""}### 4. సాధనా మార్గదర్శకత్వం
+- తంబూరా శ్రుతి సహాయంతో విళంబ కాలంలో (మెల్లగా) సాధన చేసి, స్వరస్థానాల స్థిరత్వాన్ని సాధించండి.`,
+      raga: questionTopic,
     };
   }
 
   if (language === "hi") {
     return {
-      answer: `## कर्नाटक संगीत सिद्धांत विश्लेषण: ${cleanTopic}
+      answer: `## कर्नाटक संगीत विश्लेषण: ${questionTopic}
 
-### 1. विषय परिचय एवं महत्व
-यह विषय कर्नाटक संगीत पाठ्यक्रम के राग नियमों, स्वरस्थानों और ताल प्रणाली को स्पष्ट करता है।
+### 1. प्रश्न विषय विवरण
+आपके प्रश्न **"${questionTopic}"** का कर्नाटक संगीत शास्त्र में महत्वपूर्ण स्थान है।
 
-${explicitText ? `${explicitText}\n\n` : ""}### 2. अभ्यास निर्देश एवं परीक्षा के मुख्य बिंदु
-- आधार षड्ज (सा) के साथ तानपुरा श्रुति में निरंतर अभ्यास करें।
-- 12 स्वरस्थानों एवं 72 मेलकर्ता राग संरचना को समझें।`,
-      raga: cleanTopic,
-      arohanam: "सा री गा मा पा ढा नी सा'",
-      avarohanam: "सा' नी ढा पा मा गा री सा",
-    };
-  }
-
-  if (language === "ta") {
-    return {
-      answer: `## கர்நாடக இசை கோட்பாடு விளக்கம்: ${cleanTopic}
-
-### 1. தலைப்பு விளக்கம்
-இந்த பகுதி கர்நாடக இசையின் ஸ்வரஸ்தானங்கள், ராக அமைப்புகள் மற்றும் தாள விதிகளை விளக்குகிறது.
-
-${explicitText ? `${explicitText}\n\n` : ""}### 2. பயிற்சி முறைகள்
-- தம்பூரு ஸ்ருதியுடன் தினமும் ஸ்வரஸ்தானங்களை பயிற்சி செய்யவும்.`,
-      raga: cleanTopic,
-    };
-  }
-
-  if (language === "kn") {
-    return {
-      answer: `## ಕರ್ನಾಟಕ ಸಂಗೀತ ಸಿದ್ಧಾಂತ ವಿಶ್ಲೇಷಣೆ: ${cleanTopic}
-
-### 1. ವಿಷಯ ಪರಿಚಯ
-ಈ ವಿಷಯವು ಕರ್ನಾಟಕ ಸಂಗೀತದ ಸ್ವರಸ್ಥಾನಗಳು, ರಾಗ ಲಕ್ಷಣಗಳು ಮತ್ತು ತಾಳ ಪದ್ಧತಿಯನ್ನು ಒಳಗೊಂಡಿದೆ.
-
-${explicitText ? `${explicitText}\n\n` : ""}### 2. ಅಭ್ಯಾಸದ ಮಾರ್ಗದರ್ಶನ
-- ತಂಬೂರಿ ಶ್ರುತಿಯೊಂದಿಗೆ ಶ್ರುತಿಬದ್ಧವಾಗಿ ಅಭ್ಯಾಸ ಮಾಡಿ.`,
-      raga: cleanTopic,
-    };
-  }
-
-  if (language === "ml") {
-    return {
-      answer: `## കർണാടക സംഗീത സിദ്ധാന്ത വിശകലനം: ${cleanTopic}
-
-### 1. വിഷയാവലോകനം
-ഈ വിഷയം കർണാടക സംഗീതത്തിലെ സ്വരസ്ഥാനങ്ങളും രാഗ ലക്ഷണങ്ങളും വ്യക്തമാക്കുന്നു.
-
-${explicitText ? `${explicitText}\n\n` : ""}### 2. പരിശീലന കുറിപ്പുകൾ
-- തമ്പുരു ശ്രുതിയിൽ കൃത്യമായി പരിശീലിക്കുക.`,
-      raga: cleanTopic,
+${explicitText ? `### 2. पाठ्यक्रम विवरण\n${explicitText}\n\n` : ""}### 3. अभ्यास मार्गदर्शन
+- आधार षड्ज (सा) के साथ तानपुरा श्रुति में निरंतर अभ्यास करें।`,
+      raga: questionTopic,
     };
   }
 
   return {
-    answer: `## Carnatic Music Theory Analysis: ${cleanTopic}
+    answer: `## Carnatic Music Analysis: ${questionTopic}
 
-### 1. Overview & Theoretical Definition
-This topic covers essential Carnatic music theory principles regarding scale structures, Swarasthana pitch intervals, and classical performance traditions.
+### 1. Direct Question Explanation
+Regarding your inquiry on **"${questionTopic}"**, this is an essential Carnatic music theory concept.
 
-${explicitText ? `### 2. Official Syllabus Text Details\n${explicitText}\n\n` : ""}### 3. Practical Application & Exam Guidance
-- **Adhara Shadja (S):** Fundamental tonic pitch reference.
-- **Swarasthanas:** 12 microtonal positions (S, R1-R3, G1-G3, M1-M2, P, D1-D3, N1-N3).
-- Practice slowly in Vilambita Kala (slow tempo) with Tanpura drone pitch reference.`,
-    raga: cleanTopic,
-    arohanam: "S R G M P D N S'",
-    avarohanam: "S' N D P M G R S",
+### 2. Musicological & Theoretical Rules
+- **Tonic Alignment:** Always align your fundamental pitch with the Adhara Shadja (S) Tanpura drone.
+- **Scale Rules:** Carnatic music is anchored in the 12 Swarasthana pitch positions and 72 Melakarta parent scale matrix.
+
+${explicitText ? `### 3. Official Context Details\n${explicitText}\n\n` : ""}### 4. Practical Guidance
+- Practice in Vilambita Kala (slow tempo) to maintain microtonal precision and rhythm stability.`,
+    raga: questionTopic,
   };
 }
 
