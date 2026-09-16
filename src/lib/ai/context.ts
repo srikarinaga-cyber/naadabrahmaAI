@@ -319,14 +319,14 @@ function translateSyllabusContext(rawText: string, language: string): string {
 }
 
 export function generateFallbackStudyNotes(userQuestion: string, language: string = "en"): AiChatResponse {
-  let cleanTopic = "Carnatic Music Theory";
+  let rawCleanTopic = "Carnatic Music Theory";
   let rawExplicitText = "";
 
   if (userQuestion.includes("TOPIC:")) {
     const afterTopic = userQuestion.split("TOPIC:")[1] || "";
-    cleanTopic = afterTopic.split("\n")[0]?.trim() || "Carnatic Music Theory";
+    rawCleanTopic = afterTopic.split("\n")[0]?.trim() || "Carnatic Music Theory";
   } else if (!userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
-    cleanTopic = userQuestion.trim();
+    rawCleanTopic = userQuestion.trim();
   }
 
   if (userQuestion.includes("EXACT SYLLABUS TEXT CONTEXT:")) {
@@ -336,9 +336,130 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
   rawExplicitText = rawExplicitText.replace(/^TOPIC:.*$/gm, "").trim();
   const explicitText = translateSyllabusContext(rawExplicitText, language);
 
+  // Clean prompt artifacts from topic title
+  let cleanTopicTitle = rawCleanTopic
+    .replace(/^(what is|explain|tell me about|how to|difference between|briefly explain)\s+/i, "")
+    .replace(/\s+(అంటే ఏమిటి|గురించి వివరించండి|వివరించండి|అంటే ఏంటి|గురించి చెప్పండి|ఏవి\?|ఏంటి\?)$/gi, "")
+    .trim();
+
+  if (!cleanTopicTitle) cleanTopicTitle = "Carnatic Music Theory";
+
   const qLower = userQuestion.toLowerCase();
 
-  // 1. Shankarabharanam vs Kalyani Query Match
+  // 1. Katapayadi Sankhya System Match
+  const isKatapayadi = qLower.includes("katapayadi") || qLower.includes("కటపయాది") || qLower.includes("कटपयादि");
+  if (isKatapayadi) {
+    if (language === "te") {
+      return {
+        answer: `## కటపయాది సూత్రం - 72 మేళకర్త రాగ వర్గీకరణ నియమం
+
+### 1. కటపయాది సూత్రం అంటే ఏమిటి?
+కటపయాది సూత్రం అనేది ప్రాచీన భారతీయ అక్షర-సంఖ్య పద్ధతి. ఈ నియమం ద్వారా మేళకర్త రాగం పేరులోని మొదటి రెండు అక్షరాల ఆధారంగా ఆ రాగం యొక్క మేళకర్త సంఖ్యను ($1 - 72$) సులభంగా గణించవచ్చు.
+
+### 2. అక్షర-సంఖ్య పట్టిక (Ka-Ta-Pa-Ya Rules)
+- **క-వర్గం (క1, ఖ2, గ3, ఘ4, ఙ5...):** సంఖ్యలు $1, 2, 3, 4, 5, 6, 7, 8, 9, 0$
+- **ట-వర్గం (ట1, ఠ2, డ3, ఢ4, ణ5...):** సంఖ్యలు $1, 2, 3, 4, 5, 6, 7, 8, 9, 0$
+- **ప-వర్గం (ప1, ఫ2, బ3, భ4, మ5):** సంఖ్యలు $1, 2, 3, 4, 5$
+- **య-వర్గం (య1, ర2, ల3, వ4, శ5, ష6, స7, హ8):** సంఖ్యలు $1, 2, 3, 4, 5, 6, 7, 8$
+
+### 3. గణన విధానం (ఉదాహరణలు)
+1. **ధీరశంకరాభరణం:**
+   - మొదటి రెండు అక్షరాలు: **ధీ** ($9$) మరియు **ర** ($2$).
+   - ఏర్పడిన సంఖ్య: $92$. దీన్ని తిరగేయగా (Reverse digits): **$29$వ మేళకర్త రాగం**.
+2. **మాయామాలవగౌళ:**
+   - మొదటి రెండు అక్షరాలు: **మా** ($5$) మరియు **యా** ($1$).
+   - ఏర్పడిన సంఖ్య: $51$. తిరగేయగా: **$15$వ మేళకర్త రాగం**.
+3. **మేచకళ్యాణి:**
+   - మొదటి రెండు అక్షరాలు: **మే** ($5$) మరియు **చ** ($6$).
+   - ఏర్పడిన సంఖ్య: $56$. తిరగేయగా: **$65$వ మేళకర్త రాగం**.
+
+### 4. 12 చక్రాలు (Chakras)
+72 మేళకర్తలను 12 చక్రాలుగా విభజించారు (ప్రతి చక్రంలో 6 రాగాలు ఉంటాయి):
+1. ఇందు, 2. నేత్ర, 3. అగ్ని, 4. వేద, 5. బాణ, 6. రుతు, 7. రిషి, 8. వసు, 9. బ్రహ్మ, 10. దిశి, 11. రుద్ర, 12. ఆదిత్య.`,
+        raga: "Katapayadi System",
+      };
+    }
+    return {
+      answer: `## Katapayadi Sankhya System in Carnatic Musicology
+
+### 1. What is the Katapayadi Formula?
+The **Katapayadi Sankhya System** is an ancient Indian alphanumerical schema used to assign a unique index number ($1 \text{ to } 72$) to each Melakarta parent raga based on the first two syllables of its standardized name.
+
+### 2. Syllable-to-Number Mapping Rules
+- **Ka-Group (Ka=1, Kha=2, Ga=3, Gha=4, Nga=5...):** Digits $1, 2, 3, 4, 5, 6, 7, 8, 9, 0$
+- **Ta-Group (Ta=1, Tha=2, Da=3, Dha=4, Na=5...):** Digits $1, 2, 3, 4, 5, 6, 7, 8, 9, 0$
+- **Pa-Group (Pa=1, Pha=2, Ba=3, Bha=4, Ma=5):** Digits $1, 2, 3, 4, 5$
+- **Ya-Group (Ya=1, Ra=2, La=3, Va=4, Sha=5, Sha=6, Sa=7, Ha=8):** Digits $1, 2, 3, 4, 5, 6, 7, 8$
+
+### 3. Reversal Rule & Calculation Examples
+To derive the Melakarta number, take the digits corresponding to the first two syllables and **reverse their order**:
+1. **Dheerasankarabharanam:**
+   - Syllables: **Dhee** ($9$) and **Ra** ($2$) $\rightarrow 92$.
+   - Reversed digits: **29th Melakarta**.
+2. **Mayamalavagowla:**
+   - Syllables: **Ma** ($5$) and **Ya** ($1$) $\rightarrow 51$.
+   - Reversed digits: **15th Melakarta**.
+3. **Mechakkalyani:**
+   - Syllables: **Me** ($5$) and **Cha** ($6$) $\rightarrow 56$.
+   - Reversed digits: **65th Melakarta**.`,
+      raga: "Katapayadi System",
+    };
+  }
+
+  // 2. Sarali Varisalu & Abhyasa Ganam Match
+  const isSarali = qLower.includes("sarali") || qLower.includes("సరళి") || qLower.includes("सरलि") || qLower.includes("abhyasa");
+  if (isSarali) {
+    if (language === "te") {
+      return {
+        answer: `## సరళి వరుసలు & అభ్యాస గానం (Basic Carnatic Exercises)
+
+### 1. ప్రాథమిక సంగీత సాధనా క్రమం
+కర్ణాటక సంగీత పితామహులైన **శ్రీ పురందరదాసు** ప్రారంభ సాధకుల కోసం ప్రాథమిక సంగీత క్రమాన్ని నిర్మించారు. ఇవన్నీ **15వ మేళకర్త మాయామాలవగౌళ** రాగంలో సాధన చేస్తారు.
+
+### 2. అభ్యాస గాన సోపానాలు
+1. **సరళి వరుసలు (Sarali Varisalu):** ఏక స్థాయి స్వర సాధన, శ్రుతి శుద్ధత మరియు స్వరస్థానాల స్థిరత్వానికి ఉపయోగపడతాయి.
+2. **జంట వరుసలు (Janta Varisalu):** ద్వంద్వ స్వరాల ప్రయోగం (ఉదా: సస రిరి గగ మమ) - స్వర స్పష్టత సాధించడానికి.
+3. **దాటు వరుసలు (Dhatu Varisalu):** స్వరాలను దాటుతూ పలకడం (ఉదా: సగ రిమ గప) - గమక స్థిరత్వానికి.
+4. **అలంకారములు (Alankarams):** 7 ప్రధాన తాళాలు మరియు 5 లఘు జాతులలో తాళ నడక సాధన.
+5. **గీతములు (Geethams):** సాహిత్యంతో కూడిన మొదటి చిన్న స్వర రచనలు.
+
+### 3. సాధనా వేగాలు (3 Speeds)
+- **ప్రథమ కాలం (1st Speed):** 1 అక్షరానికి 1 స్వరం.
+- **ద్వితీయ కాలం (2nd Speed):** 1 అక్షరానికి 2 స్వరాలు.
+- **తృతీయ కాలం (3rd Speed):** 1 అక్షరానికి 4 స్వరాలు.`,
+        raga: "Sarali Varisalu",
+      };
+    }
+  }
+
+  // 3. Tyagaraja Pancharatna Kritis Match
+  const isPancharatna = qLower.includes("pancharatna") || qLower.includes("పంచరత్న") || qLower.includes("पंचरत्न");
+  if (isPancharatna) {
+    if (language === "te") {
+      return {
+        answer: `## శ్రీ త్యాగరాజ స్వామి ఘనరాగ పంచరత్న కృతులు
+
+### 1. పంచరత్న కృతుల ప్రాముఖ్యత
+శ్రీ త్యాగరాజ స్వామి రచించిన 5 అత్యంత గంభీరమైన ఘనరాగ కృతులను **పంచరత్న కృతులు** అంటారు. ఇవన్నీ ఆది తాళంలో నిర్మించబడ్డాయి.
+
+### 2. 5 ఘనరాగ పంచరత్న కృతుల వివరాలు
+1. **జగదానందకారక** - నాట రాగం (ఆది తాళం)
+   - సంస్కృత సాహిత్యం. శ్రీరాముని శతనామావళి కీర్తన.
+2. **దుడుకుగల నన్నేదొర గైకోనురా** - గౌళ రాగం (ఆది తాళం)
+   - ఆత్మనివేదన, మనో నివేదన సారాంశం.
+3. **కనకనరుచిరా కనకవసన** - వరాళి రాగం (ఆది తాళం)
+   - శ్రీరాముని సౌందర్య వర్ణన.
+4. **సమయానికి మరువవే మనసా** - ఆరభి రాగం (ఆది తాళం)
+   - భక్తి సారాంశం, భగవంతుని కృపా వర్ణన.
+5. **ఎంతరో మహానుభావులు అందరికీ వందనములు** - శ్రీ రాగం (ఆది తాళం)
+   - సకల సంగీత కోవిదులకు, భక్తులకు నమస్కరించే విశ్వజనీన కీర్తన.`,
+        raga: "Pancharatna Kritis",
+        famousKritis: ["జగదానందకారక (నాట)", "దుడుకుగల (గౌళ)", "కనకనరుచిరా (వరాళి)", "సమయానికి మరువవే (ఆరభి)", "ఎంతరో మహానుభావులు (శ్రీ రాగం)"],
+      };
+    }
+  }
+
+  // 4. Shankarabharanam vs Kalyani Query Match
   const isShankaraKalyani =
     (qLower.includes("shankara") || qLower.includes("శంకరాభరణం") || qLower.includes("शंकराभरणम") || qLower.includes("சங்கராபரணம்") || qLower.includes("ಶಂಕರ ಅಭರಣಂ")) &&
     (qLower.includes("kalyani") || qLower.includes("కళ్యాణి") || qLower.includes("कल्याणी") || qLower.includes("கல்யாணி") || qLower.includes("കല്യാണി"));
@@ -366,36 +487,13 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
 
 ### 3. ప్రసిద్ధ కృతులు & గమక ప్రయోగాలు
 - **శంకరాభరణం:** *అక్షయలింగ విభో* (ముత్తుస్వామి దీక్షితులు), *ఏదిన ముచ్చట* (త్యాగరాజు), *సరోజదళ నేత్రి* (శ్యామశాస్త్రి).
-- **కళ్యాణి:** *వాసుదేవయని* (త్యాగరాజు), *హిమాద్రి సుతే* (శ్యామశాస్త్రి), *ఎంతరో మహానుభావులు* తరహా గంభీర రాగ విస్తరణ.`,
+- **కళ్యాణి:** *వాసుదేవయని* (త్యాగరాజు), *హిమాద్రి సుతే* (శ్యామశాస్త్రి).`,
         raga: "Shankarabharanam vs Kalyani",
         melakartaNumber: 29,
         arohanam: "స రి2 గా3 మా1 పా దా2 నీ3 స' (శంకరాభరణం) | స రి2 గా3 మా2 పా దా2 నీ3 స' (కళ్యాణి)",
         avarohanam: "స' నీ3 దా2 పా మా1 గా3 రి2 స (శంకరాభరణం) | స' నీ3 దా2 పా మా2 గా3 రి2 స (కళ్యాణి)",
         famousKritis: ["అక్షయలింగ విభో (శంకరాభరణం)", "వాసుదేవయని (కళ్యాణి)"],
-        practiceTips: ["మధ్యమ స్వర వ్యత్యాసాన్ని (మ1 vs మ2) శ్రుతిపెట్టి శ్రద్ధగా వినండి.", "మంద్ర స్థాయి నుండి తార స్థాయి వరకు శంకరాభరణం ప్రశాంతంగా, కళ్యాణి ప్రాంజలంగా పలకాలి."],
-      };
-    }
-
-    if (language === "hi") {
-      return {
-        answer: `## शंकराभरणम एवं कल्याणी राग की तुलना एवं अंतर
-
-### 1. मुख्य अंतर (Key Difference)
-- **धीरशंकराभरणम (29वां मेलकर्ता):** यह **शुद्ध मध्यम (म1)** राग है।
-- **मेचकल्याणी (65वां मेलकर्ता):** यह **प्रति मध्यम (म2)** राग है।
-- शंकराभरणम में मध्यम (म1) को तीव्र मध्यम (म2) करने पर कल्याणी राग बनता है ($29 + 36 = 65$वां मेलकर्ता)।
-
-### 2. आरोहण एवं अवरोहण
-- **धीरशंकराभरणम (29):**
-  - **आरोहण:** सा री2 गा3 मा1 पा ढा2 नी3 सा'
-  - **अवरोहण:** सा' नी3 ढा2 पा मा1 गा3 री2 सा
-- **मेचकल्याणी (65):**
-  - **आरोहण:** सा री2 गा3 मा2 पा ढा2 नी3 सा'
-  - **अवरोहण:** सा' नी3 ढा2 पा मा2 गा3 री2 सा`,
-        raga: "Shankarabharanam vs Kalyani",
-        melakartaNumber: 29,
-        arohanam: "S R2 G3 M1 P D2 N3 S' | S R2 G3 M2 P D2 N3 S'",
-        avarohanam: "S' N3 D2 P M1 G3 R2 S | S' N3 D2 P M2 G3 R2 S",
+        practiceTips: ["మధ్యమ స్వర వ్యత్యాసాన్ని (మ1 vs మ2) శ్రుతిపెట్టి శ్రద్ధగా వినండి."],
       };
     }
 
@@ -430,7 +528,7 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
     };
   }
 
-  // 2. Mohanam vs Hamsadhwani Query Match
+  // 5. Mohanam vs Hamsadhwani Query Match
   const isMohanamHamsadhwani =
     (qLower.includes("mohanam") || qLower.includes("మోహనం") || qLower.includes("मोहनम")) &&
     (qLower.includes("hamsadhwani") || qLower.includes("హంసధ్వని") || qLower.includes("हंसध्वनि"));
@@ -475,7 +573,7 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
     };
   }
 
-  // 3. Mayamalavagowla Query Match
+  // 6. Mayamalavagowla Query Match
   const isMayamalavagowla = qLower.includes("mayamala") || qLower.includes("మాయామాలవ") || qLower.includes("मायामालव");
   if (isMayamalavagowla) {
     if (language === "te") {
@@ -498,7 +596,7 @@ export function generateFallbackStudyNotes(userQuestion: string, language: strin
     }
   }
 
-  // 4. 35 Suladi Sapta Talas / Tala Matrix Match
+  // 7. 35 Suladi Sapta Talas / Tala Matrix Match
   const isTalaMatrixQuery =
     qLower.includes("35") ||
     qLower.includes("sapta") ||
@@ -569,7 +667,7 @@ Multiplying the 7 principal Talas by the 5 Laghu Jatis yields the complete 35 Su
     };
   }
 
-  // 5. Hindolam Raga Query Match
+  // 8. Hindolam Raga Query Match
   if (qLower.includes("hindolam") || qLower.includes("హిందోళం") || qLower.includes("हिंदोलम")) {
     if (language === "te") {
       return {
@@ -613,7 +711,7 @@ Multiplying the 7 principal Talas by the 5 Laghu Jatis yields the complete 35 Su
     };
   }
 
-  // 6. Carnatic Trinity & Purandaradasa Query Match
+  // 9. Carnatic Trinity & Purandaradasa Query Match
   const isComposerQuery = qLower.includes("tyagaraja") || qLower.includes("dikshitar") || qLower.includes("syama") || qLower.includes("purandara") || qLower.includes("త్యాగరాజ") || qLower.includes("దీక్షితులు") || qLower.includes("శ్యామశాస్త్రి") || qLower.includes("పురందరదాసు");
   if (isComposerQuery) {
     if (language === "te") {
@@ -639,52 +737,50 @@ Multiplying the 7 principal Talas by the 5 Laghu Jatis yields the complete 35 Su
     }
   }
 
-  // 7. Dynamic Question-Specific Resolution (No Fake Scales attached to Non-Raga questions)
-  const questionTopic = cleanTopic && cleanTopic !== "Carnatic Music Theory" ? cleanTopic : userQuestion.trim();
-
+  // 10. Deep Clean Dynamic Question Resolution
   if (language === "te") {
     return {
-      answer: `## కర్ణాటక సంగీత విశ్లేషణ: ${questionTopic}
+      answer: `## కర్ణాటక సంగీత విశ్లేషణ: ${cleanTopicTitle}
 
-### 1. ప్రశ్నాంశ వివరణ
-మీరు అడిగిన **"${questionTopic}"** అనే అంశం కర్ణాటక సంగీత సిద్ధాంతానికి మరియు గాత్ర/వాద్య సాధనకు అత్యంత కీలకమైనది.
+### 1. ప్రశ్నాంశ ముఖ్య వివరణ
+మీరు అడిగిన **"${cleanTopicTitle}"** అనే అంశం కర్ణాటక సంగీత సిద్ధాంతం మరియు గాత్ర/వాద్య సాధనకు అత్యంత ప్రాధాన్యమైనది.
 
-### 2. ముఖ్యమైన సంగీత నియమాలు & స్వరస్థానాలు
-- **శ్రుతి శుద్ధత:** ఆధార షడ్జమంతో (స) శ్రుతి కలిపి సాధన చేయడం ప్రాథమిక నియమం.
-- **స్వర వ్యవస్థ:** ద్వాదశ స్వరస్థానాలు (స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2) మరియు 72 మేళకర్త రాగ నియమాలు ఈ అంశంలో ప్రాధాన్యం వహిస్తాయి.
+### 2. ప్రధాన సంగీత నియమాలు & స్వరస్థానాలు
+- **శ్రుతి సంపూర్ణత:** ఆధార షడ్జమంతో (స) తంబూరా శ్రుతి కలిపి సాధన చేయడం ప్రాథమిక నియమం.
+- **స్వర శ్రేణి నియమం:** ద్వాదశ స్వరస్థానాలు (స, రి1, రి2, గ1, గ2, మ1, మ2, ప, ద1, ద2, ని1, ని2) మరియు 72 మేళకర్త రాగ వ్యవస్థల పరిధిలో ఈ అంశం రూపుదిద్దుకుంది.
 
-${explicitText ? `### 3. పాఠ్యాంశ వివరాలు\n${explicitText}\n\n` : ""}### 4. సాధనా మార్గదర్శకత్వం
-- తంబూరా శ్రుతి సహాయంతో విళంబ కాలంలో (మెల్లగా) సాధన చేసి, స్వరస్థానాల స్థిరత్వాన్ని సాధించండి.`,
-      raga: questionTopic,
+${explicitText ? `### 3. సంబంధిత పాఠ్యాంశ విశ్లేషణ\n${explicitText}\n\n` : ""}### 4. సాధనా సూచనలు
+- స్థిరమైన తాళ నడకతో విళంబ కాలంలో (మెల్లగా) సాధన చేసి స్వరస్థానాల స్థిరత్వాన్ని మరియు గమక స్పష్టతను పెంపొందించుకోండి.`,
+      raga: cleanTopicTitle,
     };
   }
 
   if (language === "hi") {
     return {
-      answer: `## कर्नाटक संगीत विश्लेषण: ${questionTopic}
+      answer: `## कर्नाटक संगीत विश्लेषण: ${cleanTopicTitle}
 
-### 1. प्रश्न विषय विवरण
-आपके प्रश्न **"${questionTopic}"** का कर्नाटक संगीत शास्त्र में महत्वपूर्ण स्थान है।
+### 1. मुख्य विषय विवरण
+आपके प्रश्न **"${cleanTopicTitle}"** का कर्नाटक संगीत शास्त्र में महत्वपूर्ण स्थान है।
 
 ${explicitText ? `### 2. पाठ्यक्रम विवरण\n${explicitText}\n\n` : ""}### 3. अभ्यास मार्गदर्शन
 - आधार षड्ज (सा) के साथ तानपुरा श्रुति में निरंतर अभ्यास करें।`,
-      raga: questionTopic,
+      raga: cleanTopicTitle,
     };
   }
 
   return {
-    answer: `## Carnatic Music Analysis: ${questionTopic}
+    answer: `## Carnatic Music Analysis: ${cleanTopicTitle}
 
-### 1. Direct Question Explanation
-Regarding your inquiry on **"${questionTopic}"**, this is an essential Carnatic music theory concept.
+### 1. Direct Topic Explanation
+Regarding **"${cleanTopicTitle}"**, this is a foundational Carnatic music theory concept.
 
-### 2. Musicological & Theoretical Rules
-- **Tonic Alignment:** Always align your fundamental pitch with the Adhara Shadja (S) Tanpura drone.
-- **Scale Rules:** Carnatic music is anchored in the 12 Swarasthana pitch positions and 72 Melakarta parent scale matrix.
+### 2. Core Musicological Framework
+- **Tonic Precision:** Always anchor your fundamental pitch with the Adhara Shadja (S) Tanpura drone.
+- **Scale Structure:** Rooted in the 12 Swarasthana pitch positions and the 72 Melakarta parent scale framework.
 
-${explicitText ? `### 3. Official Context Details\n${explicitText}\n\n` : ""}### 4. Practical Guidance
-- Practice in Vilambita Kala (slow tempo) to maintain microtonal precision and rhythm stability.`,
-    raga: questionTopic,
+${explicitText ? `### 3. Official Curriculum Context\n${explicitText}\n\n` : ""}### 4. Pedagogical Recommendations
+- Practice in Vilambita Kala (slow tempo) with steady tala count to develop microtonal stability and tonal alignment.`,
+    raga: cleanTopicTitle,
   };
 }
 
