@@ -159,7 +159,14 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
   const activeSamplePrompts = SAMPLE_PROMPTS[language] || SAMPLE_PROMPTS.en;
 
   return (
-    <div className="traditional-glow overflow-hidden rounded-3xl border border-swara-gold/25 bg-card shadow-lg">
+    <div className="relative traditional-glow overflow-hidden rounded-3xl border border-swara-gold/30 bg-card/95 shadow-xl">
+      {/* Sangeetha Trimurthulu Background Theme Overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat opacity-[0.25] dark:opacity-[0.20]"
+        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
+      />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-background/40 via-background/20 to-background/60" />
+
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border bg-kumkum/5 px-6 py-4">
         <div className="flex items-center gap-3">

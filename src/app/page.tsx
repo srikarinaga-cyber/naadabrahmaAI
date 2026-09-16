@@ -12,6 +12,7 @@ import { NotesPreview } from "@/components/landing/notes-preview";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { SupabaseSetupBanner } from "@/components/landing/supabase-setup-banner";
 import { TanpuraTablaSection } from "@/components/landing/tanpura-tabla-section";
+import { FloatingAiGuruPopup } from "@/components/ai-guru/floating-popup";
 
 export const revalidate = 3600;
 
@@ -37,6 +38,7 @@ export default async function HomePage() {
         )}
       </main>
       <Footer />
+      <FloatingAiGuruPopup />
     </>
   );
 }
