@@ -340,8 +340,18 @@ export function FloatingAiGuruPopup() {
           {/* Messages Body */}
           <div className="relative z-10 flex-1 overflow-y-auto p-4 space-y-3.5">
             {messages.length === 0 && (
-              <div className="text-center py-6 space-y-2 bg-card/85 backdrop-blur-md rounded-2xl border-2 border-swara-gold/30 p-4 my-2 shadow-md">
-                <CarnaticMusicLogo className="size-14 mx-auto mb-1" />
+              <div className="text-center py-5 space-y-2.5 bg-card/90 backdrop-blur-md rounded-2xl border-2 border-swara-gold/30 p-4 my-2 shadow-lg relative overflow-hidden">
+                <CarnaticMusicLogo className="size-12 mx-auto" />
+                
+                {/* Colorful Treble Clef Musical Notes Image directly under logo */}
+                <div className="mx-auto my-1.5 size-28 flex items-center justify-center rounded-2xl bg-black border-2 border-swara-gold/40 p-1 shadow-md">
+                  <img
+                    src="/colorful-music-notes.png"
+                    alt="Colorful Musical Notes"
+                    className="size-full object-contain rounded-xl"
+                  />
+                </div>
+
                 <h4 className="text-xs font-extrabold text-[#800020] dark:text-amber-200">
                   {activeUi.welcomeTitle}
                 </h4>
