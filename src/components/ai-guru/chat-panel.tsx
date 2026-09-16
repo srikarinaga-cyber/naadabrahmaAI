@@ -160,25 +160,25 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
   const activeSamplePrompts = SAMPLE_PROMPTS[language] || SAMPLE_PROMPTS.en;
 
   return (
-    <div className="relative traditional-glow overflow-hidden rounded-3xl border border-swara-gold/30 bg-card/95 shadow-xl">
+    <div className="relative traditional-glow overflow-hidden rounded-3xl border-2 border-swara-gold/40 bg-card/98 shadow-2xl">
       {/* Sangeetha Trimurthulu Background Theme Overlay */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat opacity-[0.25] dark:opacity-[0.20]"
+        className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat opacity-[0.20] dark:opacity-[0.15]"
         style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
       />
       <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-background/40 via-background/20 to-background/60" />
 
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border bg-kumkum/5 px-6 py-4">
+      <div className="flex items-center justify-between border-b border-swara-gold/30 bg-[#800020]/10 px-6 py-4 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#800020] to-[#D4AF37] p-1 shadow-md">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#800020] to-[#D4AF37] p-1 shadow-md border border-amber-300/40">
             <CarnaticMusicLogo className="size-7" />
           </div>
           <div>
-            <p className="font-serif text-base font-bold text-kumkum">Multilingual AI Carnatic Guru</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="font-serif text-base font-extrabold text-[#800020] dark:text-amber-200">Multilingual AI Carnatic Guru</p>
+            <p className="text-xs font-bold text-foreground/90">
               {userName ? (
-                <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">
                   Welcome {userName}! Full access and note saving active.
                 </span>
               ) : (
@@ -188,20 +188,20 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
           </div>
         </div>
 
-        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-bold">
+        <Badge className="bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 text-[11px] font-extrabold px-3 py-1">
           24/7 AI Guru Online
         </Badge>
       </div>
 
       {/* Multilingual & Instrument Switcher Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 px-6 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-swara-gold/30 bg-muted/60 px-6 py-3 text-xs font-bold backdrop-blur-sm">
         <div className="flex items-center gap-2">
-          <Languages className="size-4 text-swara-gold" />
-          <span className="text-xs font-semibold text-foreground">Select Language:</span>
+          <Languages className="size-4 text-[#800020]" />
+          <span className="text-xs font-extrabold text-[#800020] dark:text-amber-200">Select Language:</span>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-            className="rounded-xl border border-swara-gold/30 bg-background px-3 py-1.5 text-xs font-bold text-kumkum focus:outline-none focus:ring-1 focus:ring-kumkum"
+            className="rounded-xl border-2 border-swara-gold/50 bg-card px-3 py-1.5 text-xs font-extrabold text-[#800020] focus:outline-none focus:ring-2 focus:ring-[#800020] shadow-sm"
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.id} value={lang.id}>
@@ -212,11 +212,11 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">Instrument:</span>
+          <span className="text-xs font-extrabold text-foreground">Instrument:</span>
           <select
             value={instrument}
             onChange={(e) => setInstrument(e.target.value as Instrument)}
-            className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-medium"
+            className="rounded-xl border-2 border-border bg-card px-3 py-1.5 text-xs font-extrabold text-foreground shadow-sm"
           >
             {INSTRUMENTS.map((i) => (
               <option key={i.id} value={i.id}>
@@ -228,15 +228,15 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       </div>
 
       {/* Multilingual Sample Prompt Chips */}
-      <div className="px-6 py-2.5 bg-muted/20 border-b border-border/50 flex flex-wrap gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground self-center">
-          Sample Prompts:
+      <div className="px-6 py-3 bg-muted/40 border-b border-swara-gold/20 flex flex-wrap items-center gap-2 backdrop-blur-sm">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#800020] dark:text-amber-300 self-center">
+          SAMPLE PROMPTS:
         </span>
         {activeSamplePrompts.map((promptText, idx) => (
           <button
             key={idx}
             onClick={() => sendQueryMessage(promptText)}
-            className="text-[11px] bg-card hover:bg-kumkum/10 hover:border-kumkum/30 border border-swara-gold/20 text-foreground px-3 py-1 rounded-xl transition-all shadow-xs"
+            className="text-xs font-bold bg-card/95 hover:bg-[#800020] hover:text-white border-2 border-swara-gold/40 text-foreground px-3.5 py-1.5 rounded-xl transition-all shadow-xs"
           >
             {promptText}
           </button>
@@ -244,30 +244,30 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       </div>
 
       {/* Message History */}
-      <div className="h-96 overflow-y-auto space-y-4 p-6">
+      <div className="h-96 overflow-y-auto space-y-4 p-6 relative z-10">
         {messages.length === 0 && (
-          <div className="text-center py-12 space-y-2">
-            <CarnaticMusicLogo className="size-14 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-foreground">
+          <div className="text-center py-10 space-y-3 bg-card/85 backdrop-blur-md rounded-3xl border-2 border-swara-gold/30 p-6 my-2 shadow-lg max-w-lg mx-auto">
+            <CarnaticMusicLogo className="size-16 mx-auto mb-2" />
+            <p className="text-base font-extrabold text-[#800020] dark:text-amber-200">
               Welcome to Naadabrahma Multilingual AI Guru!
             </p>
-            <p className="text-xs text-muted-foreground max-w-md mx-auto">
-              Ask any Carnatic music question in <strong className="text-kumkum">Telugu (తెలుగు), Tamil (தமிழ்), Kannada (ಕನ್ನಡ), Malayalam (മലയാളം), Hindi (हिन्दी), or English</strong>.
+            <p className="text-xs font-bold text-foreground/90 leading-relaxed max-w-md mx-auto">
+              Ask any Carnatic music question in <strong className="text-[#800020] dark:text-amber-300 font-extrabold">Telugu (తెలుగు), Tamil (தமிழ்), Kannada (ಕನ್ನಡ), Malayalam (മലയാളം), Hindi (हिन्दी), or English</strong>.
             </p>
           </div>
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-              msg.role === "user" ? "bg-kumkum text-white" : "bg-muted text-foreground"
+            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm font-semibold leading-relaxed shadow-sm ${
+              msg.role === "user" ? "bg-[#800020] text-white font-bold" : "bg-card/95 text-card-foreground border-2 border-swara-gold/30 backdrop-blur-md font-medium"
             }`}>
-              <p className="whitespace-pre-wrap">{msg.content}</p>
+              <p className="whitespace-pre-wrap font-sans text-xs font-semibold">{msg.content}</p>
               {msg.structured?.arohanam && (
-                <div className="mt-2 pt-2 border-t border-border/50 text-xs space-y-1 font-mono">
-                  {msg.structured.arohanam && <p><strong>Arohanam:</strong> {msg.structured.arohanam}</p>}
-                  {msg.structured.avarohanam && <p><strong>Avarohanam:</strong> {msg.structured.avarohanam}</p>}
+                <div className="mt-2.5 pt-2 border-t border-swara-gold/30 text-xs space-y-1 font-mono bg-muted/40 p-2.5 rounded-xl">
+                  {msg.structured.arohanam && <p className="font-bold text-emerald-800 dark:text-emerald-300"><strong>Arohanam:</strong> {msg.structured.arohanam}</p>}
+                  {msg.structured.avarohanam && <p className="font-bold text-emerald-800 dark:text-emerald-300"><strong>Avarohanam:</strong> {msg.structured.avarohanam}</p>}
                   {msg.structured.practiceTips && msg.structured.practiceTips.length > 0 && (
-                    <p className="font-sans"><strong>Tips:</strong> {msg.structured.practiceTips.join("; ")}</p>
+                    <p className="font-sans font-bold text-foreground"><strong>Tips:</strong> {msg.structured.practiceTips.join("; ")}</p>
                   )}
                 </div>
               )}
@@ -275,12 +275,12 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
                 <div className="mt-2.5 pt-2 border-t border-border/50 flex items-center justify-between">
                   <button
                     onClick={() => saveAsNote(msg, i)}
-                    className="flex items-center gap-1 text-[11px] text-kumkum hover:underline font-bold"
+                    className="flex items-center gap-1 text-[11px] text-[#800020] dark:text-amber-300 hover:underline font-extrabold"
                   >
                     <Save className="size-3.5" /> Save to Study Notes
                   </button>
                   {savedIndex === i && (
-                    <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-extrabold flex items-center gap-1">
                       <CheckCircle2 className="size-3" /> Saved to Notes!
                     </span>
                   )}
@@ -291,8 +291,8 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-muted rounded-2xl px-4 py-3 text-sm text-muted-foreground flex items-center gap-2">
-              <span className="size-3 border-2 border-kumkum border-t-transparent rounded-full animate-spin" />
+            <div className="bg-card/90 rounded-2xl px-4 py-3 text-xs font-bold text-foreground flex items-center gap-2 border border-swara-gold/30 shadow-sm">
+              <span className="size-3.5 border-2 border-[#800020] border-t-transparent rounded-full animate-spin" />
               AI Guru is composing answer in {LANGUAGES.find((l) => l.id === language)?.label}...
             </div>
           </div>
@@ -301,7 +301,7 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
       </div>
 
       {/* Input Box */}
-      <div className="border-t border-border px-6 py-4">
+      <div className="border-t border-swara-gold/30 px-6 py-4 bg-background/90 backdrop-blur-md relative z-10">
         <div className="flex items-center gap-2">
           <input
             value={input}
@@ -320,13 +320,13 @@ export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
                 ? "ചോദ്യങ്ങൾ ചോദിക്കൂ (ഉദാ: രാഗം, താളം)..."
                 : "Ask about ragas, talas, theory in your language..."
             }
-            className="flex-1 rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-kumkum/30"
+            className="flex-1 rounded-2xl border-2 border-swara-gold/40 bg-card px-4 py-3 text-xs font-extrabold text-foreground placeholder:text-muted-foreground/80 placeholder:font-bold focus:outline-none focus:ring-2 focus:ring-[#800020] shadow-sm"
           />
           <Button
             onClick={sendMessage}
             disabled={loading || !input.trim()}
             size="icon"
-            className="bg-kumkum hover:bg-kumkum-light shrink-0 rounded-2xl size-11"
+            className="bg-[#800020] hover:bg-[#A00028] text-white shrink-0 rounded-2xl size-11 shadow-md"
           >
             <Send className="size-4" />
           </Button>

@@ -256,13 +256,13 @@ export function FloatingAiGuruPopup() {
                 <CarnaticMusicLogo className="size-7" />
               </div>
               <div>
-                <h3 className="font-serif text-sm font-bold tracking-wide text-amber-100 flex items-center gap-1.5">
+                <h3 className="font-serif text-sm font-extrabold tracking-wide text-amber-100 flex items-center gap-1.5">
                   AI Guru Chat Bot
-                  <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 text-[9px] font-bold py-0">
+                  <Badge className="bg-emerald-500/30 text-emerald-200 border-emerald-400/40 text-[9px] font-extrabold py-0">
                     Online
                   </Badge>
                 </h3>
-                <p className="text-[10px] text-amber-200/90 leading-tight">
+                <p className="text-[11px] font-bold text-amber-200 leading-tight">
                   {activeUi.headerSub}
                 </p>
               </div>
@@ -287,13 +287,13 @@ export function FloatingAiGuruPopup() {
           </div>
 
           {/* Settings Bar (Language & Instrument) */}
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-border/60 bg-muted/40 px-4 py-2 text-xs">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-swara-gold/30 bg-muted/60 px-4 py-2 text-xs backdrop-blur-sm">
             <div className="flex items-center gap-1.5">
               <Languages className="size-3.5 text-[#800020]" />
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-                className="rounded-lg border border-swara-gold/40 bg-background/90 px-2 py-1 text-xs font-bold text-[#800020] focus:outline-none"
+                className="rounded-lg border-2 border-swara-gold/50 bg-card px-2 py-1 text-xs font-extrabold text-[#800020] focus:outline-none shadow-xs"
               >
                 {LANGUAGES.map((lang) => (
                   <option key={lang.id} value={lang.id}>
@@ -304,13 +304,13 @@ export function FloatingAiGuruPopup() {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold text-muted-foreground">
+              <span className="text-[11px] font-extrabold text-foreground">
                 {activeUi.instrumentLabel}
               </span>
               <select
                 value={instrument}
                 onChange={(e) => setInstrument(e.target.value as Instrument)}
-                className="rounded-lg border border-border bg-background/90 px-2 py-1 text-xs font-medium"
+                className="rounded-lg border-2 border-border bg-card px-2 py-1 text-xs font-extrabold text-foreground shadow-xs"
               >
                 {INSTRUMENTS.map((i) => (
                   <option key={i.id} value={i.id}>
@@ -322,15 +322,15 @@ export function FloatingAiGuruPopup() {
           </div>
 
           {/* Sample Prompts Bar */}
-          <div className="relative z-10 px-4 py-2 bg-muted/20 border-b border-border/40 flex flex-wrap gap-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground self-center">
+          <div className="relative z-10 px-4 py-2.5 bg-muted/30 border-b border-swara-gold/20 flex flex-wrap items-center gap-1.5 backdrop-blur-sm">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#800020] dark:text-amber-300 self-center">
               {activeUi.sampleHeader}
             </span>
             {activeSamplePrompts.map((promptText, idx) => (
               <button
                 key={idx}
                 onClick={() => sendQueryMessage(promptText)}
-                className="text-[10px] bg-card/90 hover:bg-[#800020]/10 hover:border-[#800020]/40 border border-swara-gold/30 text-foreground px-2.5 py-1 rounded-lg transition-all shadow-2xs text-left"
+                className="text-[10px] font-bold bg-card/95 hover:bg-[#800020] hover:text-white border-2 border-swara-gold/30 text-foreground px-2.5 py-1 rounded-lg transition-all shadow-2xs text-left"
               >
                 {promptText}
               </button>
@@ -340,12 +340,12 @@ export function FloatingAiGuruPopup() {
           {/* Messages Body */}
           <div className="relative z-10 flex-1 overflow-y-auto p-4 space-y-3.5">
             {messages.length === 0 && (
-              <div className="text-center py-6 space-y-2 bg-card/60 backdrop-blur-sm rounded-2xl border border-swara-gold/20 p-4 my-2">
-                <CarnaticMusicLogo className="size-12 mx-auto mb-1" />
-                <h4 className="text-xs font-bold text-foreground">
+              <div className="text-center py-6 space-y-2 bg-card/85 backdrop-blur-md rounded-2xl border-2 border-swara-gold/30 p-4 my-2 shadow-md">
+                <CarnaticMusicLogo className="size-14 mx-auto mb-1" />
+                <h4 className="text-xs font-extrabold text-[#800020] dark:text-amber-200">
                   {activeUi.welcomeTitle}
                 </h4>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <p className="text-[11px] font-bold text-foreground/90 leading-relaxed">
                   {activeUi.welcomeDesc}
                 </p>
               </div>
@@ -359,23 +359,23 @@ export function FloatingAiGuruPopup() {
                 }`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs shadow-xs leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs shadow-xs leading-relaxed font-semibold ${
                     msg.role === "user"
-                      ? "bg-[#800020] text-white rounded-br-none"
-                      : "bg-card/95 text-card-foreground border border-swara-gold/30 rounded-bl-none backdrop-blur-sm font-sans"
+                      ? "bg-[#800020] text-white rounded-br-none font-bold"
+                      : "bg-card/95 text-card-foreground border-2 border-swara-gold/30 rounded-bl-none backdrop-blur-sm font-sans"
                   }`}
                 >
-                  <div className="whitespace-pre-wrap font-sans text-xs">
+                  <div className="whitespace-pre-wrap font-sans text-xs font-semibold">
                     {msg.content}
                   </div>
 
                   {msg.structured?.arohanam && (
                     <div className="mt-2.5 pt-2 border-t border-swara-gold/30 text-[11px] font-mono bg-muted/40 p-2 rounded-xl">
-                      <p className="text-emerald-700 dark:text-emerald-400 font-bold">
+                      <p className="text-emerald-800 dark:text-emerald-300 font-extrabold">
                         {activeUi.arohanamLabel} {msg.structured.arohanam}
                       </p>
                       {msg.structured.avarohanam && (
-                        <p className="text-emerald-700 dark:text-emerald-400 font-bold">
+                        <p className="text-emerald-800 dark:text-emerald-300 font-extrabold">
                           {activeUi.avarohanamLabel} {msg.structured.avarohanam}
                         </p>
                       )}
@@ -386,7 +386,7 @@ export function FloatingAiGuruPopup() {
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card/80 p-2.5 rounded-xl border border-swara-gold/20 w-fit">
+              <div className="flex items-center gap-2 text-xs font-bold text-foreground bg-card/90 p-2.5 rounded-xl border border-swara-gold/30 w-fit shadow-xs">
                 <Sparkles className="size-4 text-[#800020] animate-spin" />
                 <span>{activeUi.loadingText}</span>
               </div>
@@ -396,20 +396,20 @@ export function FloatingAiGuruPopup() {
           </div>
 
           {/* Input Footer Bar */}
-          <div className="relative z-10 p-3 bg-background/95 border-t border-border/80 flex items-center gap-2">
+          <div className="relative z-10 p-3 bg-background/95 border-t border-swara-gold/30 flex items-center gap-2 backdrop-blur-md">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               placeholder={activeUi.placeholder}
-              className="flex-1 rounded-xl border border-swara-gold/40 bg-card px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#800020]"
+              className="flex-1 rounded-xl border-2 border-swara-gold/40 bg-card px-3 py-2 text-xs font-extrabold text-foreground placeholder:text-muted-foreground/80 placeholder:font-bold focus:outline-none focus:ring-2 focus:ring-[#800020] shadow-xs"
             />
             <Button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
               size="sm"
-              className="rounded-xl bg-[#800020] hover:bg-[#A00028] text-white px-3 py-2 text-xs"
+              className="rounded-xl bg-[#800020] hover:bg-[#A00028] text-white px-3 py-2 text-xs font-bold shadow-md"
             >
               <Send className="size-3.5" />
             </Button>
