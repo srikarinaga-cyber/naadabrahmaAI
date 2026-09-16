@@ -213,24 +213,32 @@ export function FloatingAiGuruPopup() {
       {/* Floating Launcher Icon in Bottom-Right Corner */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
         {!isOpen && (
-          <div className="hidden md:flex items-center gap-2 rounded-2xl border border-swara-gold/40 bg-card/90 px-4 py-2 text-xs font-semibold shadow-xl backdrop-blur-md animate-bounce">
-            <CarnaticMusicLogo className="size-5" />
-            <span className="font-serif font-bold text-[#800020]">AI Guru</span>
-            <span className="text-muted-foreground">{activeUi.launcherBadge}</span>
+          <div className="hidden md:flex items-center gap-2.5 rounded-2xl border-2 border-swara-gold/50 bg-card/95 px-4 py-2 text-xs font-bold shadow-xl backdrop-blur-md animate-bounce">
+            <div className="size-6 rounded-full overflow-hidden bg-black border border-swara-gold/60 shrink-0 flex items-center justify-center p-0.5">
+              <img src="/colorful-music-notes.png" alt="AI Guru Music Notes" className="size-full object-contain" />
+            </div>
+            <span className="font-serif font-extrabold text-[#800020]">AI Guru</span>
+            <span className="text-muted-foreground font-bold">{activeUi.launcherBadge}</span>
           </div>
         )}
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#800020] via-[#A00028] to-[#D4AF37] text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/40"
+          className="relative flex size-15 items-center justify-center rounded-full bg-black text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/50 border-2 border-swara-gold/60 overflow-hidden"
           aria-label="Open AI Guru Chat"
         >
           {isOpen ? (
-            <X className="size-6 text-white" />
+            <div className="flex size-full items-center justify-center bg-gradient-to-tr from-[#800020] to-[#D4AF37]">
+              <X className="size-7 text-white" />
+            </div>
           ) : (
-            <div className="relative flex items-center justify-center">
-              <CarnaticMusicLogo className="size-8" />
-              <span className="absolute -top-1.5 -right-1.5 flex size-3.5">
+            <div className="relative flex size-full items-center justify-center p-1 bg-black">
+              <img
+                src="/colorful-music-notes.png"
+                alt="AI Guru Music Notes"
+                className="size-full object-contain rounded-full"
+              />
+              <span className="absolute top-0 right-0 flex size-3.5 z-10">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-300 opacity-75"></span>
                 <span className="relative inline-flex size-3.5 rounded-full bg-amber-400 border border-amber-600"></span>
               </span>
