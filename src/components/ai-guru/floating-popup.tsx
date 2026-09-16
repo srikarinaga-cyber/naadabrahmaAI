@@ -214,8 +214,8 @@ export function FloatingAiGuruPopup() {
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
         {!isOpen && (
           <div className="hidden md:flex items-center gap-2.5 rounded-2xl border-2 border-swara-gold/50 bg-card/95 px-4 py-2 text-xs font-bold shadow-xl backdrop-blur-md animate-bounce">
-            <div className="size-6 rounded-full overflow-hidden bg-black border border-swara-gold/60 shrink-0 flex items-center justify-center p-0.5">
-              <img src="/colorful-music-notes.png" alt="AI Guru Music Notes" className="size-full object-contain" />
+            <div className="size-6 rounded-full overflow-hidden bg-white border border-swara-gold/60 shrink-0 flex items-center justify-center p-0.5">
+              <img src="/launcher-music-theme.png" alt="AI Guru Music Theme" className="size-full object-contain" />
             </div>
             <span className="font-serif font-extrabold text-[#800020]">AI Guru</span>
             <span className="text-muted-foreground font-bold">{activeUi.launcherBadge}</span>
@@ -224,7 +224,7 @@ export function FloatingAiGuruPopup() {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex size-15 items-center justify-center rounded-full bg-black text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/50 border-2 border-swara-gold/60 overflow-hidden"
+          className="relative flex size-15 items-center justify-center rounded-full bg-gradient-to-tr from-[#800020] via-[#A00028] to-[#D4AF37] text-white shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none ring-4 ring-[#D4AF37]/50 border-2 border-amber-300/80 overflow-hidden"
           aria-label="Open AI Guru Chat"
         >
           {isOpen ? (
@@ -232,10 +232,10 @@ export function FloatingAiGuruPopup() {
               <X className="size-7 text-white" />
             </div>
           ) : (
-            <div className="relative flex size-full items-center justify-center p-1 bg-black">
+            <div className="relative flex size-full items-center justify-center p-1.5 bg-white">
               <img
-                src="/colorful-music-notes.png"
-                alt="AI Guru Music Notes"
+                src="/launcher-music-theme.png"
+                alt="AI Guru Music Theme"
                 className="size-full object-contain rounded-full"
               />
               <span className="absolute top-0 right-0 flex size-3.5 z-10">
@@ -260,8 +260,8 @@ export function FloatingAiGuruPopup() {
           {/* Modal Header with Carnatic Music Logo */}
           <div className="relative z-10 flex items-center justify-between border-b border-swara-gold/30 bg-[#800020]/95 px-5 py-3.5 text-white shadow-md">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#D4AF37] to-[#800020] p-1 shadow-md border border-amber-300/40 shrink-0">
-                <CarnaticMusicLogo className="size-7" />
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-white p-1 shadow-md border border-amber-300/60 shrink-0 overflow-hidden">
+                <img src="/launcher-music-theme.png" alt="AI Guru Music Theme" className="size-full object-contain" />
               </div>
               <div>
                 <h3 className="font-serif text-sm font-extrabold tracking-wide text-amber-100 flex items-center gap-1.5">
