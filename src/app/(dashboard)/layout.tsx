@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { MusicThemeBackdrop } from "@/components/ui/music-theme-backdrop";
 
 interface NavItem {
   name: string;

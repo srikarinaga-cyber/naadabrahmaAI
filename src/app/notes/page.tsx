@@ -5,21 +5,23 @@ import { Footer } from "@/components/layout/footer";
 import { NotesPanel } from "@/components/modules/notes-panel";
 import { Badge } from "@/components/ui/badge";
 import { NotebookPen } from "lucide-react";
+import { MusicThemeBackdrop } from "@/components/ui/music-theme-backdrop";
 
 export default function NotesPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col justify-between">
+      <MusicThemeBackdrop />
       <Navbar />
-      <main className="mx-auto max-w-5xl px-6 py-16">
-        <div className="mb-8">
-          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4">
-            <NotebookPen className="mr-1 size-3" />
+      <main className="mx-auto max-w-5xl px-6 py-16 flex-1 w-full relative z-10">
+        <div className="mb-8 bg-card/85 backdrop-blur-xl border border-swara-gold/30 p-6 rounded-3xl shadow-xl">
+          <Badge variant="outline" className="border-[#800020]/30 text-[#800020] dark:text-amber-200 mb-4 font-bold">
+            <NotebookPen className="mr-1 size-3.5" />
             Notes Generation
           </Badge>
-          <h1 className="font-serif text-3xl font-bold text-kumkum">
+          <h1 className="font-serif text-3xl font-extrabold text-[#800020] dark:text-amber-100">
             Syllabus PDFs & Study Notes
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm max-w-2xl">
+          <p className="text-foreground/90 font-medium mt-2 text-sm max-w-2xl leading-relaxed">
             Browse official syllabus PDFs from Supabase Storage, import content for AI search,
             and generate exam-ready study notes.
           </p>
