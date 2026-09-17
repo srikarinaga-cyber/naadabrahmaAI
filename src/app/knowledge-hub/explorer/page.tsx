@@ -1,13 +1,18 @@
-export const dynamic = "force-dynamic";
+"use client";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { RagaTreeExplorer } from "@/components/music/RagaTreeExplorer";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/components/providers/language-provider";
+import { EXPLORER_I18N } from "@/lib/data/knowledge-hub-i18n";
 
 export default function RagaExplorerPage() {
+  const { language } = useLanguage();
+  const t = EXPLORER_I18N[language] || EXPLORER_I18N.en;
+
   return (
     <div className="min-h-screen bg-[#070402] text-amber-50 flex flex-col justify-between">
       <Navbar />
@@ -16,21 +21,21 @@ export default function RagaExplorerPage() {
           <div className="flex items-center gap-2 mb-3">
             <Link
               href="/knowledge-hub"
-              className="text-xs text-amber-300/60 hover:text-amber-100 transition"
+              className="text-xs text-amber-300/60 hover:text-amber-100 transition font-medium"
             >
-              ← Back to Knowledge Hub
+              {t.backToHub}
             </Link>
           </div>
 
           <Badge variant="outline" className="border-[#d4af37]/30 text-[#d4af37] mb-3 py-1 px-3">
             <Sparkles className="mr-1.5 size-3.5" />
-            Heritage & Classical Musicology Explorer
+            {t.badge}
           </Badge>
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-amber-100">
-            Heritage & Raga Relationship Explorer
+            {t.mainTitle}
           </h1>
           <p className="text-amber-200/70 mt-2 text-xs md:text-sm max-w-3xl leading-relaxed">
-            Explore the sacred 72 Melakarta parent raga system formulated by Venkatamakhin, inspect ascending (Arohana) and descending (Avarohana) swarasthanas, examine Janya derivatives, and connect directly with your personalized learning path.
+            {t.mainDesc}
           </p>
         </div>
 
@@ -40,3 +45,4 @@ export default function RagaExplorerPage() {
     </div>
   );
 }
+

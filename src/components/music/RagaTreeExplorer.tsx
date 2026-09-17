@@ -16,8 +16,13 @@ interface JanyaItem {
 }
 
 import { getJanyasForMelakarta, ExtendedJanya } from "@/lib/data/janyas-db";
+import { useLanguage } from "@/components/providers/language-provider";
+import { EXPLORER_I18N, translateSwaraNotation } from "@/lib/data/knowledge-hub-i18n";
 
 export function RagaTreeExplorer() {
+  const { language } = useLanguage();
+  const t = EXPLORER_I18N[language] || EXPLORER_I18N.en;
+
   const [selectedMelakartaNum, setSelectedMelakartaNum] = useState<number>(15); // Default to Mayamalavagowla (#15)
   const [selectedJanya, setSelectedJanya] = useState<ExtendedJanya | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -83,13 +88,13 @@ export function RagaTreeExplorer() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#d4af37]">
-              Classical Indian Musicology Taxonomy
+              {t.taxonomy}
             </span>
             <h2 className="text-2xl font-bold text-amber-100 tracking-wide mt-1">
-              72 Melakarta Heritage Relationship Tree
+              {t.treeTitle}
             </h2>
             <p className="text-xs text-amber-300/60 mt-0.5">
-              Explore Venkatamakhin&apos;s 72 Parent Melakartas and their musicological Janya derivatives
+              {t.treeDesc}
             </p>
           </div>
 
@@ -100,7 +105,7 @@ export function RagaTreeExplorer() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Raga name or # (e.g. 15, Mayamalavagowla)..."
+              placeholder={t.searchPlaceholder}
               className="w-full rounded-xl border border-amber-900/50 bg-black/60 pl-10 pr-4 py-2.5 text-xs text-amber-100 focus:border-[#d4af37] focus:outline-none"
             />
           </div>
@@ -109,7 +114,7 @@ export function RagaTreeExplorer() {
         {/* Chakra Pills Filter */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
           <span className="text-[11px] font-bold text-amber-400/70 uppercase tracking-wider mr-1 shrink-0">
-            Chakra:
+            {t.chakraLabel}
           </span>
           {chakras.map((chk) => (
             <button
@@ -134,7 +139,7 @@ export function RagaTreeExplorer() {
           <div className="flex items-center justify-between border-b border-amber-900/30 pb-3">
             <h3 className="text-sm font-bold text-amber-100 flex items-center gap-2">
               <BookOpen className="size-4 text-[#d4af37]" />
-              <span>72 Parent Melakartas ({filteredMelakartas.length})</span>
+              <span>{t.parentMelakartas} ({filteredMelakartas.length})</span>
             </h3>
           </div>
 
@@ -160,7 +165,7 @@ export function RagaTreeExplorer() {
                     <span className="font-semibold text-xs text-amber-100">{mel.name}</span>
                   </div>
                   <div className="text-[10px] text-amber-400/60 mt-1 font-mono">
-                    {mel.arohana}
+                    {translateSwaraNotation(mel.arohana, language)}
                   </div>
                 </div>
 
@@ -183,15 +188,15 @@ export function RagaTreeExplorer() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/30">
-                    Parent Melakarta #{selectedMelakarta.number}
+                    {t.parentMelakarta} #{selectedMelakarta.number}
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950 text-amber-300 border border-amber-800/40">
-                    {selectedMelakarta.chakra} Chakra
+                    {selectedMelakarta.chakra} {t.chakraSuffix}
                   </span>
 
                   {isRecommendedForStudent() && (
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/50 flex items-center gap-1">
-                      <Sparkles className="size-3 text-emerald-400" /> Recommended for your path
+                      <Sparkles className="size-3 text-emerald-400" /> {t.recommendedForPath}
                     </span>
                   )}
                 </div>
@@ -209,7 +214,7 @@ export function RagaTreeExplorer() {
                 href={`/ai-guru?prompt=Explain the musicology of Melakarta #${selectedMelakarta.number} ${selectedMelakarta.name}, its Arohana/Avarohana scales, and its popular compositions.`}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-black font-bold text-xs shadow-lg hover:brightness-110 transition flex items-center gap-1.5"
               >
-                <Sparkles className="size-3.5" /> Ask AI Guru About {selectedMelakarta.name}
+                <Sparkles className="size-3.5" /> {t.askAiGuru} {selectedMelakarta.name}
               </Link>
             </div>
 
@@ -217,19 +222,19 @@ export function RagaTreeExplorer() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="p-3.5 rounded-xl bg-black/50 border border-amber-900/40">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/70 block mb-1">
-                  Arohana (Ascending Scale)
+                  {t.arohana}
                 </span>
                 <span className="text-sm font-mono font-bold text-amber-100 tracking-wider">
-                  {selectedMelakarta.arohana}
+                  {translateSwaraNotation(selectedMelakarta.arohana, language)}
                 </span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-black/50 border border-amber-900/40">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/70 block mb-1">
-                  Avarohana (Descending Scale)
+                  {t.avarohana}
                 </span>
                 <span className="text-sm font-mono font-bold text-amber-100 tracking-wider">
-                  {selectedMelakarta.avarohana}
+                  {translateSwaraNotation(selectedMelakarta.avarohana, language)}
                 </span>
               </div>
             </div>
@@ -241,18 +246,18 @@ export function RagaTreeExplorer() {
               <div className="flex items-center gap-2">
                 <CornerDownRight className="size-4 text-[#d4af37]" />
                 <h4 className="text-sm font-bold text-amber-100">
-                  Derived Janya Ragas ({janyaList.length})
+                  {t.derivedJanyas} ({janyaList.length})
                 </h4>
               </div>
               <span className="text-xs text-amber-300/60 font-mono">
-                Parent: #{selectedMelakarta.number} {selectedMelakarta.name}
+                {t.parentLabel} #{selectedMelakarta.number} {selectedMelakarta.name}
               </span>
             </div>
 
             {janyaList.length === 0 ? (
               <div className="py-8 text-center space-y-2">
                 <HelpCircle className="size-6 text-amber-400/40 mx-auto" />
-                <h5 className="text-xs font-bold text-amber-200">Janya Relationship Data Unavailable</h5>
+                <h5 className="text-xs font-bold text-amber-200">{t.janyaUnavailable}</h5>
                 <p className="text-[11px] text-amber-300/60 max-w-sm mx-auto">
                   Detailed Janya derivatives for this specific Melakarta scale have not been compiled in the catalog yet.
                 </p>
@@ -272,7 +277,7 @@ export function RagaTreeExplorer() {
                     <div>
                       <span className="font-bold text-xs text-amber-100 block">{janya.name}</span>
                       <span className="text-[10px] font-mono text-amber-400/70 block mt-0.5">
-                        ↑ {janya.arohana}
+                        ↑ {translateSwaraNotation(janya.arohana, language)}
                       </span>
                       <span className="text-[10px] text-amber-300/50 mt-1 block line-clamp-1">
                         {janya.musicTheoryNotes || janya.jeevaSwara || "Janya scale"}
@@ -294,13 +299,13 @@ export function RagaTreeExplorer() {
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-emerald-900/30 pb-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                    Selected Janya Raga Detail
+                    {t.selectedJanyaDetail}
                   </span>
                   <h4 className="text-xl font-bold text-emerald-100 mt-0.5">
                     {selectedJanya.name}
                   </h4>
                   <p className="text-xs text-emerald-300/70">
-                    Parent Melakarta: <strong className="text-amber-300">#{selectedMelakarta.number} {selectedMelakarta.name}</strong>
+                    {t.parentLabel} <strong className="text-amber-300">#{selectedMelakarta.number} {selectedMelakarta.name}</strong>
                   </p>
                 </div>
 
@@ -308,27 +313,27 @@ export function RagaTreeExplorer() {
                   href={`/ai-guru?prompt=Explain the janya raga ${selectedJanya.name} derived from Melakarta #${selectedMelakarta.number} ${selectedMelakarta.name}, its unique gamakas, and famous compositions.`}
                   className="px-3.5 py-1.5 rounded-lg border border-emerald-700/50 bg-emerald-950/60 text-xs font-bold text-emerald-200 hover:bg-emerald-900/50 transition flex items-center gap-1.5"
                 >
-                  <Sparkles className="size-3.5" /> Ask AI Guru About {selectedJanya.name}
+                  <Sparkles className="size-3.5" /> {t.askAiGuru} {selectedJanya.name}
                 </Link>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
                 <div className="p-3 rounded-xl bg-black/40 border border-emerald-900/30">
-                  <span className="text-[10px] font-bold uppercase text-emerald-400/80 block mb-0.5">Arohana</span>
-                  <span className="text-emerald-100 font-bold">{selectedJanya.arohana}</span>
+                  <span className="text-[10px] font-bold uppercase text-emerald-400/80 block mb-0.5">{t.arohana}</span>
+                  <span className="text-emerald-100 font-bold">{translateSwaraNotation(selectedJanya.arohana, language)}</span>
                 </div>
                 <div className="p-3 rounded-xl bg-black/40 border border-emerald-900/30">
-                  <span className="text-[10px] font-bold uppercase text-emerald-400/80 block mb-0.5">Avarohana</span>
-                  <span className="text-emerald-100 font-bold">{selectedJanya.avarohana}</span>
+                  <span className="text-[10px] font-bold uppercase text-emerald-400/80 block mb-0.5">{t.avarohana}</span>
+                  <span className="text-emerald-100 font-bold">{translateSwaraNotation(selectedJanya.avarohana, language)}</span>
                 </div>
               </div>
 
               <div className="p-3.5 rounded-xl bg-black/40 border border-emerald-900/30 text-xs leading-relaxed">
-                <span className="font-bold text-emerald-300 block mb-1">Musicological Characteristics & Notes:</span>
+                <span className="font-bold text-emerald-300 block mb-1">{t.musicologicalNotes}</span>
                 <p className="text-emerald-100/80">{selectedJanya.musicTheoryNotes || selectedJanya.jeevaSwara || "Verified Carnatic Janya Derivative."}</p>
                 {selectedJanya.famousKriti && (
                   <div className="mt-2 text-[11px] text-amber-300/90 font-medium">
-                    🎵 Famous Composition: <strong>{selectedJanya.famousKriti}</strong>
+                    🎵 {t.famousKriti} <strong>{selectedJanya.famousKriti}</strong>
                   </div>
                 )}
               </div>
@@ -339,3 +344,4 @@ export function RagaTreeExplorer() {
     </div>
   );
 }
+

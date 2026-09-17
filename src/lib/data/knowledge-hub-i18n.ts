@@ -239,3 +239,177 @@ export function translateSwaraNotation(arohana: string, lang: SupportedLanguage)
 
   return arohana;
 }
+
+export const EXPLORER_I18N: Record<
+  SupportedLanguage,
+  {
+    backToHub: string;
+    badge: string;
+    mainTitle: string;
+    mainDesc: string;
+    taxonomy: string;
+    treeTitle: string;
+    treeDesc: string;
+    searchPlaceholder: string;
+    chakraLabel: string;
+    parentMelakartas: string;
+    parentMelakarta: string;
+    chakraSuffix: string;
+    recommendedForPath: string;
+    askAiGuru: string;
+    arohana: string;
+    avarohana: string;
+    derivedJanyas: string;
+    parentLabel: string;
+    selectedJanyaDetail: string;
+    musicologicalNotes: string;
+    famousKriti: string;
+    janyaUnavailable: string;
+  }
+> = {
+  en: {
+    backToHub: "← Back to Knowledge Hub",
+    badge: "Heritage & Classical Musicology Explorer",
+    mainTitle: "Heritage & Raga Relationship Explorer",
+    mainDesc: "Explore the sacred 72 Melakarta parent raga system formulated by Venkatamakhin, inspect ascending (Arohana) and descending (Avarohana) swarasthanas, examine Janya derivatives, and connect directly with your personalized learning path.",
+    taxonomy: "Classical Indian Musicology Taxonomy",
+    treeTitle: "72 Melakarta Heritage Relationship Tree",
+    treeDesc: "Explore Venkatamakhin's 72 Parent Melakartas and their musicological Janya derivatives",
+    searchPlaceholder: "Search Raga name or # (e.g. 15, Mayamalavagowla)...",
+    chakraLabel: "Chakra:",
+    parentMelakartas: "72 Parent Melakartas",
+    parentMelakarta: "Parent Melakarta #",
+    chakraSuffix: "Chakra",
+    recommendedForPath: "Recommended for your path",
+    askAiGuru: "Ask AI Guru About",
+    arohana: "Arohana (Ascending Scale)",
+    avarohana: "Avarohana (Descending Scale)",
+    derivedJanyas: "Derived Janya Ragas",
+    parentLabel: "Parent:",
+    selectedJanyaDetail: "Selected Janya Raga Detail",
+    musicologicalNotes: "Musicological Characteristics & Notes:",
+    famousKriti: "Famous Composition:",
+    janyaUnavailable: "Janya Relationship Data Unavailable",
+  },
+  te: {
+    backToHub: "← జ్ఞాన నిధికి తిరిగి వెళ్ళండి",
+    badge: "సనాతన & శాస్త్రీయ రాగ వర్గీకరణ ఎక్స్‌ప్లోరర్",
+    mainTitle: "సనాతన రాగ అనుబంధ & వర్గీకరణ ఎక్స్‌ప్లోరర్",
+    mainDesc: "వెంకటమఖి ప్రతిపాదించిన 72 మేళకర్త రాగ వ్యవస్థను అన్వేషించండి. ఆరోహణ-అవరోహణ స్వరస్థానాలు, జన్య రాగాలు మరియు మీ వ్యక్తిగత సాధన మార్గాన్ని తెలుసుకోండి.",
+    taxonomy: "భారతీయ శాస్త్రీయ సంగీత వర్గీకరణ",
+    treeTitle: "72 మేళకర్త రాగ అనుబంధ వృక్షం",
+    treeDesc: "వెంకటమఖి 72 మేళకర్త రాగాలు మరియు వాటి జన్య రాగాల వివరాలు",
+    searchPlaceholder: "రాగం పేరు లేదా సంఖ్య వెతకండి (ఉదా: 15, మాయామాళవగౌళ)...",
+    chakraLabel: "చక్రం:",
+    parentMelakartas: "72 జనక మేళకర్తలు",
+    parentMelakarta: "జనక మేళకర్త #",
+    chakraSuffix: "చక్రం",
+    recommendedForPath: "మీ సాధన మార్గానికి సిఫార్సు చేయబడింది",
+    askAiGuru: "AI గురుని అడగండి:",
+    arohana: "ఆరోహణ (ఆరోహణ స్వర క్రమం)",
+    avarohana: "అవరోహణ (అవరోహణ స్వర క్రమం)",
+    derivedJanyas: "ఉత్పత్తి జన్య రాగాలు",
+    parentLabel: "జనక రాగం:",
+    selectedJanyaDetail: "ఎంచుకున్న జన్య రాగ వివరాలు",
+    musicologicalNotes: "సంగీత శాస్త్ర లక్షణాలు & విశేషాలు:",
+    famousKriti: "ప్రసిద్ధ కీర్తన/రచన:",
+    janyaUnavailable: "జన్య రాగ వివరాలు అందుబాటులో లేవు",
+  },
+  hi: {
+    backToHub: "← ज्ञान केंद्र पर वापस जाएं",
+    badge: "सनातन एवं शास्त्रीय राग वर्गीकरण एक्सप्लोरर",
+    mainTitle: "सनातन राग संबंध एवं वर्गीकरण एक्सप्लोरर",
+    mainDesc: "वेंकटमखी द्वारा निर्मित 72 मेलकर्ता राग प्रणाली का अध्ययन करें। आरोहण-अवरोहण स्वरस्थान एवं जन्य रागों को देखें।",
+    taxonomy: "भारतीय शास्त्रीय संगीत वर्गीकरण",
+    treeTitle: "72 मेलकर्ता राग संबंध वृक्ष",
+    treeDesc: "वेंकटमखी के 72 मेलकर्ता राग एवं जन्य रागों का विवरण",
+    searchPlaceholder: "राग का नाम या संख्या खोजें (जैसे: 15, मायामालवगौड़ा)...",
+    chakraLabel: "चक्र:",
+    parentMelakartas: "72 जनक मेलकर्ता",
+    parentMelakarta: "जनक मेलकर्ता #",
+    chakraSuffix: "चक्र",
+    recommendedForPath: "आपके अध्ययन मार्ग के लिए अनुशंसित",
+    askAiGuru: "एआई गुरु से पूछें:",
+    arohana: "आरोहण (आरोही स्वर)",
+    avarohana: "अवरोहण (अवरोही स्वर)",
+    derivedJanyas: "उत्पन्न जन्य राग",
+    parentLabel: "जनक राग:",
+    selectedJanyaDetail: "चयनित जन्य राग का विवरण",
+    musicologicalNotes: "संगीत शास्त्रीय विशेषताएं एवं टिप्पणी:",
+    famousKriti: "प्रसिद्ध रचना:",
+    janyaUnavailable: "जन्य राग विवरण उपलब्ध नहीं है",
+  },
+  ta: {
+    backToHub: "← அறிவு மையத்திற்கு திரும்பு",
+    badge: "கர்நாடக ராக தொடர்பு எக்ஸ்ப்ளோரர்",
+    mainTitle: "ராக தொடர்பு மற்றும் வகைப்பாடு எக்ஸ்ப்ளோரர்",
+    mainDesc: "வெங்கடமகி உருவாக்கிய 72 மேளகர்த்தா ராக முறையை ஆராய்க. ஆரோஹணம்-அவரோஹணம் மற்றும் ஜன்ய ராகங்களை அறிக.",
+    taxonomy: "இந்திய இசை சாஸ்திர வகைப்பாடு",
+    treeTitle: "72 மேளகர்த்தா ராக இணைப்பு மரம்",
+    treeDesc: "வெங்கடமகியின் 72 மேளகர்த்தா ராகங்கள் மற்றும் ஜன்ய ராகங்கள்",
+    searchPlaceholder: "ராகத்தின் பெயர் அல்லது எண் தேடவும்...",
+    chakraLabel: "சக்கரம்:",
+    parentMelakartas: "72 ஜனக மேளகர்த்தாக்கள்",
+    parentMelakarta: "ஜனக மேளகர்த்தா #",
+    chakraSuffix: "சக்கரம்",
+    recommendedForPath: "உங்கள் பயிற்சி பாதைக்கு பரிந்துரைக்கப்பட்டது",
+    askAiGuru: "AI குருவிடம் கேட்க:",
+    arohana: "ஆரோஹணம் (ஏறு வரிசை)",
+    avarohana: "அவரோஹணம் (இறங்கு வரிசை)",
+    derivedJanyas: "ஜன்ய ராகங்கள்",
+    parentLabel: "ஜனக ராகம்:",
+    selectedJanyaDetail: "தேர்ந்தெடுக்கப்பட்ட ஜன்ய ராக விவரம்",
+    musicologicalNotes: "இசை சாஸ்திர இயல்புகள் & குறிப்புகள்:",
+    famousKriti: "புகழ்பெற்ற கீர்த்தனை:",
+    janyaUnavailable: "ஜன்ய ராக விவரங்கள் இல்லை",
+  },
+  kn: {
+    backToHub: "← ಜ್ಞಾನ ಕೇಂದ್ರಕ್ಕೆ ಹಿಂತಿರುಗಿ",
+    badge: "ಕರ್ನಾಟಕ ರಾಗ ಸಂಬಂಧ ಎಕ್ಸ್‌ಪ್ಲೋರರ್",
+    mainTitle: "ರಾಗ ಸಂಬಂಧ ಮತ್ತು ವರ್ಗೀಕರಣ ಎಕ್ಸ್‌ಪ್ಲೋರರ್",
+    mainDesc: "ವೆಂಕಟಮಖಿ ರೂಪಿಸಿದ 72 ಮೇಳಕರ್ತ ರಾಗ ವ್ಯವಸ್ಥೆಯನ್ನು ಅನ್ವೇಷಿಸಿ. ಆರೋಹಣ-ಅವರೋಹಣ ಸ್ವರಸ್ಥಾನಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.",
+    taxonomy: "ಭಾರತೀಯ ಶಾಸ್ತ್ರೀಯ ಸಂಗೀತ ವರ್ಗೀಕರಣ",
+    treeTitle: "72 ಮೇಳಕರ್ತ ರಾಗ ಸಂಬಂಧ ವೃಕ್ಷ",
+    treeDesc: "ವೆಂಕಟಮಖಿಯ 72 ಮೇಳಕರ್ತ ರಾಗಗಳು ಮತ್ತು ಜನ್ಯ ರಾಗಗಳು",
+    searchPlaceholder: "ರಾಗದ ಹೆಸರು ಅಥವಾ ಸಂಖ್ಯೆ ಹುಡುಕಿ...",
+    chakraLabel: "ಚಕ್ರ:",
+    parentMelakartas: "72 ಜನಕ ಮೇಳಕರ್ತಗಳು",
+    parentMelakarta: "ಜನಕ ಮೇಳಕರ್ತ #",
+    chakraSuffix: "ಚಕ್ರ",
+    recommendedForPath: "ನಿಮ್ಮ ಅಭ್ಯಾಸ ಮಾರ್ಗಕ್ಕೆ ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ",
+    askAiGuru: "AI ಗುರುಗಳನ್ನು ಕೇಳಿ:",
+    arohana: "ಆರೋಹಣ (ಆರೋಹಣ ಸ್ವರಗಳು)",
+    avarohana: "ಅವರೋಹಣ (ಅವರೋಹಣ ಸ್ವರಗಳು)",
+    derivedJanyas: "ಉತ್ಪನ್ನ ಜನ್ಯ ರಾಗಗಳು",
+    parentLabel: "ಜನಕ ರಾಗ:",
+    selectedJanyaDetail: "ಆಯ್ಕೆಮಾಡಿದ ಜನ್ಯ ರಾಗದ ವಿವರ",
+    musicologicalNotes: "ಸಂಗೀತ ಶಾಸ್ತ್ರೀಯ ಲಕ್ಷಣಗಳು & ಟಿಪ್ಪಣಿಗಳು:",
+    famousKriti: "ಪ್ರಸಿದ್ಧ ಕೃತಿ:",
+    janyaUnavailable: "ಜನ್ಯ ರಾಗದ ವಿವರ ಲಭ್ಯವಿಲ್ಲ",
+  },
+  ml: {
+    backToHub: "← ജ്ഞാന കേന്ദ്രത്തിലേക്ക് മടങ്ങുക",
+    badge: "കർണ്ണാടക രാഗ ബന്ധ എക്സ്പ്ലോറർ",
+    mainTitle: "രാഗ ബന്ധവും വർഗ്ഗീകരണവും എക്സ്പ്ലോറർ",
+    mainDesc: "വെങ്കടമഖി നിർമ്മിച്ച 72 മേളകർത്താ രാഗ വ്യവസ്ഥ പഠിക്കൂ. ആരോഹണം-അവരോഹണം, ജന്യ രാഗങ്ങൾ കാണുക.",
+    taxonomy: "ഇന്ത്യൻ സംഗീത ശാസ്ത്ര വർഗ്ഗീകരണം",
+    treeTitle: "72 മേളകർത്താ രാഗ ബന്ധ വൃക്ഷം",
+    treeDesc: "വെങ്കടമഖിയുടെ 72 മേളകർത്താ രാഗങ്ങളും ജന്യ രാഗങ്ങളും",
+    searchPlaceholder: "രാഗത്തിന്റെ പേരോ നമ്പറോ തിരയൂ...",
+    chakraLabel: "ചക്രം:",
+    parentMelakartas: "72 ജനക മേളകർത്താക്കൾ",
+    parentMelakarta: "ജനക മേളകർത്താ #",
+    chakraSuffix: "ചക്രം",
+    recommendedForPath: "നിങ്ങളുടെ പഠന വഴിക്കായി ശുപാർശ ചെയ്തത്",
+    askAiGuru: "AI ഗുരുവിനോട് ചോദിക്കൂ:",
+    arohana: "ആരോഹണം (ആരോഹണ സ്വരങ്ങൾ)",
+    avarohana: "അവരോഹണം (അവരോഹണ സ്വരങ്ങൾ)",
+    derivedJanyas: "ഉത്ഭവിച്ച ജന്യ രാഗങ്ങൾ",
+    parentLabel: "ജനക രാഗം:",
+    selectedJanyaDetail: "തിരഞ്ഞെടുത്ത ജന്യ രാഗ വിവരങ്ങൾ",
+    musicologicalNotes: "സംഗീത ശാസ്ത്രീയ സവിശേഷതകൾ & കുറിപ്പുകൾ:",
+    famousKriti: "പ്രസിദ്ധമായ കീർത്തനം:",
+    janyaUnavailable: "ജന്യ രാഗ വിവരങ്ങൾ ലഭ്യമല്ല",
+  },
+};
+
