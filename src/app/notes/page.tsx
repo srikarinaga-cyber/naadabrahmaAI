@@ -10,7 +10,6 @@ import { MusicThemeBackdrop } from "@/components/ui/music-theme-backdrop";
 export default function NotesPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col justify-between">
-      <MusicThemeBackdrop />
       <Navbar />
       <main className="mx-auto max-w-5xl px-6 py-16 flex-1 w-full relative z-10">
         <div className="mb-8 bg-card/85 backdrop-blur-xl border border-swara-gold/30 p-6 rounded-3xl shadow-xl">

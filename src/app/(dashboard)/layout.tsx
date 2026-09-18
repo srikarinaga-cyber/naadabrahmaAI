@@ -119,13 +119,6 @@ export default function DashboardLayout({
 
   return (
     <div className="relative min-h-screen bg-[#FAF6F0] flex flex-col md:flex-row overflow-hidden">
-      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-[center_top] bg-no-repeat opacity-[0.50] dark:opacity-[0.45]"
-        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
-      />
-      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/50" />
-
       {/* Ultra-Translucent Sidebar so the first person on the left is 100% visible */}
       <aside className="relative z-10 w-full md:w-64 border-r border-[#D4AF37]/25 bg-white/35 backdrop-blur-md flex flex-col justify-between p-6 shadow-xs">
         <div className="space-y-8">

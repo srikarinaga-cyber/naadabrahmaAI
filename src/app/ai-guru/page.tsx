@@ -11,19 +11,6 @@ import { Bot } from "lucide-react";
 export default function AiGuruPage() {
   return (
     <div className="relative min-h-screen bg-[#FAF6F0] dark:bg-background flex flex-col overflow-hidden">
-      {/* High-Visibility Sangeetha Trimurthulu Background Theme Overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-[center_top] bg-no-repeat opacity-[0.45] dark:opacity-[0.35]"
-        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
-      />
-      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[#FAF6F0]/40 via-[#FAF6F0]/20 to-[#FAF6F0]/60 dark:from-background/60 dark:via-background/40 dark:to-background/80" />
-
-      {/* Floating Musical Note Ornaments */}
-      <div className="pointer-events-none fixed top-24 left-10 text-3xl opacity-30 animate-bounce text-[#D4AF37]">🎵</div>
-      <div className="pointer-events-none fixed top-40 right-12 text-3xl opacity-30 animate-pulse text-[#800020]">🎼</div>
-      <div className="pointer-events-none fixed bottom-20 left-16 text-3xl opacity-30 animate-pulse text-[#D4AF37]">🎶</div>
-      <div className="pointer-events-none fixed bottom-32 right-20 text-3xl opacity-30 animate-bounce text-[#800020]">🕉️</div>
-
       <Navbar />
 
       <main className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 py-12 flex-1">

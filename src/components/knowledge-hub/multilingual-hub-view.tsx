@@ -39,7 +39,6 @@ export function MultilingualKnowledgeHubView({ melakartas }: Props) {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
-      <MusicThemeBackdrop />
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-6 py-12 flex-1 w-full relative z-10">

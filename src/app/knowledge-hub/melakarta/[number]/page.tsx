@@ -80,13 +80,6 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* High Visibility Realistic Sangeetha Trinity Artwork Background Theme */}
-      <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat opacity-45 dark:opacity-40"
-        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
-      />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/40 via-transparent to-background/60" />
-
       <Navbar />
       <main className="mx-auto max-w-5xl px-6 py-16">
         {/* Navigation Bar with Previous Raga, Back to List & Next Raga */}

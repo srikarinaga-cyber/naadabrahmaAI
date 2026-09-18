@@ -205,13 +205,6 @@ export default function ComposersPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* High-Visibility Realistic Sangeetha Trinity Background Theme showing all 3 Saints */}
-      <div
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-[center_top] bg-no-repeat opacity-50 dark:opacity-45"
-        style={{ backgroundImage: "url('/trinity-theme-bg.png')" }}
-      />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/30 via-transparent to-background/50" />
-
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
