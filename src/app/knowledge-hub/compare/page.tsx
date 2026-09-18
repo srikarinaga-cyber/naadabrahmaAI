@@ -75,7 +75,7 @@ export default function RagaComparePage() {
   const raga2SwaraTokens = raga2.arohana.split(/\s+/).filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-background/80 relative overflow-hidden">
+    <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col justify-between">
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link

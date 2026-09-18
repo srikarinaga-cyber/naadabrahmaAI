@@ -8,7 +8,7 @@ import { Users } from "lucide-react";
 
 export default function TeacherPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-between">
+    <div className="min-h-screen bg-transparent flex flex-col justify-between">
       <Navbar />
       <main className="mx-auto max-w-6xl w-full px-6 py-12">
         <div className="mb-8">

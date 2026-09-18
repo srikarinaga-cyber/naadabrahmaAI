@@ -14,7 +14,7 @@ export default function RagaExplorerPage() {
   const t = EXPLORER_I18N[language] || EXPLORER_I18N.en;
 
   return (
-    <div className="min-h-screen bg-[#070402]/85 text-amber-50 flex flex-col justify-between relative">
+    <div className="min-h-screen bg-transparent text-amber-50 flex flex-col justify-between relative">
       <Navbar />
       <main className="mx-auto max-w-6xl w-full px-6 py-10 space-y-6">
         <div>
