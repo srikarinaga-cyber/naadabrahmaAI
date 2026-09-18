@@ -76,148 +76,138 @@ export function MusicThemeBackdrop() {
         }
       `}</style>
 
-      {/* ── MODE 1: RAGA EXPLORER (Taxonomy Network Tree Theme) ── */}
+      {/* ── MODE 1: RAGA EXPLORER (Deep Cosmic Melakarta Network & Swara Constellation) ── */}
       {isExplorer && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-80"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 6s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#070402]/60 via-[#070402]/40 to-[#070402]/80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0c0704] via-[#1a0e08] to-[#050201]" />
           
-          {/* Animated Taxonomy Network Constellation Lines */}
-          <div className="absolute inset-0 opacity-45 pointer-events-none">
+          {/* Animated Melakarta Constellation Lines */}
+          <div className="absolute inset-0 opacity-40 pointer-events-none">
             <svg className="w-full h-full">
-              <line x1="15%" y1="20%" x2="45%" y2="50%" stroke="#d4af37" strokeWidth="2" strokeDasharray="8 8" className="animate-pulse" />
-              <line x1="45%" y1="50%" x2="80%" y2="25%" stroke="#800020" strokeWidth="2" strokeDasharray="8 8" className="animate-pulse duration-700" />
-              <line x1="45%" y1="50%" x2="70%" y2="75%" stroke="#d4af37" strokeWidth="2" strokeDasharray="8 8" className="animate-pulse duration-1000" />
+              <line x1="10%" y1="25%" x2="35%" y2="55%" stroke="#d4af37" strokeWidth="1.5" strokeDasharray="6 6" className="animate-pulse" />
+              <line x1="35%" y1="55%" x2="70%" y2="30%" stroke="#e5c158" strokeWidth="1.5" strokeDasharray="8 8" className="animate-pulse duration-700" />
+              <line x1="35%" y1="55%" x2="65%" y2="75%" stroke="#d4af37" strokeWidth="1.5" strokeDasharray="6 6" className="animate-pulse duration-1000" />
+              <line x1="70%" y1="30%" x2="90%" y2="60%" stroke="#800020" strokeWidth="1.5" strokeDasharray="10 10" className="animate-pulse duration-500" />
+
+              {/* Pulsing Constellation Swara Nodes */}
+              <circle cx="10%" cy="25%" r="6" fill="#d4af37" className="animate-ping" style={{ animationDuration: "3s" }} />
+              <circle cx="35%" cy="55%" r="8" fill="#e5c158" className="animate-ping" style={{ animationDuration: "2.5s" }} />
+              <circle cx="70%" cy="30%" r="7" fill="#d4af37" className="animate-ping" style={{ animationDuration: "4s" }} />
+              <circle cx="65%" cy="75%" r="6" fill="#800020" className="animate-ping" style={{ animationDuration: "3.5s" }} />
             </svg>
           </div>
 
-          {/* Floating Janaka & Janya Nodes */}
-          <div className="absolute top-[18%] left-[12%] px-3 py-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 text-amber-200 text-xs font-mono font-bold shadow-lg animate-bounce">
-            జనక #15 మాయామాళవగౌళ
+          {/* Floating Swara Nodes on background sides */}
+          <div className="absolute top-[30%] left-[8%] font-serif text-4xl font-extrabold text-amber-400/50 drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] animate-bounce" style={{ animationDuration: "5s" }}>
+            స
           </div>
-          <div className="absolute top-[52%] left-[42%] px-3 py-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/80 text-emerald-200 text-xs font-mono font-bold shadow-lg animate-pulse">
-            జన్య: మలహరి
+          <div className="absolute top-[60%] left-[15%] font-serif text-4xl font-extrabold text-amber-300/40 drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] animate-pulse">
+            రి
           </div>
-          <div className="absolute top-[25%] right-[16%] px-3 py-1.5 rounded-full border border-amber-400/60 bg-amber-950/80 text-amber-200 text-xs font-mono font-bold shadow-lg animate-bounce" style={{ animationDuration: "5s" }}>
-            జనక #29 శంకరాభరణం
+          <div className="absolute top-[25%] right-[10%] font-serif text-4xl font-extrabold text-amber-400/50 drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] animate-bounce" style={{ animationDuration: "6s" }}>
+            గా
           </div>
-          <div className="absolute bottom-[20%] right-[22%] px-3 py-1.5 rounded-full border border-emerald-400/60 bg-emerald-950/80 text-emerald-200 text-xs font-mono font-bold shadow-lg animate-pulse" style={{ animationDuration: "4s" }}>
-            జన్య: హంసధ్వని
+          <div className="absolute bottom-[20%] right-[15%] font-serif text-4xl font-extrabold text-amber-300/40 drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] animate-pulse">
+            మా
           </div>
         </>
       )}
 
-      {/* ── MODE 2: RAGA COMPARISON (Dual Pitch Wave Resonance Theme) ── */}
+      {/* ── MODE 2: RAGA COMPARISON (Dual Pitch Wave Resonance & Opposing Spectrum) ── */}
       {isCompare && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-75"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 5s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/60 dark:from-background/40 dark:to-background/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#180a06]/40 via-transparent to-[#0a1218]/40 dark:from-background/60 dark:to-background/80" />
 
-          {/* Dual Opposing Sine Waves (Raga 1 vs Raga 2) */}
-          <div className="absolute inset-0 opacity-65 pointer-events-none">
+          {/* Dual Opposing Sine Waves (Raga 1 vs Raga 2 Pitch Waves) */}
+          <div className="absolute inset-0 opacity-50 pointer-events-none">
             <svg className="w-full h-full">
-              {/* Left Raga Wave (Gold) */}
+              {/* Left Raga 1 Golden Sine Wave */}
               <path
                 d="M -50,220 Q 300,100 650,300 T 1400,220"
                 fill="none"
                 stroke="#d4af37"
-                strokeWidth="4"
-                strokeDasharray="18 10"
-                style={{ animation: "waveSineFlow 10s linear infinite" }}
+                strokeWidth="3"
+                strokeDasharray="16 8"
+                style={{ animation: "waveSineFlow 8s linear infinite" }}
               />
-              {/* Right Raga Wave (Crimson) */}
+              {/* Right Raga 2 Cyan/Crimson Sine Wave */}
               <path
                 d="M -50,380 Q 400,500 850,320 T 1600,400"
                 fill="none"
-                stroke="#800020"
-                strokeWidth="4"
-                strokeDasharray="18 10"
-                style={{ animation: "waveSineFlow 12s linear infinite reverse" }}
+                stroke="#38bdf8"
+                strokeWidth="3"
+                strokeDasharray="16 8"
+                style={{ animation: "waveSineFlow 10s linear infinite reverse" }}
               />
             </svg>
           </div>
 
-          {/* Opposing Equalizer Spectrum Side Bars */}
-          <div className="absolute top-1/4 left-3 h-64 flex flex-col justify-around opacity-60">
-            <div className="w-12 h-2 rounded bg-amber-500 animate-pulse" />
-            <div className="w-20 h-2 rounded bg-amber-400 animate-pulse duration-700" />
-            <div className="w-16 h-2 rounded bg-amber-600 animate-pulse duration-1000" />
+          {/* Opposing Spectrum Bars along edges */}
+          <div className="absolute top-1/3 left-2 h-48 flex flex-col justify-around opacity-40">
+            <div className="w-8 h-1.5 rounded bg-amber-500 animate-pulse" />
+            <div className="w-14 h-1.5 rounded bg-amber-400 animate-pulse duration-700" />
+            <div className="w-10 h-1.5 rounded bg-amber-600 animate-pulse duration-1000" />
           </div>
-          <div className="absolute top-1/4 right-3 h-64 flex flex-col justify-around items-end opacity-60">
-            <div className="w-16 h-2 rounded bg-rose-600 animate-pulse" />
-            <div className="w-24 h-2 rounded bg-rose-500 animate-pulse duration-700" />
-            <div className="w-14 h-2 rounded bg-rose-700 animate-pulse duration-1000" />
+          <div className="absolute top-1/3 right-2 h-48 flex flex-col justify-around items-end opacity-40">
+            <div className="w-10 h-1.5 rounded bg-sky-500 animate-pulse" />
+            <div className="w-16 h-1.5 rounded bg-sky-400 animate-pulse duration-700" />
+            <div className="w-8 h-1.5 rounded bg-sky-600 animate-pulse duration-1000" />
           </div>
         </>
       )}
 
-      {/* ── MODE 3: COMPOSERS / VAGGEYAKARAS (Trinity Halo & Royal Mudra Theme) ── */}
+      {/* ── MODE 3: COMPOSERS / VAGGEYAKARAS (Trinity Sacred Halo & Temple Rays) ── */}
       {isComposers && (
         <>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1c0d06] via-[#0d0603] to-[#050201]" />
+          
+          {/* Soft Sweeping Temple Ray Light */}
           <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-85"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 4s ease-in-out infinite" }}
+            className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-gradient-to-b from-amber-500/15 via-amber-700/5 to-transparent blur-3xl pointer-events-none"
+            style={{ animation: "trinityAuraPulse 6s ease-in-out infinite" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/20 via-transparent to-[#FAF6F0]/50 dark:from-background/30 dark:to-background/60" />
 
-          {/* Floating Composer Mudra Badges */}
-          <div className="absolute top-[15%] left-[8%] px-4 py-2 rounded-2xl bg-[#800020]/90 text-amber-200 border-2 border-[#d4af37] font-serif text-sm font-extrabold shadow-2xl animate-bounce">
-            ముద్ర: త్యాగరాజు 🕉️
+          {/* Side Floating Musical Emblems */}
+          <div className="absolute bottom-12 left-8 text-5xl text-amber-500/30 animate-bounce" style={{ animationDuration: "7s" }}>
+            🪕
           </div>
-          <div className="absolute top-[28%] right-[10%] px-4 py-2 rounded-2xl bg-[#800020]/90 text-amber-200 border-2 border-[#d4af37] font-serif text-sm font-extrabold shadow-2xl animate-pulse">
-            ముద్ర: గురుగుహ 🪕
-          </div>
-          <div className="absolute bottom-[30%] left-[6%] px-4 py-2 rounded-2xl bg-[#800020]/90 text-amber-200 border-2 border-[#d4af37] font-serif text-sm font-extrabold shadow-2xl animate-bounce" style={{ animationDuration: "6s" }}>
-            ముద్ర: శ్యామకృష్ణ 🎶
-          </div>
-          <div className="absolute bottom-[15%] right-[14%] px-4 py-2 rounded-2xl bg-[#800020]/90 text-amber-200 border-2 border-[#d4af37] font-serif text-sm font-extrabold shadow-2xl animate-pulse" style={{ animationDuration: "5s" }}>
-            ముద్ర: పురందర విఠల 🎵
+          <div className="absolute bottom-12 right-8 text-5xl text-amber-500/30 animate-bounce" style={{ animationDuration: "6s" }}>
+            🕉️
           </div>
         </>
       )}
 
-      {/* ── MODE 4: 35 SULADI SAPTA TALAS (Beat Pulse Matrix Theme) ── */}
+      {/* ── MODE 4: 35 SULADI SAPTA TALAS (Beat Pulse & Laya Rhythm Radar) ── */}
       {isTalas && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-75"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 6s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/60 dark:from-background/40 dark:to-background/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#120804] via-[#080402] to-[#020100]" />
 
-          {/* Expanding Concentric Tala Beat Rings */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-            <div className="size-64 rounded-full border-4 border-amber-500/40" style={{ animation: "ringExpandPulse 3s linear infinite" }} />
-            <div className="size-96 rounded-full border-2 border-rose-600/40 absolute inset-0 -m-16" style={{ animation: "ringExpandPulse 3s linear infinite 1.5s" }} />
+          {/* Expanding Concentric Tala Beat Rings from bottom center */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 pointer-events-none">
+            <div className="size-80 rounded-full border-2 border-amber-500/25" style={{ animation: "ringExpandPulse 4s linear infinite" }} />
+            <div className="size-[500px] rounded-full border border-rose-500/20 absolute inset-0 -m-20" style={{ animation: "ringExpandPulse 4s linear infinite 2s" }} />
           </div>
 
-          {/* Animated Floating Tala Angas */}
-          <div className="absolute top-[20%] left-[10%] font-mono text-2xl font-extrabold text-[#800020] dark:text-amber-300 bg-amber-400/20 px-3 py-1.5 rounded-xl border border-amber-500/40 animate-bounce">
-            అంగం: I4 O O (లఘు + ద్రుతం + ద్రుతం)
-          </div>
-          <div className="absolute bottom-[25%] right-[12%] font-mono text-2xl font-extrabold text-[#800020] dark:text-amber-300 bg-rose-400/20 px-3 py-1.5 rounded-xl border border-rose-500/40 animate-pulse">
-            5 జాతులు: తిశ్ర • చతుశ్ర • ఖండ • మిశ్ర • సంకీర్ణ
+          {/* Bottom Rhythm Beat Bar Visualizer */}
+          <div className="absolute bottom-0 inset-x-0 h-12 flex items-end justify-center gap-2 opacity-30 pointer-events-none">
+            {[1, 4, 2, 4, 1, 2, 4, 2, 1, 4, 2, 4].map((beats, idx) => (
+              <div
+                key={idx}
+                className="w-3 rounded-t bg-gradient-to-t from-amber-700 to-amber-400 animate-pulse"
+                style={{ height: `${beats * 10}px`, animationDuration: `${0.8 + (idx % 3) * 0.4}s` }}
+              />
+            ))}
           </div>
         </>
       )}
 
-      {/* ── MODE 5: MELAKARTA DETAIL PAGE (Swarasthana Ladder Theme) ── */}
+      {/* ── MODE 5: MELAKARTA DETAIL PAGE (Swarasthana Scale Ladder) ── */}
       {isMelakartaDetail && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-80"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 5s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/20 via-transparent to-[#FAF6F0]/50 dark:from-background/30 dark:to-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#140a04]/40 via-transparent to-[#050201]/60" />
 
-          {/* Floating Swarasthana Scale Nodes */}
-          <div className="absolute top-1/4 right-8 flex flex-col gap-3 font-serif text-2xl font-extrabold text-[#800020] dark:text-amber-300">
+          {/* Floating Swarasthana Scale Nodes on right edge */}
+          <div className="absolute top-1/4 right-6 flex flex-col gap-4 font-serif text-xl font-bold text-amber-400/40 pointer-events-none">
             <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>స'</span>
             <span className="animate-bounce" style={{ animationDelay: "0.3s" }}>నీ</span>
             <span className="animate-bounce" style={{ animationDelay: "0.5s" }}>దా</span>
@@ -230,55 +220,44 @@ export function MusicThemeBackdrop() {
         </>
       )}
 
-      {/* ── MODE 6: MULTI-INSTRUMENT STUDIO (Veena & Violin Tuning Theme) ── */}
+      {/* ── MODE 6: MULTI-INSTRUMENT STUDIO (Veena Strings & Sound Wave Vibration) ── */}
       {isInstruments && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-80"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 5s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/60 dark:from-background/30 dark:to-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0e0703] via-[#170c06] to-[#080402]" />
 
-          <div className="absolute top-1/2 left-10 text-6xl text-amber-700 animate-bounce" style={{ animationDuration: "4s" }}>
-            🪕
-          </div>
-          <div className="absolute top-1/2 right-10 text-6xl text-amber-700 animate-bounce" style={{ animationDuration: "4.5s" }}>
-            🎻
+          {/* 7 Vertical Plucked Veena Strings */}
+          <div className="absolute inset-0 opacity-40 flex justify-around pointer-events-none">
+            {[1, 2, 3, 4, 5, 6, 7].map((stringNum) => (
+              <div key={stringNum} className="relative w-[1.5px] h-full bg-gradient-to-b from-transparent via-amber-500/60 to-transparent">
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 w-3 h-20 bg-gradient-to-b from-transparent via-amber-300 to-transparent rounded-full blur-[1px]"
+                  style={{ animation: `stringLightTravel ${2 + stringNum * 0.4}s ease-in-out infinite ${stringNum * 0.3}s` }}
+                />
+              </div>
+            ))}
           </div>
         </>
       )}
 
-      {/* ── MODE 7: STUDY NOTES (Sacred Manuscript Literature Theme) ── */}
+      {/* ── MODE 7: STUDY NOTES (Palm-Leaf Manuscript & Swara Dust) ── */}
       {isNotes && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-80"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 5s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/60 dark:from-background/30 dark:to-background/60" />
-
-          <div className="absolute top-1/4 left-10 text-4xl text-amber-800 animate-pulse">
-            📜 నాదబ్రహ్మ లక్ష్మీ గ్రంథాలు
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#180e07] via-[#0d0703] to-[#040201]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] rounded-full bg-amber-700/10 blur-3xl pointer-events-none" />
         </>
       )}
 
-      {/* ── MODE 8: TEACHER PORTAL (Gurukulam Theme) ── */}
+      {/* ── MODE 8: TEACHER PORTAL (Gurukulam Diyah Glow) ── */}
       {isTeacher && (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-[center_top] bg-no-repeat opacity-85"
-            style={{ backgroundImage: "url('/trinity-theme-bg.png')", animation: "trinityAuraPulse 5s ease-in-out infinite" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6F0]/30 via-transparent to-[#FAF6F0]/60 dark:from-background/30 dark:to-background/60" />
-
-          <div className="absolute top-20 right-12 text-3xl font-serif font-extrabold text-[#800020] animate-pulse">
-            🪔 పవిత్ర గురుకుల సాధన
+          <div className="absolute inset-0 bg-gradient-to-b from-[#150a04] via-[#0a0402] to-[#030100]" />
+          <div className="absolute bottom-10 right-10 text-4xl text-amber-500/30 animate-pulse">
+            🪔
           </div>
         </>
       )}
 
-      {/* ── DEFAULT / KNOWLEDGE HUB MAIN (72 Melakarta Swara Chakra & Audio Visualizer Theme) ── */}
+      {/* ── DEFAULT / KNOWLEDGE HUB MAIN (72 Melakarta Swara Chakra & Audio Visualizer) ── */}
       {!isExplorer && !isCompare && !isComposers && !isTalas && !isMelakartaDetail && !isInstruments && !isNotes && !isTeacher && (
         <>
           <div
