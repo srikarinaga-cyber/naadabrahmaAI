@@ -10,7 +10,7 @@ import { MusicThemeBackdrop } from "@/components/ui/music-theme-backdrop";
 
 export default function InstrumentsStubPage() {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col justify-between">
+    <div className="min-h-screen bg-background/80 relative overflow-hidden flex flex-col justify-between">
       <Navbar />
       <main className="mx-auto max-w-2xl px-6 py-24 text-center relative z-10 flex-1">
         <div className="glass-panel traditional-glow rounded-3xl border border-swara-gold/30 p-10 md:p-12 bg-card/90 backdrop-blur-md shadow-xl">

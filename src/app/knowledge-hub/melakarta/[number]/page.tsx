@@ -79,7 +79,7 @@ export default async function MelakartaDetailPage({ params }: PageProps) {
   const nextMelakarta = MELAKARTA_SEED_DATA.find((m) => m.number === nextMelakartaNum) || { name: `Raga #${nextMelakartaNum}` };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background/80 relative overflow-hidden">
       <Navbar />
       <main className="mx-auto max-w-5xl px-6 py-16">
         {/* Navigation Bar with Previous Raga, Back to List & Next Raga */}
