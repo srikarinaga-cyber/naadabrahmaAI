@@ -92,6 +92,12 @@ select 'Shankarabharanam', m.id, 'S R2 G3 M1 P D2 N3 S', 'S N3 D2 P M1 G3 R2 S',
   '{"type": "sampurna", "time_of_day": "Any"}'::jsonb
 from melakartas m where m.number = 29;
 
+insert into janyas (name, parent_melakarta_id, arohana, avarohana, vakra, bhashanga, upanga, description, metadata)
+select 'Sri', m.id, 'S R2 M1 P N2 S', 'S N2 P M1 R2 G2 R2 S', true, false, true,
+  'Auspicious janya raga derived from Kharaharapriya (#22). Famous for Tyagaraja''s Endaro Mahanubhavulu Pancharatna kriti.',
+  '{"type": "audava-sampurna", "time_of_day": "Evening"}'::jsonb
+from melakartas m where m.number = 22;
+
 -- Kritis (placeholder lyrics — no copyrighted text)
 insert into kritis (title, composer_id, janya_id, tala_id, notation, lyrics, translation, difficulty_level, metadata)
 select 'Vatapi Ganapatim Bhajeham',
@@ -136,10 +142,6 @@ select 'Endaro Mahanubhavulu',
   'Reference translation placeholder',
   'diploma',
   '{"language": "Telugu"}'::jsonb;
-
--- Sri janya may not exist - use melakarta Kharaharapriya instead for Endaro
-update kritis set janya_id = null, melakarta_id = (select id from melakartas where number = 22)
-where title = 'Endaro Mahanubhavulu';
 
 -- Exam Questions (seed quiz bank)
 insert into exam_questions (type, level, question_text, options, correct_answer, explanation) values
