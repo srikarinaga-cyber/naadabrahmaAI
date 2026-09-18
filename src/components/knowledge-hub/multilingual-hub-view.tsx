@@ -38,12 +38,12 @@ export function MultilingualKnowledgeHubView({ melakartas }: Props) {
   });
 
   return (
-    <div className="min-h-screen bg-background/80 relative overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col">
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-6 py-12 flex-1 w-full relative z-10">
         {/* Header with Multilingual Switcher */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-card/85 backdrop-blur-xl border-2 border-swara-gold/40 p-6 rounded-3xl shadow-xl">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-white/70 dark:bg-card/70 backdrop-blur-xl border-2 border-swara-gold/50 p-6 rounded-3xl shadow-xl">
           <div>
             <Badge variant="outline" className="border-[#800020]/40 text-[#800020] dark:text-amber-200 mb-2 font-extrabold text-xs">
               {ui.badge}
@@ -131,7 +131,7 @@ export function MultilingualKnowledgeHubView({ melakartas }: Props) {
               <Link
                 key={m.number}
                 href={`/knowledge-hub/melakarta/${m.number}`}
-                className="group rounded-3xl border-2 border-swara-gold/30 p-5 transition-all hover:border-[#800020] hover:bg-[#800020]/10 hover:shadow-xl bg-card/90 backdrop-blur-md flex flex-col justify-between"
+                className="group rounded-3xl border-2 border-swara-gold/40 p-5 transition-all hover:border-[#800020] hover:bg-white/90 hover:shadow-2xl bg-white/65 dark:bg-card/65 backdrop-blur-md flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
