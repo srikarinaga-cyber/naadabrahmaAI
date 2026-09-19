@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { SupportedLanguage } from "@/lib/ai/context";
+import { useLanguage } from "@/components/providers/language-provider";
 
 interface SyllabusFile {
   name: string;
@@ -66,7 +67,7 @@ export function NotesPanel({ initialTab }: NotesPanelProps) {
   const [savedNotes, setSavedNotes] = useState<SavedNote[]>([]);
   const [topic, setTopic] = useState("");
   const [generatedNote, setGeneratedNote] = useState<string | null>(null);
-  const [language, setLanguage] = useState<SupportedLanguage>("en");
+  const { language, setLanguage } = useLanguage();
   const [loadingFiles, setLoadingFiles] = useState(true);
   const [loadingChunks, setLoadingChunks] = useState(false);
   const [generating, setGenerating] = useState(false);

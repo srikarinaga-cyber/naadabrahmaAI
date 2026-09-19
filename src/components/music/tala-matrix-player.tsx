@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Play, Square, Clock, Volume2, Sliders, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/components/providers/language-provider";
 
 export interface SuladiTala {
   id: string;
@@ -138,6 +139,8 @@ export const SULADI_35_TALAS: SuladiTala[] = [
 ];
 
 export function TalaMatrixPlayer() {
+  const { language } = useLanguage();
+  const isTe = language === "te";
   const [selectedJathi, setSelectedJathi] = useState<string>("All");
   const [selectedFamily, setSelectedFamily] = useState<string>("All");
   const [activeTala, setActiveTala] = useState<SuladiTala>(SULADI_35_TALAS[21]); // Default to Adi Tala
@@ -249,7 +252,7 @@ export function TalaMatrixPlayer() {
         <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border pb-4 gap-4">
           <div>
             <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1 font-bold">
-              35 Suladi Sapta Tala Rhythm Synthesizer
+              {isTe ? "35 సుళాది సప్త తాళ సాధన సింథసైజర్" : "35 Suladi Sapta Tala Rhythm Synthesizer"}
             </Badge>
             <h2 className="font-serif text-2xl font-bold text-kumkum">{activeTala.name}</h2>
             <p className="text-xs text-muted-foreground mt-1">{activeTala.description}</p>
@@ -266,11 +269,11 @@ export function TalaMatrixPlayer() {
           >
             {isPlaying ? (
               <>
-                <Square className="size-4 fill-current animate-pulse" /> Stop Tala Beats
+                <Square className="size-4 fill-current animate-pulse" /> {isTe ? "తాళ సాధన ఆపండి" : "Stop Tala Beats"}
               </>
             ) : (
               <>
-                <Play className="size-4 fill-current" /> Start {activeTala.name} Beats
+                <Play className="size-4 fill-current" /> {isTe ? `${activeTala.name} తాళం ప్రారంభించండి` : `Start ${activeTala.name} Beats`}
               </>
             )}
           </Button>
@@ -280,7 +283,7 @@ export function TalaMatrixPlayer() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/40 p-4 rounded-2xl border border-border/50">
           <div>
             <div className="flex justify-between text-xs font-semibold text-foreground mb-1">
-              <span>Tala BPM Speed Tempo:</span>
+              <span>{isTe ? "తాళ వేగం (BPM):" : "Tala BPM Speed Tempo:"}</span>
               <span className="font-mono text-kumkum font-bold">{bpm} BPM</span>
             </div>
             <input
@@ -296,7 +299,7 @@ export function TalaMatrixPlayer() {
 
           <div>
             <div className="flex justify-between text-xs font-semibold text-foreground mb-1">
-              <span>Beat Sound Volume (Voice Loudness):</span>
+              <span>{isTe ? "తాళ శబ్ద స్థాయి (Volume):" : "Beat Sound Volume (Voice Loudness):"}</span>
               <span className="font-mono text-kumkum font-bold">{Math.round(volume * 100)}%</span>
             </div>
             <input
@@ -314,8 +317,8 @@ export function TalaMatrixPlayer() {
         {/* Akshara Beats Visualizer Bar with Exact Anga Roles */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-muted-foreground">Anga Pattern: <strong className="text-kumkum font-serif text-sm">{activeTala.angaNotation}</strong></span>
-            <span className="text-kumkum font-bold">Total Cycle: {activeTala.totalBeats} Akshara Beats</span>
+            <span className="text-muted-foreground">{isTe ? "అంగముల అమరిక:" : "Anga Pattern:"} <strong className="text-kumkum font-serif text-sm">{activeTala.angaNotation}</strong></span>
+            <span className="text-kumkum font-bold">{isTe ? `మొత్తం ఆవర్తనం: ${activeTala.totalBeats} అక్షర కాలాలు` : `Total Cycle: ${activeTala.totalBeats} Akshara Beats`}</span>
           </div>
 
           <div className="grid grid-cols-4 sm:grid-cols-7 md:grid-cols-10 gap-2">
@@ -345,7 +348,7 @@ export function TalaMatrixPlayer() {
       {/* Filter Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-2 overflow-x-auto">
-          <span className="text-xs font-bold text-muted-foreground mr-1">Filter Jathi:</span>
+          <span className="text-xs font-bold text-muted-foreground mr-1">{isTe ? "లఘు జాతి ఎంపిక:" : "Filter Jathi:"}</span>
           {["All", "Tisra", "Chatusra", "Khanda", "Misra", "Sankeerna"].map((j) => (
             <button
               key={j}
@@ -356,19 +359,19 @@ export function TalaMatrixPlayer() {
                   : "bg-card text-muted-foreground hover:bg-muted"
               }`}
             >
-              {j} {j !== "All" && `(${j === "Tisra" ? 3 : j === "Chatusra" ? 4 : j === "Khanda" ? 5 : j === "Misra" ? 7 : 9})`}
+              {j === "All" ? (isTe ? "అన్నీ" : "All") : j} {j !== "All" && `(${j === "Tisra" ? 3 : j === "Chatusra" ? 4 : j === "Khanda" ? 5 : j === "Misra" ? 7 : 9})`}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-muted-foreground">Family:</span>
+          <span className="text-xs font-bold text-muted-foreground">{isTe ? "తాళ కుటుంబం:" : "Family:"}</span>
           <select
             value={selectedFamily}
             onChange={(e) => setSelectedFamily(e.target.value)}
             className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs font-semibold"
           >
-            <option value="All">All 7 Tala Families</option>
+            <option value="All">{isTe ? "అన్ని 7 తాళ కుటుంబాలు" : "All 7 Tala Families"}</option>
             <option value="Dhruva">Dhruva</option>
             <option value="Matya">Matya</option>
             <option value="Rupaka">Rupaka</option>
