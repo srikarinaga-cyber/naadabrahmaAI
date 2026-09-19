@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ArrowRight, GitCompare, Music, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
 import { MELAKARTA_SEED_DATA } from "@/lib/data/melakartas-seed";
 import { SwarasthanaPlayer } from "@/components/music/swarasthana-player";
+import { useLanguage } from "@/components/providers/language-provider";
+import { translateSwaraNotation } from "@/lib/data/knowledge-hub-i18n";
 
 interface ExtendedRagaComparison {
   number: number;
@@ -64,6 +66,7 @@ const RAGA_DATABASE: ExtendedRagaComparison[] = [
 ];
 
 export default function RagaComparePage() {
+  const { language } = useLanguage();
   const [raga1Name, setRaga1Name] = useState<string>("Mohanam");
   const [raga2Name, setRaga2Name] = useState<string>("Hamsadhwani");
 
@@ -74,42 +77,47 @@ export default function RagaComparePage() {
   const raga1SwaraTokens = raga1.arohana.split(/\s+/).filter(Boolean);
   const raga2SwaraTokens = raga2.arohana.split(/\s+/).filter(Boolean);
 
+  const isTe = language === "te";
+
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col justify-between">
       <Navbar />
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
           href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-kumkum transition-colors bg-card/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-border shadow-xs mb-8"
+          className="inline-flex items-center gap-2 text-xs font-extrabold text-foreground hover:text-[#800020] transition-colors bg-card/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-swara-gold/40 shadow-xs mb-8"
         >
-          <ArrowLeft className="size-4" /> Back to Knowledge Hub
+          <ArrowLeft className="size-4 text-[#800020] dark:text-amber-300" />
+          <span>{isTe ? "← జ్ఞాన నిధికి తిరిగి వెళ్ళండి" : "← Back to Knowledge Hub"}</span>
         </Link>
 
         {/* Header */}
         <div className="mb-10">
-          <Badge variant="outline" className="border-kumkum/30 text-kumkum mb-3 font-bold">
+          <Badge variant="outline" className="border-swara-gold/50 text-[#800020] dark:text-amber-200 mb-3 font-extrabold text-xs">
             <GitCompare className="mr-1.5 size-3.5" />
-            Side-by-Side Raga Comparison Matrix
+            {isTe ? "రాగాల ముఖాముఖి పోలిక విశ్లేషణ" : "Side-by-Side Raga Comparison Matrix"}
           </Badge>
-          <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            Compare Any Two Carnatic Ragas
+          <h1 className="font-serif text-3xl font-extrabold text-[#800020] dark:text-amber-100 md:text-4xl">
+            {isTe ? "ఏవైనా రెండు కర్ణాటక రాగాలను పోల్చండి" : "Compare Any Two Carnatic Ragas"}
           </h1>
-          <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed text-sm">
-            Select any two Melakarta or Janya ragas to inspect side-by-side Arohana/Avarohana swarasthana differences, parent classifications, and audio player sound signatures.
+          <p className="text-foreground/90 font-medium mt-2 max-w-3xl leading-relaxed text-xs md:text-sm">
+            {isTe
+              ? "ఏవైనా రెండు మేళకర్త లేదా జన్య రాగాలను ఎంచుకుని ఆరోహణ-అవరోహణ స్వరస్థాన వ్యత్యాసాలను, జనక రాగ మూలాలను మరియు శ్రుతి నాదాన్ని విశ్లేషించండి."
+              : "Select any two Melakarta or Janya ragas to inspect side-by-side Arohana/Avarohana swarasthana differences, parent classifications, and audio player sound signatures."}
           </p>
         </div>
 
         {/* Raga Selectors */}
         <div className="grid gap-6 md:grid-cols-2 mb-10">
           {/* Raga 1 Selector */}
-          <div className="glass-panel rounded-3xl border border-swara-gold/40 bg-card/85 backdrop-blur-md p-6 space-y-3 shadow-md">
-            <label className="block text-xs font-bold text-kumkum uppercase tracking-wider">
-              Select Raga 1:
+          <div className="glass-panel rounded-3xl border border-swara-gold/40 bg-card/90 backdrop-blur-xl p-6 space-y-3 shadow-md">
+            <label className="block text-xs font-extrabold text-[#800020] dark:text-amber-300 uppercase tracking-wider">
+              {isTe ? "రాగం 1 ని ఎంచుకోండి:" : "Select Raga 1:"}
             </label>
             <select
               value={raga1Name}
               onChange={(e) => setRaga1Name(e.target.value)}
-              className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm font-serif font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-kumkum/40"
+              className="w-full rounded-2xl border-2 border-swara-gold/40 bg-card px-4 py-3 text-sm font-serif font-extrabold text-[#800020] dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-[#800020]"
             >
               {RAGA_DATABASE.map((r) => (
                 <option key={`r1-${r.name}`} value={r.name}>

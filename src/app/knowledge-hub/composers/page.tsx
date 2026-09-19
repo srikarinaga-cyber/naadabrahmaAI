@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Sparkles, BookOpen, Music, X, Award, Globe, HeartHandshake } from "lucide-react";
+import { useLanguage } from "@/components/providers/language-provider";
 
 interface VaggeyakaraFullInfo {
   id: string;
@@ -201,7 +202,10 @@ const EXTENDED_VAGGEYAKARAS: VaggeyakaraFullInfo[] = [
 ];
 
 export default function ComposersPage() {
+  const { language } = useLanguage();
   const [selectedComposer, setSelectedComposer] = useState<VaggeyakaraFullInfo | null>(null);
+
+  const isTe = language === "te";
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden flex flex-col justify-between">
@@ -209,20 +213,23 @@ export default function ComposersPage() {
       <main className="mx-auto max-w-7xl px-6 py-16">
         <Link
           href="/knowledge-hub"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-kumkum mb-8 transition-colors bg-card/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border"
+          className="inline-flex items-center gap-2 text-xs font-extrabold text-foreground hover:text-[#800020] transition-colors bg-card/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-swara-gold/40 shadow-xs mb-8"
         >
-          <ArrowLeft className="size-4" /> Back to Janaka Ragas
+          <ArrowLeft className="size-4 text-[#800020] dark:text-amber-300" />
+          <span>{isTe ? "← జ్ఞాన నిధికి తిరిగి వెళ్ళండి" : "← Back to Knowledge Hub"}</span>
         </Link>
 
         <div className="mb-10">
-          <Badge variant="outline" className="border-kumkum/20 text-kumkum mb-4 font-bold">
-            Vaggeyakaras Directory
+          <Badge variant="outline" className="border-swara-gold/50 text-[#800020] dark:text-amber-200 mb-3 font-extrabold text-xs">
+            {isTe ? "మహా వాగ్గేయకారుల జాబితా" : "Vaggeyakaras Directory"}
           </Badge>
-          <h1 className="font-serif text-3xl font-bold text-kumkum md:text-4xl">
-            Great Carnatic Music Composers (Vaggeyakaras)
+          <h1 className="font-serif text-3xl font-extrabold text-[#800020] dark:text-amber-100 md:text-4xl">
+            {isTe ? "కర్ణాటక సంగీత మహా వాగ్గేయకారులు" : "Great Carnatic Music Composers (Vaggeyakaras)"}
           </h1>
-          <p className="text-muted-foreground mt-2 max-w-3xl leading-relaxed">
-            Click on any composer below to inspect their complete biography, mudras, key musical innovations, and signature kritis.
+          <p className="text-foreground/90 font-medium mt-2 max-w-3xl leading-relaxed text-xs md:text-sm">
+            {isTe
+              ? "సంగీత త్రిమూర్తులు మరియు ఇతర ప్రసిద్ధ కర్ణాటక సంగీత రచయితల జీవిత చరిత్రలు, ముద్రలు, సంగీత ఆవిష్కరణలు మరియు ప్రసిద్ధ కృతులను తెలుసుకోవడానికి క్రింది కార్డులపై క్లిక్ చేయండి."
+              : "Click on any composer below to inspect their complete biography, mudras, key musical innovations, and signature kritis."}
           </p>
         </div>
 

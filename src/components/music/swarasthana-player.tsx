@@ -1,16 +1,154 @@
-"use client";
-
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Play, Volume2, Music, Sparkles, Smartphone, Sliders, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/components/providers/language-provider";
+import { translateSwaraNotation } from "@/lib/data/knowledge-hub-i18n";
 
 interface SwarasthanaPlayerProps {
   ragaName: string;
   arohana: string;
   avarohana: string;
 }
+
+const PLAYER_I18N: Record<
+  string,
+  {
+    engineBadge: string;
+    playerTitleSuffix: string;
+    tanpuraBtn: string;
+    veenaBtn: string;
+    violinBtn: string;
+    durationLabel: string;
+    fastLabel: string;
+    legendTitle: string;
+    playScaleBtn: string;
+    playingScaleBtn: string;
+    shadja: string;
+    rishabha: string;
+    gandhara: string;
+    madhyama: string;
+    panchama: string;
+    dhaivata: string;
+    nishada: string;
+  }
+> = {
+  en: {
+    engineBadge: "Tanpura Droid Swarasthana Engine",
+    playerTitleSuffix: "Swara Player",
+    tanpuraBtn: "🪕 Tanpura Droid Sound",
+    veenaBtn: "🪕 Veena",
+    violinBtn: "🎻 Violin",
+    durationLabel: "Swara Playback Duration Time Setter:",
+    fastLabel: "0.3s (Fast)",
+    legendTitle: "Swarasthana Color Pattern Legend:",
+    playScaleBtn: "Play Complete Scale",
+    playingScaleBtn: "Playing Scale...",
+    shadja: "Shadja (Sa)",
+    rishabha: "Rishabha (Ri)",
+    gandhara: "Gandhara (Ga)",
+    madhyama: "Madhyama (Ma)",
+    panchama: "Panchama (Pa)",
+    dhaivata: "Dhaivata (Dha)",
+    nishada: "Nishada (Ni)",
+  },
+  te: {
+    engineBadge: "తంబూరా నాద స్వరస్థాన ఇంజిన్",
+    playerTitleSuffix: "స్వర నాద ప్లేయర్",
+    tanpuraBtn: "🪕 తంబూరా నాదం",
+    veenaBtn: "🪕 వీణ నాదం",
+    violinBtn: "🎻 వయోలిన్ నాదం",
+    durationLabel: "స్వర నాద సమయ అవధి ప్రామాణీకరణ:",
+    fastLabel: "0.3సె (వేగం)",
+    legendTitle: "స్వరస్థాన వర్ణ సూచిక (Color Legend):",
+    playScaleBtn: "సంపూర్ణ స్వర క్రమం ప్లే చేయి",
+    playingScaleBtn: "స్వరాలు ప్లే అవుతున్నాయి...",
+    shadja: "షడ్జము (స)",
+    rishabha: "రిషభము (రి)",
+    gandhara: "గాంధారము (గా)",
+    madhyama: "మధ్యమము (మా)",
+    panchama: "పంచమము (పా)",
+    dhaivata: "దైవతము (దా)",
+    nishada: "నిషాదము (నీ)",
+  },
+  hi: {
+    engineBadge: "तानपुरा नाद स्वरस्थान इंजन",
+    playerTitleSuffix: "स्वर प्लेयर",
+    tanpuraBtn: "🪕 तानपुरा ध्वनि",
+    veenaBtn: "🪕 वीणा ध्वनि",
+    violinBtn: "🎻 वायलिन ध्वनि",
+    durationLabel: "स्वर बजाने की समयावधि सेट करें:",
+    fastLabel: "0.3से (तीव्र)",
+    legendTitle: "स्वरस्थान रंग संकेतक (Color Legend):",
+    playScaleBtn: "संपूर्ण स्वर क्रम बजाएं",
+    playingScaleBtn: "स्वर बज रहे हैं...",
+    shadja: "षड्ज (सा)",
+    rishabha: "ऋषभ (रे)",
+    gandhara: "गंधार (ग)",
+    madhyama: "मध्यम (म)",
+    panchama: "पंचम (प)",
+    dhaivata: "धैवत (ध)",
+    nishada: "निषाद (नि)",
+  },
+  ta: {
+    engineBadge: "தம்பூரா ஸ்வரஸ்தான கருவி",
+    playerTitleSuffix: "ஸ்வர பிளேயர்",
+    tanpuraBtn: "🪕 தம்பூரா நாதம்",
+    veenaBtn: "🪕 வீணை",
+    violinBtn: "🎻 வயலின்",
+    durationLabel: "ஸ்வர வாசிப்பு நேர அளவு:",
+    fastLabel: "0.3வி (வேகம்)",
+    legendTitle: "ஸ்வரஸ்தான வண்ணக் குறிப்புகள்:",
+    playScaleBtn: "முழு ஸ்வரங்களை இயக்குக",
+    playingScaleBtn: "இயங்குகிறது...",
+    shadja: "ஷட்ஜம் (ஸ)",
+    rishabha: "ரிஷபம் (ரி)",
+    gandhara: "காந்தாரம் (க)",
+    madhyama: "மத்யமம் (ம)",
+    panchama: "பஞ்சமம் (ப)",
+    dhaivata: "தைவதம் (த)",
+    nishada: "நிஷாதம் (நி)",
+  },
+  kn: {
+    engineBadge: "ತಂಬೂರಿ ಶ್ರುತಿ ಸ್ವರಸ್ಥಾನ ಇಂಜಿನ್",
+    playerTitleSuffix: "ಸ್ವರ ಪ್ಲೇಯರ್",
+    tanpuraBtn: "🪕 ತಂಬೂರಿ ನಾದ",
+    veenaBtn: "🪕 ವೀಣೆ",
+    violinBtn: "🎻 ಪಿಟೀಲು",
+    durationLabel: "ಸ್ವರ ಪ್ಲೇಬ್ಯಾಕ್ ಸಮಯ ನಿಗದಿ:",
+    fastLabel: "0.3ಸೆ (ವೇಗ)",
+    legendTitle: "ಸ್ವರಸ್ಥಾನ ಬಣ್ಣ ಸೂಚಕ:",
+    playScaleBtn: "ಸಂಪೂರ್ಣ ಸ್ವರ ಕ್ರಮ ಪ್ಲೇ ಮಾಡಿ",
+    playingScaleBtn: "ಸ್ವರಗಳು ಪ್ಲೇ ಆಗುತ್ತಿವೆ...",
+    shadja: "ಷಡ್ಜ (ಸ)",
+    rishabha: "ಋಷಭ (ರಿ)",
+    gandhara: "ಗಾಂಧಾರ (ಗ)",
+    madhyama: "ಮಧ್ಯಮ (ಮ)",
+    panchama: "ಪಂಚಮ (ಪ)",
+    dhaivata: "ಧೈವತ (ಧ)",
+    nishada: "ನಿಷಾದ (ನಿ)",
+  },
+  ml: {
+    engineBadge: "തമ്പുരു നാദ സ്വരസ്ഥാന എൻജിൻ",
+    playerTitleSuffix: "സ്വര പ്ലെയർ",
+    tanpuraBtn: "🪕 തമ്പുരു നാദം",
+    veenaBtn: "🪕 വീണ",
+    violinBtn: "🎻 വയലിൻ",
+    durationLabel: "സ്വര പ്ലേബാക്ക് സമയം ക്രമീകരിക്കൂ:",
+    fastLabel: "0.3സെ (വേഗം)",
+    legendTitle: "സ്വരസ്ഥാന വർണ്ണ സൂചിക:",
+    playScaleBtn: "സമ്പൂർണ്ണ സ്വരങ്ങൾ കേൾക്കൂ",
+    playingScaleBtn: "പ്ലേ ചെയ്യുന്നു...",
+    shadja: "ഷഡ്ജം (സ)",
+    rishabha: "ഋഷഭം (രി)",
+    gandhara: "ഗാന്ധാരം (ഗ)",
+    madhyama: "മദ്ധ്യമം (മ)",
+    panchama: "പഞ്ചമം (പ)",
+    dhaivata: "ധൈവതം (ധ)",
+    nishada: "നിഷാദം (നി)",
+  },
+};
 
 // Exact Swara frequencies & names relative to Adhara Shadja C3 (130.81 Hz) with Color Patterns
 const SWARA_DETAILS: Record<
@@ -37,6 +175,9 @@ const SWARA_DETAILS: Record<
 };
 
 export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaPlayerProps) {
+  const { language } = useLanguage();
+  const pt = PLAYER_I18N[language] || PLAYER_I18N.en;
+
   const [instrument, setInstrument] = useState<"tanpura" | "veena" | "violin">("tanpura");
   const [noteDurationSec, setNoteDurationSec] = useState<number>(0.8);
   const [activeSwara, setActiveSwara] = useState<string | null>(null);
@@ -243,10 +384,10 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
             />
           </div>
           <div>
-            <Badge className="bg-kumkum/10 text-kumkum border-none text-[10px] mb-1 font-bold">
-              Tanpura Droid Swarasthana Engine
+            <Badge className="bg-[#800020]/15 text-[#800020] dark:text-amber-200 border-none text-[10px] mb-1 font-extrabold">
+              {pt.engineBadge}
             </Badge>
-            <h3 className="font-serif text-xl font-bold text-kumkum">{ragaName} Swara Player</h3>
+            <h3 className="font-serif text-xl font-extrabold text-[#800020] dark:text-amber-100">{ragaName} {pt.playerTitleSuffix}</h3>
           </div>
         </div>
 
@@ -258,47 +399,47 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
               onClick={() => setInstrument("tanpura")}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 instrument === "tanpura"
-                  ? "bg-kumkum text-white shadow-sm"
+                  ? "bg-[#800020] text-white shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              🪕 Tanpura Droid Sound
+              {pt.tanpuraBtn}
             </button>
             <button
               onClick={() => setInstrument("veena")}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 instrument === "veena"
-                  ? "bg-kumkum text-white shadow-sm"
+                  ? "bg-[#800020] text-white shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              🪕 Veena
+              {pt.veenaBtn}
             </button>
             <button
               onClick={() => setInstrument("violin")}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 instrument === "violin"
-                  ? "bg-kumkum text-white shadow-sm"
+                  ? "bg-[#800020] text-white shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              🎻 Violin
+              {pt.violinBtn}
             </button>
           </div>
         </div>
       </div>
 
       {/* Swara Playback Time Duration Setter Slider */}
-      <div className="rounded-2xl bg-muted/40 p-4 border border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="rounded-2xl bg-muted/60 p-4 border border-swara-gold/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Clock className="size-4 text-swara-gold" />
-          <span className="text-xs font-bold text-foreground">
-            Swara Playback Duration Time Setter:
+          <span className="text-xs font-extrabold text-foreground">
+            {pt.durationLabel}
           </span>
         </div>
 
         <div className="flex items-center gap-3 flex-1 max-w-xs">
-          <span className="text-[10px] font-mono text-muted-foreground">0.3s (Fast)</span>
+          <span className="text-[10px] font-mono text-muted-foreground font-bold">{pt.fastLabel}</span>
           <input
             type="range"
             min="0.3"
@@ -306,9 +447,9 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
             step="0.1"
             value={noteDurationSec}
             onChange={(e) => setNoteDurationSec(parseFloat(e.target.value))}
-            className="flex-1 accent-kumkum h-1.5 bg-background rounded-lg"
+            className="flex-1 accent-[#800020] h-1.5 bg-background rounded-lg cursor-pointer"
           />
-          <span className="text-xs font-bold font-mono text-kumkum">{noteDurationSec.toFixed(1)}s</span>
+          <span className="text-xs font-extrabold font-mono text-[#800020] dark:text-amber-300">{noteDurationSec.toFixed(1)}s</span>
         </div>
       </div>
 
@@ -333,18 +474,18 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
       )}
 
       {/* Swarasthana Color Pattern Legend Bar */}
-      <div className="bg-muted/40 p-3 rounded-2xl border border-border/50 space-y-1.5">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Swarasthana Color Pattern Legend:
+      <div className="bg-muted/60 p-3 rounded-2xl border border-swara-gold/30 space-y-1.5">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-foreground/80">
+          {pt.legendTitle}
         </span>
-        <div className="flex flex-wrap gap-1.5 text-[10px] font-bold">
-          <span className="bg-amber-500 text-white px-2 py-0.5 rounded-md">Shadja (Sa)</span>
-          <span className="bg-emerald-600 text-white px-2 py-0.5 rounded-md">Rishabha (Ri)</span>
-          <span className="bg-purple-600 text-white px-2 py-0.5 rounded-md">Gandhara (Ga)</span>
-          <span className="bg-rose-600 text-white px-2 py-0.5 rounded-md">Madhyama (Ma)</span>
-          <span className="bg-indigo-600 text-white px-2 py-0.5 rounded-md">Panchama (Pa)</span>
-          <span className="bg-teal-600 text-white px-2 py-0.5 rounded-md">Dhaivata (Dha)</span>
-          <span className="bg-amber-700 text-white px-2 py-0.5 rounded-md">Nishada (Ni)</span>
+        <div className="flex flex-wrap gap-1.5 text-[10px] font-extrabold">
+          <span className="bg-amber-500 text-white px-2 py-0.5 rounded-md">{pt.shadja}</span>
+          <span className="bg-emerald-600 text-white px-2 py-0.5 rounded-md">{pt.rishabha}</span>
+          <span className="bg-purple-600 text-white px-2 py-0.5 rounded-md">{pt.gandhara}</span>
+          <span className="bg-rose-600 text-white px-2 py-0.5 rounded-md">{pt.madhyama}</span>
+          <span className="bg-indigo-600 text-white px-2 py-0.5 rounded-md">{pt.panchama}</span>
+          <span className="bg-teal-600 text-white px-2 py-0.5 rounded-md">{pt.dhaivata}</span>
+          <span className="bg-amber-700 text-white px-2 py-0.5 rounded-md">{pt.nishada}</span>
         </div>
       </div>
 
@@ -367,16 +508,17 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
 
         <div className="flex flex-wrap gap-2.5">
           {arohanaSwaras.map((s, idx) => {
-            const info = SWARA_DETAILS[s] || { colorClass: "bg-kumkum text-white", borderClass: "border-kumkum" };
+            const info = SWARA_DETAILS[s] || { colorClass: "bg-[#800020] text-white", borderClass: "border-[#800020]" };
+            const translatedS = translateSwaraNotation(s, language);
             return (
               <button
                 key={`aro-${idx}`}
                 onClick={() => playSwaraTone(s)}
-                className={`size-14 rounded-2xl font-serif text-base font-bold border-2 transition-all flex flex-col items-center justify-center shadow-md ${info.colorClass} ${info.borderClass} ${
+                className={`size-14 rounded-2xl font-serif text-base font-extrabold border-2 transition-all flex flex-col items-center justify-center shadow-md ${info.colorClass} ${info.borderClass} ${
                   activeSwara === s ? "scale-110 ring-4 ring-swara-gold shadow-lg" : "hover:scale-105"
                 }`}
               >
-                <span>{s}</span>
+                <span>{translatedS}</span>
                 <span className="text-[9px] font-sans font-normal opacity-80">
                   {instrument === "tanpura" ? "🪕" : instrument === "veena" ? "🪕" : "🎻"}
                 </span>
@@ -389,32 +531,35 @@ export function SwarasthanaPlayer({ ragaName, arohana, avarohana }: SwarasthanaP
       {/* Avarohana Colored Swara Buttons (Starting with High Pitch Sa S') */}
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-kumkum uppercase tracking-wider flex items-center gap-1.5">
-            <Volume2 className="size-3.5 text-swara-gold" /> Avarohana (High Pitch S&apos; Descending Swaras):
+          <span className="text-xs font-extrabold text-[#800020] dark:text-amber-200 uppercase tracking-wider flex items-center gap-1.5">
+            <Volume2 className="size-3.5 text-swara-gold" />
+            <span>{language === "te" ? "అవరోహణ (అవరోహణ స్వరములు):" : "Avarohana (Descending Swaras):"}</span>
           </span>
           <Button
             size="sm"
             variant="outline"
             disabled={isPlayingScale}
             onClick={() => playScaleSequence(avarohanaSwaras)}
-            className="border-swara-gold/30 text-xs font-bold text-kumkum hover:bg-kumkum hover:text-white gap-1.5"
+            className="border-swara-gold/40 text-xs font-extrabold text-[#800020] dark:text-amber-200 hover:bg-[#800020] hover:text-white gap-1.5 rounded-xl shadow-2xs"
           >
-            <Play className="size-3" /> Play Avarohana ({instrument === "tanpura" ? "Tanpura Droid" : instrument})
+            <Play className="size-3" />
+            <span>{isPlayingScale ? pt.playingScaleBtn : pt.playScaleBtn}</span>
           </Button>
         </div>
 
         <div className="flex flex-wrap gap-2.5">
           {avarohanaSwaras.map((s, idx) => {
-            const info = SWARA_DETAILS[s] || { colorClass: "bg-kumkum text-white", borderClass: "border-kumkum" };
+            const info = SWARA_DETAILS[s] || { colorClass: "bg-[#800020] text-white", borderClass: "border-[#800020]" };
+            const translatedS = translateSwaraNotation(s, language);
             return (
               <button
                 key={`ava-${idx}`}
                 onClick={() => playSwaraTone(s)}
-                className={`size-14 rounded-2xl font-serif text-base font-bold border-2 transition-all flex flex-col items-center justify-center shadow-md ${info.colorClass} ${info.borderClass} ${
+                className={`size-14 rounded-2xl font-serif text-base font-extrabold border-2 transition-all flex flex-col items-center justify-center shadow-md ${info.colorClass} ${info.borderClass} ${
                   activeSwara === s ? "scale-110 ring-4 ring-swara-gold shadow-lg" : "hover:scale-105"
                 }`}
               >
-                <span>{s}</span>
+                <span>{translatedS}</span>
                 <span className="text-[9px] font-sans font-normal opacity-80">
                   {instrument === "tanpura" ? "🪕" : instrument === "veena" ? "🪕" : "🎻"}
                 </span>
