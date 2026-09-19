@@ -13,6 +13,7 @@ import {
   KH_UI_STRINGS,
   translateSwaraNotation,
 } from "@/lib/data/knowledge-hub-i18n";
+import { useLanguage } from "@/components/providers/language-provider";
 import type { MelakartaSeed } from "@/lib/data/melakartas-seed";
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export function MultilingualKnowledgeHubView({ melakartas }: Props) {
-  const [language, setLanguage] = useState<SupportedLanguage>("en");
+  const { language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
 
   const ui = KH_UI_STRINGS[language] || KH_UI_STRINGS.en;

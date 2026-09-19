@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { INSTRUMENTS, type Instrument } from "@/lib/ai/instruments";
 import type { AiChatResponse, SupportedLanguage } from "@/lib/ai/context";
 import { CarnaticMusicLogo } from "@/components/ui/music-logo";
+import { useLanguage } from "@/components/providers/language-provider";
 
 interface Message {
   role: "user" | "assistant";
@@ -62,10 +63,10 @@ const SAMPLE_PROMPTS: Record<SupportedLanguage, string[]> = {
 };
 
 export function AiGuruChat({ requireAuth = false }: AiGuruChatProps) {
+  const { language, setLanguage } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [instrument, setInstrument] = useState<Instrument>("vocal");
-  const [language, setLanguage] = useState<SupportedLanguage>("en");
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [savedIndex, setSavedIndex] = useState<number | null>(null);
